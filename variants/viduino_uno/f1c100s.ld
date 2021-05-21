@@ -38,6 +38,27 @@ SECTIONS
     PROVIDE(__text_end = .);
   } > ram
 
+  .preinit_array     :
+	{
+		PROVIDE_HIDDEN (__preinit_array_start = .);
+		KEEP (*(.preinit_array*))
+		PROVIDE_HIDDEN (__preinit_array_end = .);
+	} >ram
+	.init_array :
+	{
+		PROVIDE_HIDDEN (__init_array_start = .);
+		KEEP (*(SORT(.init_array.*)))
+		KEEP (*(.init_array*))
+		PROVIDE_HIDDEN (__init_array_end = .);
+	} >ram
+	.fini_array :
+	{
+		PROVIDE_HIDDEN (__fini_array_start = .);
+		KEEP (*(SORT(.fini_array.*)))
+		KEEP (*(.fini_array*))
+		PROVIDE_HIDDEN (__fini_array_end = .);
+	} >ram
+
   . = ALIGN(4);
   _etext = . ;
   PROVIDE (etext = .);
