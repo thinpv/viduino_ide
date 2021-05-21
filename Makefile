@@ -48,12 +48,12 @@ CXXFLAGS	:= $(CFLAGS)
 ASFLAGS		:= -g -ggdb -Wall -O3 -ffreestanding -std=gnu11 $(DEFINES)
 CFLAGS		+= -g -ggdb -Wall -O3 -ffreestanding -std=gnu11 $(DEFINES)
 CXXFLAGS	+= -g -ggdb -Wall -O3 -ffreestanding -std=gnu++11 $(DEFINES) -fno-rtti
-LDFLAGS		:= -T variants/viduino_uno/f1c100s.ld -nostdlib 
+LDFLAGS		:= -T variants/viduino_uno/f1c100s.ld -nostdlib -Wno-unused-function
 MCFLAGS		:= -march=armv5te -mtune=arm926ej-s -mfloat-abi=soft -marm -mno-thumb-interwork
 
 LIBS 			:= -lgcc -lm -lc -lnosys
 CORES			:= cores/allwinner
-SDKSRC		:= sdk
+SDKSRC		:= cores/allwinner/sdk
 SDKINC		:= cores/allwinner/sdk
 INCDIRS		+= -I$(CORES) -I$(CORES)/api
 INCDIRS		+= -I$(SDKINC)/driver/include -I$(SDKINC)/machine/include -I$(SDKINC)/machine/include/f1c100s -I$(SDKINC)/lib -I$(SDKINC)/lib/include
@@ -77,7 +77,7 @@ SRC_S = \
 	$(SDKSRC)/lib/strncmp.S \
 
 SRC_C += \
-	boot_main.c \
+	$(SDKSRC)/machine/boot_main.c \
 	$(SDKSRC)/machine/sys-clock.c \
 	$(SDKSRC)/machine/sys-dram.c \
 	$(SDKSRC)/machine/sys-print.c \
@@ -153,17 +153,17 @@ SRC_CPP += \
 # 	libraries/FT5xx6/src/FT5xx6.cpp
 
 #freertos
-INCDIRS		+= -IFreeRTOS/Source/include -IFreeRTOS/Source/portable/GCC/ARM926EJ-S -IFreeRTOS/FreeRTOSConfig
+INCDIRS		+= -Icores/allwinner/sdk/freertos/include -Icores/allwinner/sdk/freertos/portable/GCC/ARM926EJ-S
 SRC_C += \
-	FreeRTOS/Source/croutine.c \
-	FreeRTOS/Source/event_groups.c \
-	FreeRTOS/Source/list.c \
-	FreeRTOS/Source/queue.c \
-	FreeRTOS/Source/tasks.c \
-	FreeRTOS/Source/timers.c \
-	FreeRTOS/Source/portable/MemMang/heap_2.c \
-	FreeRTOS/Source/portable/GCC/ARM926EJ-S/port.c \
-	FreeRTOS/Source/portable/GCC/ARM926EJ-S/portISR.c \
+	cores/allwinner/sdk/freertos/croutine.c \
+	cores/allwinner/sdk/freertos/event_groups.c \
+	cores/allwinner/sdk/freertos/list.c \
+	cores/allwinner/sdk/freertos/queue.c \
+	cores/allwinner/sdk/freertos/tasks.c \
+	cores/allwinner/sdk/freertos/timers.c \
+	cores/allwinner/sdk/freertos/portable/MemMang/heap_2.c \
+	cores/allwinner/sdk/freertos/portable/GCC/ARM926EJ-S/port.c \
+	cores/allwinner/sdk/freertos/portable/GCC/ARM926EJ-S/portISR.c \
 
 OBJ_S   = $(addprefix $(BUILD)/, $(SRC_S:.S=.o))
 OBJ_C   = $(addprefix $(BUILD)/, $(SRC_C:.c=.o))

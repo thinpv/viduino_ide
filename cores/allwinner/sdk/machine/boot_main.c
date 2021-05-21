@@ -36,7 +36,7 @@ int boot_main(int argc, char **argv)
     sys_init();
 
     irq_init();
-    xTaskCreate(arduino, "arduino", 512, NULL, tskIDLE_PRIORITY + 2, NULL);
+    xTaskCreate(arduino, "arduino", 1024, NULL, tskIDLE_PRIORITY + 2, NULL);
     vTaskStartScheduler();
     for (;;)
     {

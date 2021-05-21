@@ -25,7 +25,8 @@ uint64_t timer_get_ticker()
 
 unsigned long millis(void)
 {
-	return ticker/TICK_PER_MILLISECOND;
+	return xTaskGetTickCount();
+	// return ticker/TICK_PER_MILLISECOND;
 }
 
 unsigned long micros(void)
