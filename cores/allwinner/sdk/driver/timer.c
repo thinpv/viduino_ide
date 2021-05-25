@@ -6,6 +6,9 @@
 #include <timer.h>
 #include <irq.h>
 
+#include "FreeRTOS.h"
+#include "task.h"
+
 #define TICK_PER_SECOND			1000
 #define TICK_PER_MILLISECOND	(TICK_PER_SECOND/1000)
 #define MICROSECOND_PER_TICK	(1000000/TICK_PER_SECOND)
@@ -36,8 +39,9 @@ unsigned long micros(void)
 
 void delay(unsigned long ms)
 {
-	uint64_t time_to_delay = ticker + ms*TICK_PER_MILLISECOND;
-	while(ticker < time_to_delay);
+	vTaskDelay( ms/portTICK_PERIOD_MS );
+	// uint64_t time_to_delay = ticker + ms*TICK_PER_MILLISECOND;
+	// while(ticker < time_to_delay);
 }
 
 void delayMicroseconds(unsigned int usec)
