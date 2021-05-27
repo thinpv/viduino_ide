@@ -449,5 +449,7 @@ typedef struct {
 
 #include <gpio.h>
 #include <uart.h>
+#include <irq.h>
+#include <irq_gpio.h>
 
 #endif // !__F1C100S_H_

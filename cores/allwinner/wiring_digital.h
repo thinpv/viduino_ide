@@ -25,9 +25,9 @@
 
 #include "Arduino.h"
 
-extern void pinMode(pin_size_t pinNumber, PinMode pinMode);
-extern void digitalWrite(pin_size_t pinNumber, PinStatus status);
-extern PinStatus digitalRead(pin_size_t pinNumber);
+extern void pinMode(pin_size_t pinNumber, uint8_t pinMode);
+extern void digitalWrite(pin_size_t pinNumber, uint8_t status);
+extern int digitalRead(pin_size_t pinNumber);
 
 #ifdef __cplusplus
 }

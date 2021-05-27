@@ -63,6 +63,10 @@ void yield(void);
 #include "Uart.h"
 #include "Wire.h"
 
+
+#include "FreeRTOS.h"
+#include "task.h"
+
 // void tone(uint8_t _pin, unsigned int frequency, unsigned long duration = 0);
 // void tone(uint8_t _pin, unsigned int frequency, unsigned long duration = 0);
 void noTone(uint8_t _pin);

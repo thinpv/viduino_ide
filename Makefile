@@ -32,9 +32,9 @@ SIZE 		  = $(CROSS_COMPILE)size
 
 DEFINES		+= -D__ARM32_ARCH__=5 -D__ARM926EJS__
 
-LVGL_DIR ?= ${shell pwd}/libraries
-LVGL_DIR_NAME ?= lv_arduino/src
-include libraries/lv_arduino/src/lvgl.mk
+# LVGL_DIR ?= ${shell pwd}/libraries
+# LVGL_DIR_NAME ?= lv_arduino/src
+# include libraries/lv_arduino/src/lvgl.mk
 
 NS2009_DIR = ${shell pwd}/libraries/NS2009
 include libraries/NS2009/src/ns2009.mk
@@ -45,9 +45,9 @@ include libraries/NS2009/src/ns2009.mk
 # include libraries/nofrendo/example/nofrendo-f1c100s/nofrendo-f1c100s.mk
 
 CXXFLAGS	:= $(CFLAGS)
-ASFLAGS		:= -g -ggdb -Wall -O3 -ffreestanding -std=gnu11 $(DEFINES)
-CFLAGS		+= -g -ggdb -Wall -O3 -ffreestanding -std=gnu11 $(DEFINES)
-CXXFLAGS	+= -g -ggdb -Wall -O3 -ffreestanding -std=gnu++11 $(DEFINES) -fno-rtti
+ASFLAGS		:= -g -Wall -Os -ffreestanding -std=gnu11 $(DEFINES)
+CFLAGS		+= -g -Wall -Os -ffreestanding -std=gnu11 $(DEFINES)
+CXXFLAGS	+= -g -Wall -Os -ffreestanding -std=gnu++11 $(DEFINES) -fno-rtti
 LDFLAGS		:= -T variants/viduino_uno/f1c100s.ld -nostdlib -Wno-unused-function
 MCFLAGS		:= -march=armv5te -mtune=arm926ej-s -mfloat-abi=soft -marm -mno-thumb-interwork
 

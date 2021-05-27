@@ -7,20 +7,31 @@ extern "C"{
 
 void yield(void);
 
-typedef enum {
-  LOW     = 0,
-  HIGH    = 1,
-  CHANGE  = 2,
-  FALLING = 3,
-  RISING  = 4,
-} PinStatus;
+// typedef enum {
+//   LOW     = 0,
+//   HIGH    = 1,
+//   CHANGE  = 2,
+//   FALLING = 3,
+//   RISING  = 4,
+// } PinStatus;
 
-typedef enum {
-  INPUT           = 0x0,
-  OUTPUT          = 0x1,
-  INPUT_PULLUP    = 0x2,
-  INPUT_PULLDOWN  = 0x3,
-} PinMode;
+#define LOW 0
+#define HIGH 1
+#define CHANGE 2
+#define FALLING 3
+#define RISING 4
+
+// typedef enum {
+//   INPUT           = 0x0,
+//   OUTPUT          = 0x1,
+//   INPUT_PULLUP    = 0x2,
+//   INPUT_PULLDOWN  = 0x3,
+// } PinMode;
+
+#define INPUT 0
+#define OUTPUT 1
+#define INPUT_PULLUP 2
+#define INPUT_PULLDOWN 3
 
 typedef enum {
   LSBFIRST = 0,
@@ -89,9 +100,9 @@ typedef uint32_t pin_size_t;
 typedef uint8_t pin_size_t;
 #endif
 
-void pinMode(pin_size_t pinNumber, PinMode pinMode);
-void digitalWrite(pin_size_t pinNumber, PinStatus status);
-PinStatus digitalRead(pin_size_t pinNumber);
+void pinMode(pin_size_t pinNumber, uint8_t pinMode);
+void digitalWrite(pin_size_t pinNumber, uint8_t status);
+int digitalRead(pin_size_t pinNumber);
 int analogRead(pin_size_t pinNumber);
 void analogReference(uint8_t mode);
 void analogWrite(pin_size_t pinNumber, int value);
@@ -106,8 +117,8 @@ unsigned long pulseInLong(pin_size_t pin, uint8_t state, unsigned long timeout);
 void shiftOut(pin_size_t dataPin, pin_size_t clockPin, BitOrder bitOrder, uint8_t val);
 uint8_t shiftIn(pin_size_t dataPin, pin_size_t clockPin, BitOrder bitOrder);
 
-void attachInterrupt(pin_size_t interruptNumber, voidFuncPtr callback, PinStatus mode);
-void attachInterruptParam(pin_size_t interruptNumber, voidFuncPtrParam callback, PinStatus mode, void* param);
+void attachInterrupt(pin_size_t interruptNumber, voidFuncPtr callback, uint8_t mode);
+void attachInterruptParam(pin_size_t interruptNumber, voidFuncPtrParam callback, uint8_t mode, void* param);
 void detachInterrupt(pin_size_t interruptNumber);
 
 void setup(void);

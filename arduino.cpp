@@ -2,7 +2,7 @@
 #include "FreeRTOS.h"
 #include "task.h"
 
-#if 1
+#if 0
 
 #include <lvgl.h>
 #include <../lv_conf.h>
@@ -104,19 +104,35 @@ void loop()
 #include <usb.h>
 #include <usb_keyboard.h>
 
+void gpio_interrupt_handle()
+{
+    // uint32_t val = irq_gpio_status(GPIOF_INT);
+    Serial.println("gpio_interrupt_handle");
+    // Serial.println(val);
+}
+
 void setup()
 {
-    printf("setup\r\n");
+    Serial.begin(115200);
+    Serial.println("setup");
 
     // nofrendo_main(0, NULL);
 
     // set_usb_descriptor_request_func(usb_hid_descriptor_request);
     // usb_device_init(USB_TYPE_USB_HID);
+
+    gpio_set_cfg(GPIOF, 2, GPIO_FUNC_110);
+    gpio_set_pull(GPIOF, 2, GPIO_PULL_UP);
+    irq_gpio_settype(GPIOF_INT, 2, IRQ_TYPE_EDGE_FALLING, gpio_interrupt_handle);
+    irq_gpio_enable(GPIOF_INT, 2);
+    // irq_register(IRQ_LEVEL_1, F1C100S_IRQ_GPIOF, gpio_interrupt_handle, 3);
 }
 
 void loop()
 {
-    printf("loop\r\n");
+    // uint32_t val = irq_gpio_status(GPIOF_INT);
+    Serial.println("loop ");
+    // Serial.println(val);
     vTaskDelay( 1000/portTICK_PERIOD_MS );
 }
 

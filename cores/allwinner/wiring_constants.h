@@ -23,8 +23,8 @@
 extern "C"{
 #endif // __cplusplus
 
-#define HIGH 0x1
-#define LOW  0x0
+// #define HIGH 0x1
+// #define LOW  0x0
 
 #define INPUT 0x0
 #define OUTPUT 0x1
@@ -42,16 +42,16 @@ extern "C"{
 #define SERIAL  0x0
 #define DISPLAY 0x1
 
-enum BitOrder {
-	LSBFIRST = 0,
-	MSBFIRST = 1
-};
+// enum BitOrder {
+// 	LSBFIRST = 0,
+// 	MSBFIRST = 1
+// };
 
 //      LOW 0
 //      HIGH 1
-#define CHANGE 2
-#define FALLING 3
-#define RISING 4
+// #define CHANGE 2
+// #define FALLING 3
+// #define RISING 4
 
 #define DEFAULT 1
 #define EXTERNAL 0
@@ -76,8 +76,9 @@ enum BitOrder {
 #define degrees(rad) ((rad)*RAD_TO_DEG)
 #define sq(x) ((x)*(x))
 
-#define interrupts() __enable_irq()
-#define noInterrupts() __disable_irq()
+#include <arm32.h>
+#define interrupts() arm32_interrupt_enable()
+#define noInterrupts() arm32_interrupt_disable()
 
 #define lowByte(w) ((uint8_t) ((w) & 0xff))
 #define highByte(w) ((uint8_t) ((w) >> 8))
@@ -87,13 +88,13 @@ enum BitOrder {
 #define bitClear(value, bit) ((value) &= ~(1UL << (bit)))
 #define bitWrite(value, bit, bitvalue) (bitvalue ? bitSet(value, bit) : bitClear(value, bit))
 
-typedef unsigned int word;
+// typedef unsigned int word;
 
 #define bit(b) (1UL << (b))
 
 // TODO: to be checked
-typedef uint8_t boolean ;
-typedef uint8_t byte ;
+// typedef uint8_t boolean ;
+// typedef uint8_t byte ;
 
 
 #ifdef __cplusplus

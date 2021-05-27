@@ -22,7 +22,7 @@
 
 #include "wiring_digital.h"
 
-extern void pinMode(pin_size_t pinNumber, PinMode pinMode)
+extern void pinMode(pin_size_t pinNumber, uint8_t pinMode)
 {
     GPIOPinDescription* gpio = &GPIO_Desc[pinNumber];
     if(gpio->port == NULL)
@@ -52,7 +52,7 @@ extern void pinMode(pin_size_t pinNumber, PinMode pinMode)
     }
 }
 
-extern void digitalWrite(pin_size_t pinNumber, PinStatus status)
+extern void digitalWrite(pin_size_t pinNumber, uint8_t status)
 {
     GPIOPinDescription* gpio = &GPIO_Desc[pinNumber];
     if(gpio->port == NULL)
@@ -78,7 +78,7 @@ extern void digitalWrite(pin_size_t pinNumber, PinStatus status)
     }
 }
 
-extern PinStatus digitalRead(pin_size_t pinNumber)
+extern int digitalRead(pin_size_t pinNumber)
 {
     GPIOPinDescription* gpio = &GPIO_Desc[pinNumber];
     if(gpio->port == NULL)
