@@ -121,11 +121,12 @@ void setup()
     // set_usb_descriptor_request_func(usb_hid_descriptor_request);
     // usb_device_init(USB_TYPE_USB_HID);
 
-    gpio_set_cfg(GPIOF, 2, GPIO_FUNC_110);
-    gpio_set_pull(GPIOF, 2, GPIO_PULL_UP);
-    irq_gpio_settype(GPIOF_INT, 2, IRQ_TYPE_EDGE_FALLING, gpio_interrupt_handle);
-    irq_gpio_enable(GPIOF_INT, 2);
-    // irq_register(IRQ_LEVEL_1, F1C100S_IRQ_GPIOF, gpio_interrupt_handle, 3);
+    // gpio_set_cfg(GPIOF, 2, GPIO_FUNC_110);
+    // gpio_set_pull(GPIOF, 2, GPIO_PULL_UP);
+    // irq_gpio_settype(GPIOF_INT, 2, IRQ_TYPE_EDGE_FALLING, gpio_interrupt_handle);
+    // irq_gpio_enable(GPIOF_INT, 2);
+
+    attachInterrupt(24, gpio_interrupt_handle, IRQ_TYPE_EDGE_FALLING);
 }
 
 void loop()

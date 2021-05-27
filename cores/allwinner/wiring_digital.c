@@ -17,76 +17,102 @@
 */
 
 #ifdef __cplusplus
- extern "C" {
+extern "C"
+{
 #endif
 
 #include "wiring_digital.h"
 
-extern void pinMode(pin_size_t pinNumber, uint8_t pinMode)
-{
-    GPIOPinDescription* gpio = &GPIO_Desc[pinNumber];
-    if(gpio->port == NULL)
-        return;
-    switch (pinMode)
+    extern void pinMode(pin_size_t pinNumber, uint8_t pinMode)
     {
-    case INPUT:
-        gpio_set_dir(gpio->port, gpio->pin, GPIO_DIRECTION_INPUT);
-        break;
-    
-    case OUTPUT:
-        gpio_set_dir(gpio->port, gpio->pin, GPIO_DIRECTION_OUTPUT);
-        break;
-    
-    case INPUT_PULLUP:
-        gpio_set_dir(gpio->port, gpio->pin, GPIO_DIRECTION_INPUT);
-        gpio_set_pull(gpio->port, gpio->pin, GPIO_PULL_UP);
-        break;
-    
-    case INPUT_PULLDOWN:
-        gpio_set_dir(gpio->port, gpio->pin, GPIO_DIRECTION_INPUT);
-        gpio_set_pull(gpio->port, gpio->pin, GPIO_PULL_DOWN);
-        break;
-    
-    default:
-        break;
-    }
-}
+        GPIOPinDescription *gpio = &GPIO_Desc[pinNumber];
+        if (gpio->port == NULL)
+            return;
+        switch (pinMode)
+        {
+        case INPUT:
+            gpio_set_dir(gpio->port, gpio->pin, GPIO_DIRECTION_INPUT);
+            break;
 
-extern void digitalWrite(pin_size_t pinNumber, uint8_t status)
-{
-    GPIOPinDescription* gpio = &GPIO_Desc[pinNumber];
-    if(gpio->port == NULL)
-        return;
-    switch (status)
+        case OUTPUT:
+            gpio_set_dir(gpio->port, gpio->pin, GPIO_DIRECTION_OUTPUT);
+            break;
+
+        case INPUT_PULLUP:
+            gpio_set_dir(gpio->port, gpio->pin, GPIO_DIRECTION_INPUT);
+            gpio_set_pull(gpio->port, gpio->pin, GPIO_PULL_UP);
+            break;
+
+        case INPUT_PULLDOWN:
+            gpio_set_dir(gpio->port, gpio->pin, GPIO_DIRECTION_INPUT);
+            gpio_set_pull(gpio->port, gpio->pin, GPIO_PULL_DOWN);
+            break;
+
+        default:
+            break;
+        }
+    }
+
+    extern void digitalWrite(pin_size_t pinNumber, uint8_t status)
     {
-    case LOW:
-        gpio_set_value(gpio->port, gpio->pin, 0);
-        break;
+        GPIOPinDescription *gpio = &GPIO_Desc[pinNumber];
+        if (gpio->port == NULL)
+            return;
+        switch (status)
+        {
+        case LOW:
+            gpio_set_value(gpio->port, gpio->pin, 0);
+            break;
 
-    case HIGH:
-        gpio_set_value(gpio->port, gpio->pin, 1);
-        break;
+        case HIGH:
+            gpio_set_value(gpio->port, gpio->pin, 1);
+            break;
 
-    case CHANGE:
-    case FALLING:
-    case RISING:
-        gpio_set_value(gpio->port, gpio->pin, ~gpio_get_value(gpio->port, gpio->pin));
-        break;
+        case CHANGE:
+        case FALLING:
+        case RISING:
+            gpio_set_value(gpio->port, gpio->pin, ~gpio_get_value(gpio->port, gpio->pin));
+            break;
 
-    default:
-        break;
+        default:
+            break;
+        }
     }
-}
 
-extern int digitalRead(pin_size_t pinNumber)
-{
-    GPIOPinDescription* gpio = &GPIO_Desc[pinNumber];
-    if(gpio->port == NULL)
-        return 0xff;
-    return gpio_get_value(gpio->port, gpio->pin);
-}
+    extern int digitalRead(pin_size_t pinNumber)
+    {
+        GPIOPinDescription *gpio = &GPIO_Desc[pinNumber];
+        if (gpio->port == NULL)
+            return 0xff;
+        return gpio_get_value(gpio->port, gpio->pin);
+    }
+
+    void attachInterrupt(pin_size_t interruptNumber, voidFuncPtr callback, uint8_t mode)
+    {
+        GPIOPinDescription *gpio = &GPIO_Desc[interruptNumber];
+        if (gpio->port == GPIOD)
+        {
+            gpio_set_cfg(gpio->port, gpio->pin, GPIO_FUNC_110);
+            gpio_set_pull(gpio->port, gpio->pin, GPIO_PULL_UP);
+            irq_gpio_settype(GPIOD_INT, gpio->pin, mode, callback);
+            irq_gpio_enable(GPIOD_INT, gpio->pin);
+        }
+        else if (gpio->port == GPIOE)
+        {
+            gpio_set_cfg(gpio->port, gpio->pin, GPIO_FUNC_110);
+            gpio_set_pull(gpio->port, gpio->pin, GPIO_PULL_UP);
+            irq_gpio_settype(GPIOE_INT, gpio->pin, mode, callback);
+            irq_gpio_enable(GPIOE_INT, gpio->pin);
+        }
+        else if (gpio->port == GPIOF)
+        {
+            gpio_set_cfg(gpio->port, gpio->pin, GPIO_FUNC_110);
+            gpio_set_pull(gpio->port, gpio->pin, GPIO_PULL_UP);
+            irq_gpio_settype(GPIOF_INT, gpio->pin, mode, callback);
+            irq_gpio_enable(GPIOF_INT, gpio->pin);
+        }
+    }
 
 #ifdef __cplusplus
 }
 #endif
-
