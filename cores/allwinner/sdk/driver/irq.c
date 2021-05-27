@@ -7,10 +7,6 @@
 #include <irq.h>
 #include <printf.h>
 
-extern void irq_gpio_gpiod_interrupt_handle();
-extern void irq_gpio_gpioe_interrupt_handle();
-extern void irq_gpio_gpiof_interrupt_handle();
-
 static void F1C100S_Interrupt_Shell() {} /* Empty function */
 sys_pvFunPtr sysIrqHandlerTable[] = {
     0,                       /* 0 */
@@ -51,9 +47,9 @@ sys_pvFunPtr sysIrqHandlerTable[] = {
     F1C100S_Interrupt_Shell, /* 35 */
     F1C100S_Interrupt_Shell, /* 36 */
     F1C100S_Interrupt_Shell, /* 37 */
-    irq_gpio_gpiod_interrupt_handle, /* 38 */
-    irq_gpio_gpioe_interrupt_handle, /* 39 */
-    irq_gpio_gpiof_interrupt_handle  /* 40 */
+    F1C100S_Interrupt_Shell, /* 38 */
+    F1C100S_Interrupt_Shell, /* 39 */
+    F1C100S_Interrupt_Shell  /* 40 */
 
 };
 
