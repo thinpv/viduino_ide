@@ -32,18 +32,18 @@ SIZE 		  = $(CROSS_COMPILE)size
 
 DEFINES		+= -D__ARM32_ARCH__=5 -D__ARM926EJS__
 
-# LVGL_DIR ?= ${shell pwd}/libraries
-# LVGL_DIR_NAME ?= lv_arduino/src
-# include libraries/lv_arduino/src/lvgl.mk
+LVGL_DIR ?= ${shell pwd}/libraries
+LVGL_DIR_NAME ?= lv_arduino/src
+include libraries/lv_arduino/src/lvgl.mk
 
 NS2009_DIR = ${shell pwd}/libraries/NS2009
 include libraries/NS2009/src/ns2009.mk
 
 CXXFLAGS	:= $(CFLAGS)
-ASFLAGS		:= -g -Wall -Os -ffreestanding -std=gnu11 $(DEFINES)
-CFLAGS		+= -g -Wall -Os -ffreestanding -std=gnu11 $(DEFINES)
-CXXFLAGS	+= -g -Wall -Os -ffreestanding -std=gnu++11 $(DEFINES) -fno-rtti
-LDFLAGS		:= -T variants/viduino_uno/f1c100s.ld -nostdlib -Wno-unused-function
+ASFLAGS		:= -g -Wall -Os -ffreestanding -std=gnu11 $(DEFINES) -Wno-unused-function
+CFLAGS		+= -g -Wall -Os -ffreestanding -std=gnu11 $(DEFINES) -Wno-unused-function
+CXXFLAGS	+= -g -Wall -Os -ffreestanding -std=gnu++11 $(DEFINES) -fno-rtti -Wno-unused-function
+LDFLAGS		:= -T variants/viduino_uno/f1c100s.ld -nostdlib
 MCFLAGS		:= -march=armv5te -mtune=arm926ej-s -mfloat-abi=soft -marm -mno-thumb-interwork
 
 LIBS 			:= -lgcc -lm -lc -lnosys
@@ -138,6 +138,28 @@ SRC_CPP += \
 # INCDIRS		+= -Ilibraries/FT5xx6/src
 # SRC_CPP += \
 # 	libraries/FT5xx6/src/FT5xx6.cpp
+
+INCDIRS		+= -Ilibraries/FrameBuffer/src
+SRC_CPP += \
+	libraries/FrameBuffer/src/FrameBuffer.cpp
+
+# INCDIRS		+= -Ilibraries/NES/src
+# SRC_S += \
+# 	libraries/NES/src/6502.S
+# SRC_C += \
+# 	libraries/NES/src/nes_apu.c \
+# 	libraries/NES/src/nes_crc32.c \
+# 	libraries/NES/src/nes_key.c \
+# 	libraries/NES/src/nes_main.c \
+# 	libraries/NES/src/nes_mapper.c \
+# 	libraries/NES/src/nes_ppu.c
+
+# INCDIRS		+= -Ilibraries/FATFS013/src
+# SRC_C += \
+# 	libraries/FATFS013/src/diskio.c \
+# 	libraries/FATFS013/src/ff.c \
+# 	libraries/FATFS013/src/ffsystem.c \
+# 	libraries/FATFS013/src/ffunicode.c
 
 #freertos
 INCDIRS		+= -Icores/allwinner/sdk/freertos/include -Icores/allwinner/sdk/freertos/portable/GCC/ARM926EJ-S

@@ -1,5 +1,3 @@
-#include "Arduino.h"
-
 #include <lvgl.h>
 #include <../lv_conf.h>
 #include <touchscreen.h>
@@ -37,15 +35,25 @@ static bool read_encoder(lv_indev_drv_t *drv, lv_indev_data_t *data)
     return false; /*No buffering now so no more data read*/
 }
 
+static lv_obj_t *slider_label;
+static void slider_event_cb(lv_obj_t *slider, lv_event_t event)
+{
+    if (event == LV_EVENT_VALUE_CHANGED)
+    {
+        static char buf[4]; /* max 3 bytes for number plus 1 null terminating byte */
+        snprintf(buf, 4, "%u", lv_slider_get_value(slider));
+        lv_label_set_text(slider_label, buf);
+    }
+}
+
 void setup()
 {
     Serial.begin(115200);
     Serial.println("setup start");
 
-    lv_init();
-
     framebuffer.begin(LV_HOR_RES_MAX, LV_VER_RES_MAX, 100);
 
+    lv_init();
     lv_disp_buf_init(&disp_buf, buf, NULL, LV_HOR_RES_MAX * 10);
 
     /*Initialize the display*/
@@ -64,24 +72,20 @@ void setup()
     indev_drv.read_cb = read_encoder;
     lv_indev_drv_register(&indev_drv);
 
-    // lv_demo_benchmark();
-    // lv_demo_printer();
-    // lv_demo_widgets();
-
     /* Create simple label */
     lv_obj_t *label = lv_label_create(lv_scr_act(), NULL);
-    lv_label_set_text(label, "Hello Arduino! (V7.0.X)");
+    lv_label_set_text(label, "Hello Arduino! (V7.11.0)");
     lv_obj_align(label, NULL, LV_ALIGN_CENTER, 0, 0);
 
     /* Create a slider in the center of the display */
     lv_obj_t *slider = lv_slider_create(lv_scr_act(), NULL);
-    lv_obj_set_width(slider, 750); /*Set the width*/
-    lv_obj_set_height(slider, 50);
+    lv_obj_set_width(slider, LV_HOR_RES_MAX - 50); /*Set the width*/
+    lv_obj_set_height(slider, 30);
     lv_obj_align(slider, NULL, LV_ALIGN_CENTER, 0, 0); /*Align to the center of the parent (screen)*/
-    // lv_obj_set_event_cb(slider, slider_event_cb);         /*Assign an event function*/
+    lv_obj_set_event_cb(slider, slider_event_cb);      /*Assign an event function*/
 
     /* Create a label below the slider */
-    lv_obj_t *slider_label = lv_label_create(lv_scr_act(), NULL);
+    slider_label = lv_label_create(lv_scr_act(), NULL);
     lv_label_set_text(slider_label, "0");
     lv_obj_set_auto_realign(slider, true);
     lv_obj_align(slider_label, slider, LV_ALIGN_OUT_BOTTOM_MID, 0, 10);
