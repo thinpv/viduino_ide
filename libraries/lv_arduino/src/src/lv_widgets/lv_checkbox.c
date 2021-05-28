@@ -145,15 +145,20 @@ void lv_checkbox_set_checked(lv_obj_t * cb, bool checked)
     if(checked) {
         lv_obj_add_state(ext->bullet, LV_STATE_CHECKED);
         lv_obj_add_state(ext->label, LV_STATE_CHECKED);
-    } else {
+    }
+    else {
         lv_obj_clear_state(ext->bullet, LV_STATE_CHECKED);
         lv_obj_clear_state(ext->label, LV_STATE_CHECKED);
     }
 
     lv_obj_clear_state(ext->bullet, LV_STATE_DISABLED);
     lv_obj_clear_state(ext->label, LV_STATE_DISABLED);
-}
 
+#if LV_USE_ANIMATION
+    lv_obj_finish_transitions(cb, LV_CHECKBOX_PART_BG);
+    lv_obj_finish_transitions(ext->bullet, LV_OBJ_PART_MAIN);
+#endif
+}
 
 /**
  * Make the check box inactive (disabled)
@@ -166,6 +171,11 @@ void lv_checkbox_set_disabled(lv_obj_t * cb)
 
     lv_obj_add_state(ext->bullet, LV_STATE_DISABLED);
     lv_obj_add_state(ext->label, LV_STATE_DISABLED);
+
+#if LV_USE_ANIMATION
+    lv_obj_finish_transitions(cb, LV_CHECKBOX_PART_BG);
+    lv_obj_finish_transitions(ext->bullet, LV_OBJ_PART_MAIN);
+#endif
 }
 
 /**
@@ -179,6 +189,11 @@ void lv_checkbox_set_state(lv_obj_t * cb, lv_btn_state_t state)
     lv_btn_set_state(cb, state);
     lv_obj_set_state(ext->bullet, lv_obj_get_state(cb, LV_CHECKBOX_PART_BG));
     lv_obj_set_state(ext->bullet, lv_obj_get_state(cb, LV_CHECKBOX_PART_BG));
+
+#if LV_USE_ANIMATION
+    lv_obj_finish_transitions(cb, LV_CHECKBOX_PART_BG);
+    lv_obj_finish_transitions(ext->bullet, LV_OBJ_PART_MAIN);
+#endif
 }
 
 /*=====================
@@ -253,7 +268,6 @@ static lv_res_t lv_checkbox_signal(lv_obj_t * cb, lv_signal_t sign, void * param
 
     return res;
 }
-
 
 static lv_style_list_t * lv_checkbox_get_style(lv_obj_t * cb, uint8_t type)
 {

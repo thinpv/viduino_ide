@@ -19,15 +19,15 @@ extern "C" {
 
 /*Testing of dependencies*/
 #if LV_USE_PAGE == 0
-#error "lv_list: lv_page is required. Enable it in lv_conf.h (LV_USE_PAGE  1) "
+#error "lv_list: lv_page is required. Enable it in lv_conf.h (LV_USE_PAGE 1)"
 #endif
 
 #if LV_USE_BTN == 0
-#error "lv_list: lv_btn is required. Enable it in lv_conf.h (LV_USE_BTN  1) "
+#error "lv_list: lv_btn is required. Enable it in lv_conf.h (LV_USE_BTN 1)"
 #endif
 
 #if LV_USE_LABEL == 0
-#error "lv_list: lv_label is required. Enable it in lv_conf.h (LV_USE_LABEL  1) "
+#error "lv_list: lv_label is required. Enable it in lv_conf.h (LV_USE_LABEL 1)"
 #endif
 
 #include "../lv_core/lv_obj.h"
@@ -58,7 +58,9 @@ typedef struct {
 enum {
     LV_LIST_PART_BG = LV_PAGE_PART_BG, /**< List background style */
     LV_LIST_PART_SCROLLBAR = LV_PAGE_PART_SCROLLBAR, /**< List scrollbar style. */
+#if LV_USE_ANIMATION
     LV_LIST_PART_EDGE_FLASH = LV_PAGE_PART_EDGE_FLASH, /**< List edge flash style. */
+#endif
     _LV_LIST_PART_VIRTUAL_LAST = _LV_PAGE_PART_VIRTUAL_LAST,
     LV_LIST_PART_SCROLLABLE = LV_PAGE_PART_SCROLLABLE, /**< List scrollable area style. */
     _LV_LIST_PART_REAL_LAST = _LV_PAGE_PART_REAL_LAST,
@@ -294,7 +296,7 @@ void lv_list_down(const lv_obj_t * list);
 /**
  * Focus on a list button. It ensures that the button will be visible on the list.
  * @param btn pointer to a list button to focus
- * @param anim LV_ANOM_ON: scroll with animation, LV_ANIM_OFF: without animation
+ * @param anim LV_ANIM_ON: scroll with animation, LV_ANIM_OFF: without animation
  */
 void lv_list_focus(const lv_obj_t * btn, lv_anim_enable_t anim);
 

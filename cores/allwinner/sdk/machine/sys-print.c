@@ -45,5 +45,5 @@ void sys_print_init(void)
 
 void sys_print_c(char c)
 {
-	uart_write_c(UART1, c, 100);
+	// uart_write_c(UART1, c, 100);
 }
