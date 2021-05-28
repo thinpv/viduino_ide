@@ -10,9 +10,12 @@
 extern "C" {
 #endif
 
+#define LV_USE_DEMO_BENCHMARK 1
+
 /*********************
  *      INCLUDES
  *********************/
+#include <lvgl.h>
 
 /*********************
  *      DEFINES
