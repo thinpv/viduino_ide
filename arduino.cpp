@@ -1,6 +1,6 @@
 #include "Arduino.h"
 
-#if 1
+#if 0
 
 #include <lvgl.h>
 #include <../lv_conf.h>
@@ -111,10 +111,10 @@ void loop()
 // #include <usb.h>
 // #include <usb_keyboard.h>
 
-// #include <nes_main.h>
-// #include <rom/zdcr.h> //dat bom
+#include <nes_main.h>
+#include <rom/zdcr.h> //dat bom
 #include <FrameBuffer.h>
-// #include <audio.h>
+#include <audio.h>
 
 void gpio_interrupt_handle()
 {
@@ -139,12 +139,11 @@ void setup()
     gpio_set_pull(GPIOF, 2, GPIO_PULL_UP);
     attachInterrupt(24, gpio_interrupt_handle, FALLING);
 
-    FrameBuffer *framebuffer = new FrameBuffer();
-    // FrameBuffer framebuffer;
-    framebuffer->begin(480, 272, 100);
-    // Serial.println("audio_play_wav_init");
-    // audio_play_wav_init();
-    // nes_load_for_ram(_aczdcr, sizeof(_aczdcr));
+    FrameBuffer framebuffer;
+    framebuffer.begin(480, 272, 100);
+    Serial.println("audio_play_wav_init");
+    audio_play_wav_init();
+    nes_load_for_ram(_aczdcr, sizeof(_aczdcr));
 }
 
 void loop()

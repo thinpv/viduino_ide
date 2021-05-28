@@ -20,7 +20,7 @@ VIDUINO = viduino-0.0.8.tar
 # CROSS_COMPILE = /opt/gcc-linaro-7.5.0-2019.12-x86_64_arm-eabi/bin/arm-eabi-
 # CROSS_COMPILE = /home/thinpv/Downloads/gcc-arm-none-eabi-9-2020-q2-update/bin/arm-none-eabi-
 
-CROSS_COMPILE = arm-none-eabi-
+CROSS_COMPILE = /home/thinpv/.arduino15/packages/arduino/tools/arm-none-eabi-gcc/7-2017q4/bin/arm-none-eabi-
 CC	          = $(CROSS_COMPILE)gcc
 CXX	          = $(CROSS_COMPILE)g++
 AS	          = $(CROSS_COMPILE)gcc -x assembler-with-cpp
@@ -101,8 +101,6 @@ SRC_C += \
 	$(SDKSRC)/driver/audio.c \
 	$(SDKSRC)/driver/defe.c \
 	$(SDKSRC)/driver/sdc.c \
-	
-	# $(SDKSRC)/driver/audio.c \
 
 SRC_C += \
 	$(SDKSRC)/lib/malloc.c \
@@ -116,9 +114,6 @@ SRC_C += \
 	$(CORES)/wiring_analog.c \
 	$(CORES)/wiring_digital.c \
 
-SRC_C += \
-	libraries/keyboard/src/usb_keyboard.c
-
 # allwinner core
 SRC_CPP += \
 	$(CORES)/api/Print.cpp \
@@ -130,6 +125,9 @@ SRC_CPP += \
 	$(CORES)/hooks.cpp \
 	$(CORES)/abi.cpp \
 	arduino.cpp
+
+# SRC_C += \
+# 	libraries/keyboard/src/usb_keyboard.c
 
 # INCDIRS		+= -Ilibraries/arduino-goodix/src
 # SRC_CPP += \
@@ -143,23 +141,23 @@ INCDIRS		+= -Ilibraries/FrameBuffer/src
 SRC_CPP += \
 	libraries/FrameBuffer/src/FrameBuffer.cpp
 
-# INCDIRS		+= -Ilibraries/NES/src
-# SRC_S += \
-# 	libraries/NES/src/6502.S
-# SRC_C += \
-# 	libraries/NES/src/nes_apu.c \
-# 	libraries/NES/src/nes_crc32.c \
-# 	libraries/NES/src/nes_key.c \
-# 	libraries/NES/src/nes_main.c \
-# 	libraries/NES/src/nes_mapper.c \
-# 	libraries/NES/src/nes_ppu.c
+INCDIRS		+= -Ilibraries/NES/src
+SRC_S += \
+	libraries/NES/src/6502.S
+SRC_C += \
+	libraries/NES/src/nes_apu.c \
+	libraries/NES/src/nes_crc32.c \
+	libraries/NES/src/nes_key.c \
+	libraries/NES/src/nes_main.c \
+	libraries/NES/src/nes_mapper.c \
+	libraries/NES/src/nes_ppu.c
 
-# INCDIRS		+= -Ilibraries/FATFS013/src
-# SRC_C += \
-# 	libraries/FATFS013/src/diskio.c \
-# 	libraries/FATFS013/src/ff.c \
-# 	libraries/FATFS013/src/ffsystem.c \
-# 	libraries/FATFS013/src/ffunicode.c
+INCDIRS		+= -Ilibraries/FATFS013/src
+SRC_C += \
+	libraries/FATFS013/src/diskio.c \
+	libraries/FATFS013/src/ff.c \
+	libraries/FATFS013/src/ffsystem.c \
+	libraries/FATFS013/src/ffunicode.c
 
 #freertos
 INCDIRS		+= -Icores/allwinner/sdk/freertos/include -Icores/allwinner/sdk/freertos/portable/GCC/ARM926EJ-S
