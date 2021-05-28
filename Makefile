@@ -39,11 +39,6 @@ DEFINES		+= -D__ARM32_ARCH__=5 -D__ARM926EJS__
 NS2009_DIR = ${shell pwd}/libraries/NS2009
 include libraries/NS2009/src/ns2009.mk
 
-# NOFRENDO_DIR:= ${shell pwd}/libraries/nofrendo
-# include libraries/nofrendo/src/nofrendo.mk
-# NOFRENDO_F1C100S_DIR:= ${shell pwd}/libraries/nofrendo/example/nofrendo-f1c100s
-# include libraries/nofrendo/example/nofrendo-f1c100s/nofrendo-f1c100s.mk
-
 CXXFLAGS	:= $(CFLAGS)
 ASFLAGS		:= -g -Wall -Os -ffreestanding -std=gnu11 $(DEFINES)
 CFLAGS		+= -g -Wall -Os -ffreestanding -std=gnu11 $(DEFINES)
@@ -111,7 +106,7 @@ SRC_C += \
 
 SRC_C += \
 	$(SDKSRC)/lib/malloc.c \
-	$(SDKSRC)/lib/dma.c \
+	$(SDKSRC)/lib/dma_alloc.c \
 	$(SDKSRC)/lib/printf.c \
 	$(SDKSRC)/lib/libc/exit/abort.c \
 	$(SDKSRC)/lib/libc/exit/assert.c \
@@ -120,14 +115,6 @@ SRC_C += \
 SRC_C += \
 	$(CORES)/wiring_analog.c \
 	$(CORES)/wiring_digital.c \
-
-# SRC_C += \
-# 	libraries/infones/src/InfoNES.c \
-# 	libraries/infones/src/InfoNES_Main.c \
-# 	libraries/infones/src/InfoNES_Mapper.c \
-# 	libraries/infones/src/InfoNES_pAPU.c \
-# 	libraries/infones/src/K6502.c \
-# 	libraries/infones/src/rom.c
 
 SRC_C += \
 	libraries/keyboard/src/usb_keyboard.c

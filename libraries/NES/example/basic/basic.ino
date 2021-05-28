@@ -8,8 +8,9 @@ static FrameBuffer framebuffer;
 
 void setup()
 {
+  Serial.begin(115200);
   framebuffer.begin(800, 480, 100);
-  printf("audio_play_wav_init\r\n");
+  Serial.println("audio_play_wav_init");
   audio_play_wav_init();
   nes_load_for_ram(_aczdcr,sizeof(_aczdcr));
 }
