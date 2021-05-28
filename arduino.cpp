@@ -106,9 +106,7 @@ void loop()
 
 void gpio_interrupt_handle()
 {
-    // uint32_t val = irq_gpio_status(GPIOF_INT);
     Serial.println("gpio_interrupt_handle");
-    // Serial.println(val);
 }
 
 void setup()
@@ -126,7 +124,8 @@ void setup()
     // irq_gpio_settype(GPIOF_INT, 2, IRQ_TYPE_EDGE_FALLING, gpio_interrupt_handle);
     // irq_gpio_enable(GPIOF_INT, 2);
 
-    attachInterrupt(24, gpio_interrupt_handle, IRQ_TYPE_EDGE_FALLING);
+    gpio_set_pull(GPIOF, 2, GPIO_PULL_UP);
+    attachInterrupt(24, gpio_interrupt_handle, FALLING);
 }
 
 void loop()
@@ -134,8 +133,7 @@ void loop()
     // uint32_t val = irq_gpio_status(GPIOF_INT);
     Serial.println("loop ");
     // Serial.println(val);
-    vTaskDelay( 1000/portTICK_PERIOD_MS );
+    vTaskDelay(1000 / portTICK_PERIOD_MS);
 }
 
 #endif
-

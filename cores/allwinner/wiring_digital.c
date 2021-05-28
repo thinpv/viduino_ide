@@ -68,12 +68,6 @@ extern "C"
             gpio_set_value(gpio->port, gpio->pin, 1);
             break;
 
-        case CHANGE:
-        case FALLING:
-        case RISING:
-            gpio_set_value(gpio->port, gpio->pin, ~gpio_get_value(gpio->port, gpio->pin));
-            break;
-
         default:
             break;
         }
@@ -93,21 +87,18 @@ extern "C"
         if (gpio->port == GPIOD)
         {
             gpio_set_cfg(gpio->port, gpio->pin, GPIO_FUNC_110);
-            gpio_set_pull(gpio->port, gpio->pin, GPIO_PULL_UP);
             irq_gpio_settype(GPIOD_INT, gpio->pin, mode, callback);
             irq_gpio_enable(GPIOD_INT, gpio->pin);
         }
         else if (gpio->port == GPIOE)
         {
             gpio_set_cfg(gpio->port, gpio->pin, GPIO_FUNC_110);
-            gpio_set_pull(gpio->port, gpio->pin, GPIO_PULL_UP);
             irq_gpio_settype(GPIOE_INT, gpio->pin, mode, callback);
             irq_gpio_enable(GPIOE_INT, gpio->pin);
         }
         else if (gpio->port == GPIOF)
         {
             gpio_set_cfg(gpio->port, gpio->pin, GPIO_FUNC_110);
-            gpio_set_pull(gpio->port, gpio->pin, GPIO_PULL_UP);
             irq_gpio_settype(GPIOF_INT, gpio->pin, mode, callback);
             irq_gpio_enable(GPIOF_INT, gpio->pin);
         }

@@ -7,26 +7,14 @@ extern "C"{
 
 void yield(void);
 
-// typedef enum {
-//   LOW     = 0,
-//   HIGH    = 1,
-//   CHANGE  = 2,
-//   FALLING = 3,
-//   RISING  = 4,
-// } PinStatus;
-
 #define LOW 0
 #define HIGH 1
-#define CHANGE 2
-#define FALLING 3
-#define RISING 4
 
-// typedef enum {
-//   INPUT           = 0x0,
-//   OUTPUT          = 0x1,
-//   INPUT_PULLUP    = 0x2,
-//   INPUT_PULLDOWN  = 0x3,
-// } PinMode;
+#define RISING    0x00
+#define FALLING   0x01
+#define ONHIGH    0x02
+#define ONLOW     0x03
+#define CHANGE    0x04
 
 #define INPUT 0
 #define OUTPUT 1
