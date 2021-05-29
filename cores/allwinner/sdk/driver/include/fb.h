@@ -18,6 +18,14 @@ typedef enum
 	PIXEL_FORMAT_RGB30		= 5,
 }pixel_format_t;
 
+typedef struct
+{
+  uint8_t b;
+  uint8_t g;
+  uint8_t r;
+  uint8_t a;
+} color_format_t;
+
 typedef struct render_st{
 	/* The width of render */
 	uint32_t width;

@@ -15,7 +15,7 @@ static int temp_touch;
 /* Display flushing */
 void my_disp_flush(lv_disp_drv_t *disp, const lv_area_t *area, lv_color_t *color_p)
 {
-  framebuffer.displayFlush(area->x1, area->x2, area->y1, area->y2, (int *)color_p);
+  framebuffer.areaPresent(area->x1, area->x2, area->y1, area->y2, (int *)color_p);
   lv_disp_flush_ready(disp);
 }
 
