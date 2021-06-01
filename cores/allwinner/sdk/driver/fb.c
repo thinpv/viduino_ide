@@ -44,9 +44,9 @@ typedef struct
 	virtual_addr_t virtdebe;
 	virtual_addr_t virttcon;
 
-	char * clkdefe;
-	char * clkdebe;
-	char * clktcon;
+	char *clkdefe;
+	char *clkdebe;
+	char *clktcon;
 	int32_t rstdefe;
 	int32_t rstdebe;
 	int32_t rsttcon;
@@ -57,7 +57,7 @@ typedef struct
 	int32_t bits_per_pixel;
 	int32_t bytes_per_pixel;
 	int32_t index;
-	void * vram[2];
+	void *vram[2];
 
 	struct
 	{
@@ -74,28 +74,28 @@ typedef struct
 		int32_t clk_active;
 	} timing;
 
-	pwm_t * backlight;
+	pwm_t *backlight;
 	int32_t brightness;
-}fb_pdata_t;
+} fb_pdata_t;
 
 static pwm_t led_pwm_bl =
-        {
-            .virt = 0x01c21000,
-            .duty = 100,
-            .period = 1000000,
-            .channel = 1,
-            .polarity = true,
-            .pwm_port = GPIOE,
-            .pwm_pin = 6,
-            .pwm_pin_cfg = 3,
-        };
+		{
+				.virt = 0x01c21000,
+				.duty = 100,
+				.period = 1000000,
+				.channel = 1,
+				.polarity = true,
+				.pwm_port = GPIOE,
+				.pwm_pin = 6,
+				.pwm_pin_cfg = 3,
+};
 
 // fb_pdata_t fb_pData;
 //framebuffer_t fb_f1c100s;
 
-inline static void f1c100s_debe_set_mode(fb_pdata_t * pdat)
+inline static void f1c100s_debe_set_mode(fb_pdata_t *pdat)
 {
-	struct f1c100s_debe_reg_t * debe = (struct f1c100s_debe_reg_t *)(pdat->virtdebe);
+	struct f1c100s_debe_reg_t *debe = (struct f1c100s_debe_reg_t *)(pdat->virtdebe);
 	uint32_t val;
 
 	val = read32((virtual_addr_t)&debe->mode);
@@ -122,17 +122,17 @@ inline static void f1c100s_debe_set_mode(fb_pdata_t * pdat)
 	write32((virtual_addr_t)&debe->mode, val);
 }
 
-inline static void f1c100s_debe_set_address(fb_pdata_t * pdat, void * vram)
+inline static void f1c100s_debe_set_address(fb_pdata_t *pdat, void *vram)
 {
-	struct f1c100s_debe_reg_t * debe = (struct f1c100s_debe_reg_t *)(pdat->virtdebe);
+	struct f1c100s_debe_reg_t *debe = (struct f1c100s_debe_reg_t *)(pdat->virtdebe);
 
 	write32((virtual_addr_t)&debe->layer0_addr_low32b, (uint32_t)vram << 3);
 	write32((virtual_addr_t)&debe->layer0_addr_high4b, (uint32_t)vram >> 29);
 }
 
-inline static void f1c100s_tcon_enable(fb_pdata_t * pdat)
+inline static void f1c100s_tcon_enable(fb_pdata_t *pdat)
 {
-	struct f1c100s_tcon_reg_t * tcon = (struct f1c100s_tcon_reg_t *)pdat->virttcon;
+	struct f1c100s_tcon_reg_t *tcon = (struct f1c100s_tcon_reg_t *)pdat->virttcon;
 	uint32_t val;
 
 	val = read32((virtual_addr_t)&tcon->ctrl);
@@ -140,9 +140,9 @@ inline static void f1c100s_tcon_enable(fb_pdata_t * pdat)
 	write32((virtual_addr_t)&tcon->ctrl, val);
 }
 
-inline static void f1c100s_tcon_disable(fb_pdata_t * pdat)
+inline static void f1c100s_tcon_disable(fb_pdata_t *pdat)
 {
-	struct f1c100s_tcon_reg_t * tcon = (struct f1c100s_tcon_reg_t *)pdat->virttcon;
+	struct f1c100s_tcon_reg_t *tcon = (struct f1c100s_tcon_reg_t *)pdat->virttcon;
 	uint32_t val;
 
 	write32((virtual_addr_t)&tcon->ctrl, 0);
@@ -182,7 +182,6 @@ inline static void f1c100s_clk_tcon_enable()
 {
 	S_Bit(CCU->TCON_CLK_REG, 31);
 	ccu_reset(RESET_LCD, true);
-
 }
 
 inline static void f1c100s_clk_tcon_disable()
@@ -197,13 +196,13 @@ static void clk_divider_set_rate(virtual_addr_t virt, uint32_t width, uint32_t s
 	uint32_t div;
 	uint32_t val;
 
-	if(rate == 0)
+	if (rate == 0)
 		rate = prate;
 
 	div = prate / rate;
-	if(onebased)
+	if (onebased)
 		div--;
-	if(div > mask)
+	if (div > mask)
 		div = mask;
 
 	val = read32(virt);
@@ -247,9 +246,9 @@ inline static void f1c100s_clk_debe_disable()
 	ccu_reset(RESET_DEBE, false);
 }
 
-inline static void f1c100s_tcon_set_mode(fb_pdata_t * pdat)
+inline static void f1c100s_tcon_set_mode(fb_pdata_t *pdat)
 {
-	struct f1c100s_tcon_reg_t * tcon = (struct f1c100s_tcon_reg_t *)pdat->virttcon;
+	struct f1c100s_tcon_reg_t *tcon = (struct f1c100s_tcon_reg_t *)pdat->virttcon;
 	int32_t bp, total;
 	uint32_t val;
 
@@ -275,7 +274,7 @@ inline static void f1c100s_tcon_set_mode(fb_pdata_t * pdat)
 	write32((virtual_addr_t)&tcon->tcon0_hv_intf, 0);
 	write32((virtual_addr_t)&tcon->tcon0_cpu_intf, 0);
 
-	if(pdat->bits_per_pixel == 18 || pdat->bits_per_pixel == 16)
+	if (pdat->bits_per_pixel == 18 || pdat->bits_per_pixel == 16)
 	{
 		write32((virtual_addr_t)&tcon->tcon0_frm_seed[0], 0x11111111);
 		write32((virtual_addr_t)&tcon->tcon0_frm_seed[1], 0x11111111);
@@ -291,18 +290,18 @@ inline static void f1c100s_tcon_set_mode(fb_pdata_t * pdat)
 	}
 
 	val = (1 << 28);
-	if(!pdat->timing.h_sync_active)
+	if (!pdat->timing.h_sync_active)
 		val |= (1 << 25);
-	if(!pdat->timing.h_sync_active)
+	if (!pdat->timing.h_sync_active)
 		val |= (1 << 24);
 	write32((virtual_addr_t)&tcon->tcon0_io_polarity, val);
 	write32((virtual_addr_t)&tcon->tcon0_io_tristate, 0);
 }
 
-inline static void fb_cfg_gpios(const GPIO_Type* port, int32_t pin_start, int32_t pin_end, int32_t cfg, gpio_pull_t pull, gpio_drv_t drv)
+inline static void fb_cfg_gpios(const GPIO_Type *port, int32_t pin_start, int32_t pin_end, int32_t cfg, gpio_pull_t pull, gpio_drv_t drv)
 {
 	int32_t pin;
-	for(pin = pin_start; pin < pin_end; pin++)
+	for (pin = pin_start; pin < pin_end; pin++)
 	{
 		gpio_set_cfg(port, pin, cfg);
 		gpio_set_pull(port, pin, pull);
@@ -310,7 +309,7 @@ inline static void fb_cfg_gpios(const GPIO_Type* port, int32_t pin_start, int32_
 	}
 }
 
-static void fb_init_hw(fb_pdata_t * pdat)
+static void fb_init_hw(fb_pdata_t *pdat)
 {
 	fb_cfg_gpios(GPIOD, 0, 22, 0x2, GPIO_PULL_NONE, GPIO_DRV_STRONG);
 
@@ -322,34 +321,34 @@ static void fb_init_hw(fb_pdata_t * pdat)
 	pwm_init(pdat->backlight);
 }
 
-void fb_setbl(framebuffer_t * fb, int32_t brightness)
+void fb_setbl(framebuffer_t *fb, int32_t brightness)
 {
-	fb_pdata_t * pdat = (fb_pdata_t *)fb->priv;
+	fb_pdata_t *pdat = (fb_pdata_t *)fb->priv;
 	//led_set_brightness(pdat->backlight, brightness);
 	pwm_set_duty(pdat->backlight, brightness);
 }
 
-int32_t fb_getbl(framebuffer_t * fb)
+int32_t fb_getbl(framebuffer_t *fb)
 {
-	fb_pdata_t * pdat = (fb_pdata_t *)fb->priv;
+	fb_pdata_t *pdat = (fb_pdata_t *)fb->priv;
 	// return led_get_brightness(pdat->backlight);
 	return pwm_get_duty(pdat->backlight);
 }
 
-render_t * fb_create(framebuffer_t * fb)
+render_t *fb_create(framebuffer_t *fb)
 {
-	fb_pdata_t * pdat = (fb_pdata_t *)fb->priv;
-	render_t * render;
-	void * pixels;
+	fb_pdata_t *pdat = (fb_pdata_t *)fb->priv;
+	render_t *render;
+	void *pixels;
 	size_t pixlen;
 
 	pixlen = pdat->width * pdat->height * pdat->bytes_per_pixel;
 	pixels = memalign(4, pixlen);
-	if(!pixels)
+	if (!pixels)
 		return NULL;
 
 	render = malloc(sizeof(render_t));
-	if(!render)
+	if (!render)
 	{
 		free(pixels);
 		return NULL;
@@ -366,20 +365,20 @@ render_t * fb_create(framebuffer_t * fb)
 	return render;
 }
 
-void fb_destroy(framebuffer_t * fb, render_t * render)
+void fb_destroy(framebuffer_t *fb, render_t *render)
 {
-	if(render)
+	if (render)
 	{
 		free(render->pixels);
 		free(render);
 	}
 }
 
-void fb_present(framebuffer_t * fb, render_t * render)
+void fb_present(framebuffer_t *fb, render_t *render)
 {
-	fb_pdata_t * pdat = (fb_pdata_t *)fb->priv;
+	fb_pdata_t *pdat = (fb_pdata_t *)fb->priv;
 
-	if(render && render->pixels)
+	if (render && render->pixels)
 	{
 		pdat->index = (pdat->index + 1) & 0x1;
 		memcpy(pdat->vram[pdat->index], render->pixels, render->pixlen);
@@ -388,59 +387,60 @@ void fb_present(framebuffer_t * fb, render_t * render)
 	}
 }
 
-void fb_area_present(framebuffer_t * fb, uint16_t x1, uint16_t x2, uint16_t y1, uint16_t y2, uint32_t* data)
+void fb_area_present(framebuffer_t *fb, uint16_t x1, uint16_t x2, uint16_t y1, uint16_t y2, uint32_t *data)
 {
 	uint16_t x = x2 - x1 + 1;
-	fb_pdata_t * pdat = (fb_pdata_t *)fb->priv;
-	uint16_t size_of_row = x*sizeof(uint32_t);
+	fb_pdata_t *pdat = (fb_pdata_t *)fb->priv;
+	uint16_t size_of_row = x * sizeof(uint32_t);
 	pdat->index = 0;
-	for(int i=y1; i<y2+1; i++) {
-		memcpy(&((uint32_t*)pdat->vram[0])[i*pdat->width + x1], data, size_of_row);
+	for (int i = y1; i < y2 + 1; i++)
+	{
+		memcpy(&((uint32_t *)pdat->vram[0])[i * pdat->width + x1], data, size_of_row);
 		data += x;
 	}
 	// dma_cache_sync(pdat->vram[0], pdat->width * pdat->height, DMA_TO_DEVICE);
 	// f1c100s_debe_set_address(pdat, pdat->vram[0]);
 }
 
-void fb_pixel_present(framebuffer_t * fb, uint16_t x, uint16_t y, uint32_t data)
+void fb_pixel_present(framebuffer_t *fb, uint16_t x, uint16_t y, uint32_t data)
 {
-	fb_pdata_t * pdat = (fb_pdata_t *)fb->priv;
-	((uint32_t*)pdat->vram[0])[x*pdat->width + y] = data;
+	fb_pdata_t *pdat = (fb_pdata_t *)fb->priv;
+	((uint32_t *)pdat->vram[0])[x * pdat->width + y] = data;
 	// dma_cache_sync(pdat->vram[0], pdat->width * pdat->height, DMA_TO_DEVICE);
 	// f1c100s_debe_set_address(pdat, pdat->vram[0]);
 }
 
-	// "fb-f1c100s@0": {
-	// 	"clock-name-defe": "link-defe",
-	// 	"clock-name-debe": "link-debe",
-	// 	"clock-name-tcon": "link-tcon",
-	// 	"reset-defe": 46,
-	// 	"reset-debe": 44,
-	// 	"reset-tcon": 36,
-	// 	"width": 800,
-	// 	"height": 480,
-	// 	"physical-width": 216,
-	// 	"physical-height": 135,
-	// 	"bits-per-pixel": 18,
-	// 	"bytes-per-pixel": 4,
-	// 	"clock-frequency": 33000000,
-	// 	"hfront-porch": 40,
-	// 	"hback-porch": 87,
-	// 	"hsync-len": 1,
-	// 	"vfront-porch": 13,
-	// 	"vback-porch": 31,
-	// 	"vsync-len": 1,
-	// 	"hsync-active": false,
-	// 	"vsync-active": false,
-	// 	"den-active": false,
-	// 	"clk-active": false,
-	// 	"backlight": "led-pwm-bl.0"
-	// },
-void fb_init(framebuffer_t * fb, int32_t width, int32_t height)
+// "fb-f1c100s@0": {
+// 	"clock-name-defe": "link-defe",
+// 	"clock-name-debe": "link-debe",
+// 	"clock-name-tcon": "link-tcon",
+// 	"reset-defe": 46,
+// 	"reset-debe": 44,
+// 	"reset-tcon": 36,
+// 	"width": 800,
+// 	"height": 480,
+// 	"physical-width": 216,
+// 	"physical-height": 135,
+// 	"bits-per-pixel": 18,
+// 	"bytes-per-pixel": 4,
+// 	"clock-frequency": 33000000,
+// 	"hfront-porch": 40,
+// 	"hback-porch": 87,
+// 	"hsync-len": 1,
+// 	"vfront-porch": 13,
+// 	"vback-porch": 31,
+// 	"vsync-len": 1,
+// 	"hsync-active": false,
+// 	"vsync-active": false,
+// 	"den-active": false,
+// 	"clk-active": false,
+// 	"backlight": "led-pwm-bl.0"
+// },
+void fb_init(framebuffer_t *fb, int32_t width, int32_t height)
 {
 	int32_t i;
 	fb->priv = malloc(sizeof(fb_pdata_t));
-	fb_pdata_t * pdat = fb->priv;
+	fb_pdata_t *pdat = fb->priv;
 
 	pdat->virtdefe = phys_to_virt(F1C100S_DEFE_BASE);
 	pdat->virtdebe = phys_to_virt(F1C100S_DEBE_BASE);
@@ -461,7 +461,7 @@ void fb_init(framebuffer_t * fb, int32_t width, int32_t height)
 	// if(buff1)
 	// 	pdat->vram[0] = buff1;
 	// else
-		pdat->vram[0] = memalign(SZ_4K, pdat->width * pdat->height * pdat->bytes_per_pixel);
+	pdat->vram[0] = memalign(SZ_4K, pdat->width * pdat->height * pdat->bytes_per_pixel);
 	// if(buff2)
 	// 	pdat->vram[1] = buff2;
 	// else
@@ -487,7 +487,7 @@ void fb_init(framebuffer_t * fb, int32_t width, int32_t height)
 	fb->pheight = pdat->pheight;
 	fb->bpp = pdat->bytes_per_pixel * 8;
 	fb->priv = pdat;
-	
+
 	ccu_set_enable_video(true);
 	f1c100s_clk_debe_init();
 	f1c100s_clk_defe_init();
@@ -495,15 +495,15 @@ void fb_init(framebuffer_t * fb, int32_t width, int32_t height)
 	f1c100s_clk_debe_enable();
 	f1c100s_clk_defe_enable();
 	f1c100s_clk_tcon_enable();
-	for(i = 0x0800; i < 0x1000; i += 4)
+	for (i = 0x0800; i < 0x1000; i += 4)
 		write32(pdat->virtdebe + i, 0);
 	fb_init_hw(pdat);
 }
 
-void fb_remove(framebuffer_t * fb)
+void fb_remove(framebuffer_t *fb)
 {
-	fb_pdata_t * pdat = (fb_pdata_t *)fb->priv;
-	if(pdat)
+	fb_pdata_t *pdat = (fb_pdata_t *)fb->priv;
+	if (pdat)
 	{
 		f1c100s_clk_defe_disable();
 		f1c100s_clk_debe_disable();
@@ -521,9 +521,9 @@ void fb_remove(framebuffer_t * fb)
 	}
 }
 
-void fb_suspend(framebuffer_t * fb)
+void fb_suspend(framebuffer_t *fb)
 {
-	fb_pdata_t * pdat = (fb_pdata_t *)fb->priv;
+	fb_pdata_t *pdat = (fb_pdata_t *)fb->priv;
 
 	//pdat->brightness = led_get_brightness(pdat->backlight);
 	pdat->brightness = pwm_get_duty(pdat->backlight);
@@ -531,9 +531,9 @@ void fb_suspend(framebuffer_t * fb)
 	pwm_set_duty(pdat->backlight, 0);
 }
 
-void fb_resume(framebuffer_t * fb)
+void fb_resume(framebuffer_t *fb)
 {
-	fb_pdata_t * pdat = (fb_pdata_t *)fb->priv;
+	fb_pdata_t *pdat = (fb_pdata_t *)fb->priv;
 
 	//led_set_brightness(pdat->backlight, pdat->brightness);
 	pwm_set_duty(pdat->backlight, pdat->brightness);

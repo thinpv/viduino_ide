@@ -9,9 +9,9 @@
 #include "FreeRTOS.h"
 #include "task.h"
 
-#define TICK_PER_SECOND			1000
-#define TICK_PER_MILLISECOND	(TICK_PER_SECOND/1000)
-#define MICROSECOND_PER_TICK	(1000000/TICK_PER_SECOND)
+#define TICK_PER_SECOND 1000
+#define TICK_PER_MILLISECOND (TICK_PER_SECOND / 1000)
+#define MICROSECOND_PER_TICK (1000000 / TICK_PER_SECOND)
 
 static volatile uint64_t ticker = 0;
 
@@ -34,12 +34,12 @@ unsigned long millis(void)
 
 unsigned long micros(void)
 {
-	return ticker*MICROSECOND_PER_TICK + (0xB71B00 - TIMER->TMR0_CUR_VALUE_REG) / 12;
+	return ticker * MICROSECOND_PER_TICK + (0xB71B00 - TIMER->TMR0_CUR_VALUE_REG) / 12;
 }
 
 void delay(unsigned long ms)
 {
-	vTaskDelay( ms/portTICK_PERIOD_MS );
+	vTaskDelay(ms / portTICK_PERIOD_MS);
 	// uint64_t time_to_delay = ticker + ms*TICK_PER_MILLISECOND;
 	// while(ticker < time_to_delay);
 }
@@ -47,7 +47,8 @@ void delay(unsigned long ms)
 void delayMicroseconds(unsigned int usec)
 {
 	uint64_t time_to_delay = micros() + usec;
-	while(micros() < time_to_delay);
+	while (micros() < time_to_delay)
+		;
 }
 
 void timer0_set()

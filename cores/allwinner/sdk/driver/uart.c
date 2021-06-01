@@ -10,12 +10,12 @@
 #define FALSE 0
 #define TRUE 1
 
-bool_t uart_set(UART_Type * uart, uint32_t baud, uint32_t data, uint32_t parity, uint32_t stop)
+bool_t uart_set(UART_Type *uart, uint32_t baud, uint32_t data, uint32_t parity, uint32_t stop)
 {
 	uint8_t dreg, preg, sreg;
 	uint16_t breg;
 
-	switch(baud)
+	switch (baud)
 	{
 	case 1200:
 		breg = 5208;
@@ -64,75 +64,75 @@ bool_t uart_set(UART_Type * uart, uint32_t baud, uint32_t data, uint32_t parity,
 		return FALSE;
 	}
 
-	switch(data)
+	switch (data)
 	{
-	case 5:	/* Data bits = 5 */
+	case 5: /* Data bits = 5 */
 		dreg = 0x0;
 		break;
-	case 6:	/* Data bits = 6 */
+	case 6: /* Data bits = 6 */
 		dreg = 0x1;
 		break;
-	case 7:	/* Data bits = 7 */
+	case 7: /* Data bits = 7 */
 		dreg = 0x2;
 		break;
-	case 8:	/* Data bits = 8 */
+	case 8: /* Data bits = 8 */
 		dreg = 0x3;
 		break;
 	default:
 		return FALSE;
 	}
 
-	switch(parity)
+	switch (parity)
 	{
-	case 0:	/* Parity none */
+	case 0: /* Parity none */
 		preg = 0x0;
 		break;
-	case 1:	/* Parity odd */
+	case 1: /* Parity odd */
 		preg = 0x1;
 		break;
-	case 2:	/* Parity even */
+	case 2: /* Parity even */
 		preg = 0x3;
 		break;
 	default:
 		return FALSE;
 	}
 
-	switch(stop)
+	switch (stop)
 	{
-	case 1:	/* Stop bits = 1 */
+	case 1: /* Stop bits = 1 */
 		sreg = 0;
 		break;
-	case 2:	/* Stop bits = 2 */
+	case 2: /* Stop bits = 2 */
 		sreg = 1;
 		break;
-	case 0:	/* Stop bits = 1.5 */
+	case 0: /* Stop bits = 1.5 */
 	default:
 		return FALSE;
 	}
 
-	if(uart == UART0)
+	if (uart == UART0)
 		ccu_reset(RESET_UART0, true);
-	else if(uart == UART1)
+	else if (uart == UART1)
 		ccu_reset(RESET_UART1, true);
-	else if(uart == UART2)
+	else if (uart == UART2)
 		ccu_reset(RESET_UART2, true);
 
 	uart->UART_DLH_IER_REG = 0;
 	uart->UART_IIR_FCR_REG = 0xF7;
 	uart->UART_MCR_REG = 0;
 
-	uart->UART_LCR_REG |= (1<<7);
+	uart->UART_LCR_REG |= (1 << 7);
 	uart->UART_RBR_THR_DLL_REG = breg & 0xFF;
-    uart->UART_DLH_IER_REG = (breg >> 8) & 0xFF;
-	uart->UART_LCR_REG &= ~(1<<7);
+	uart->UART_DLH_IER_REG = (breg >> 8) & 0xFF;
+	uart->UART_LCR_REG &= ~(1 << 7);
 
 	uart->UART_LCR_REG &= ~(0x3F);
-    uart->UART_LCR_REG |= ((dreg << 0) | (sreg << 2) | (preg << 3));
+	uart->UART_LCR_REG |= ((dreg << 0) | (sreg << 2) | (preg << 3));
 
 	return TRUE;
 }
 
-bool_t uart_get(UART_Type * uart, uint32_t * baud, uint32_t * data, uint32_t * parity, uint32_t * stop)
+bool_t uart_get(UART_Type *uart, uint32_t *baud, uint32_t *data, uint32_t *parity, uint32_t *stop)
 {
 	// if(baud)
 	// 	*baud = uart->baud;
@@ -145,51 +145,54 @@ bool_t uart_get(UART_Type * uart, uint32_t * baud, uint32_t * data, uint32_t * p
 	return TRUE;
 }
 
-bool_t uart_available(UART_Type * uart)
+bool_t uart_available(UART_Type *uart)
 {
-	if(uart->UART_USR_REG & (1<<3))
+	if (uart->UART_USR_REG & (1 << 3))
 		return TRUE;
 	return FALSE;
 }
 
-ssize_t uart_read(UART_Type * uart, uint8_t * buf, size_t count, uint32_t delay)
+ssize_t uart_read(UART_Type *uart, uint8_t *buf, size_t count, uint32_t delay)
 {
 	ssize_t i;
 	uint32_t delay_to = millis() + delay;
-	for(i = 0; i < count; i++)
+	for (i = 0; i < count; i++)
 	{
-		while((uart->UART_USR_REG & (1<<3)) == 0) {
-            if(millis() >= delay_to)
-                return i;
+		while ((uart->UART_USR_REG & (1 << 3)) == 0)
+		{
+			if (millis() >= delay_to)
+				return i;
 		}
 		buf[i] = uart->UART_RBR_THR_DLL_REG & 0xFF;
 	}
 	return i;
 }
 
-ssize_t uart_write(UART_Type * uart, const uint8_t * buf, size_t count, uint32_t delay)
+ssize_t uart_write(UART_Type *uart, const uint8_t *buf, size_t count, uint32_t delay)
 {
 	ssize_t i;
 	uint32_t delay_to = millis() + delay;
-	for(i = 0; i < count; i++)
+	for (i = 0; i < count; i++)
 	{
-		while(!(uart->UART_USR_REG & (1<<1))){
-            if(millis() >= delay_to)
-                return i;
+		while (!(uart->UART_USR_REG & (1 << 1)))
+		{
+			if (millis() >= delay_to)
+				return i;
 		}
-    	uart->UART_RBR_THR_DLL_REG = buf[i];
+		uart->UART_RBR_THR_DLL_REG = buf[i];
 	}
 	return i;
 }
 
-ssize_t uart_write_c(UART_Type * uart, const uint8_t c, uint32_t delay)
+ssize_t uart_write_c(UART_Type *uart, const uint8_t c, uint32_t delay)
 {
-	uint32_t u32delayno = delay*10000;
-	while(!(uart->UART_USR_REG & (1<<1))){
+	uint32_t u32delayno = delay * 10000;
+	while (!(uart->UART_USR_REG & (1 << 1)))
+	{
 		--u32delayno;
-		if(u32delayno == 0)
+		if (u32delayno == 0)
 			return 0;
 	}
-    uart->UART_RBR_THR_DLL_REG = c;
+	uart->UART_RBR_THR_DLL_REG = c;
 	return 1;
 }

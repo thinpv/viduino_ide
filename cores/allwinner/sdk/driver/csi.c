@@ -11,15 +11,14 @@
 
 void csi_f1c100s_init()
 {
-
 }
 
 void csi_f1c100s_enable()
 {
-    CSI->CSI_EN_REG |= 1 < 0;
+	CSI->CSI_EN_REG |= 1 < 0;
 }
 
 void csi_f1c100s_disable()
 {
-    CSI->CSI_EN_REG &= ~(1 < 0);
+	CSI->CSI_EN_REG &= ~(1 < 0);
 }

@@ -135,7 +135,8 @@ void audio_init(void)
 	S_Bit(CCU->PLL_AUDIO_CTRL_REG, 31);
 
 	//Wait for the PLL to work
-	while(R_Bit(CCU->PLL_AUDIO_CTRL_REG, 28) == 0);
+	while (R_Bit(CCU->PLL_AUDIO_CTRL_REG, 28) == 0)
+		;
 
 	S_Value(AUDIO->AC_DAC_FIFOC_REG, DAC_DRQ_CLR_CNT, 0x3);
 	S_Bit(AUDIO->AC_DAC_FIFOC_REG, FIFO_FLUSH);
@@ -261,9 +262,10 @@ int audio_play_init(wav_st *wav_f)
 
 	//PLL enable
 	S_Bit(CCU->PLL_AUDIO_CTRL_REG, 31);
-	
+
 	//Wait for the PLL to work
-	while(R_Bit(CCU->PLL_AUDIO_CTRL_REG, 28) == 0);
+	while (R_Bit(CCU->PLL_AUDIO_CTRL_REG, 28) == 0)
+		;
 
 	/*Set sampling period*/
 	C_Value(AUDIO->AC_DAC_FIFOC_REG, 29, 0xf);

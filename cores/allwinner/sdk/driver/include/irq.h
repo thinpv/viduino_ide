@@ -113,12 +113,12 @@ extern "C"
 #define DISABLE_FIQ 0x40
 #define DISABLE_FIQ_IRQ 0xC0
 
-  extern sys_pvFunPtr sysIrqHandlerTable[];
+	extern sys_pvFunPtr sysIrqHandlerTable[];
 
-  void irq_register(int32_t nIntTypeLevel, int32_t eIntNo, sys_pvFunPtr pvNewISR, uint8_t Priority);
+	void irq_register(int32_t nIntTypeLevel, int32_t eIntNo, sys_pvFunPtr pvNewISR, uint8_t Priority);
 
-  void irq_init();
-  int32_t irq_handle();
+	void irq_init();
+	int32_t irq_handle();
 
 #ifdef __cplusplus
 }

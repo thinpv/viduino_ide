@@ -2,14 +2,13 @@
 #define __CSI_H__
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
 #include <stdint.h>
 #include <types.h>
 #include <F1C100S.h>
-
-
 
 #ifdef __cplusplus
 }
