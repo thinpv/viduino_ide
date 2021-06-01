@@ -101,6 +101,7 @@ SRC_C += \
 	$(SDKSRC)/driver/audio.c \
 	$(SDKSRC)/driver/defe.c \
 	$(SDKSRC)/driver/sdc.c \
+	$(SDKSRC)/driver/sys_lcd.c \
 
 SRC_C += \
 	$(SDKSRC)/lib/malloc.c \
