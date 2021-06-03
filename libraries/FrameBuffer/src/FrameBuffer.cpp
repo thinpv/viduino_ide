@@ -1,6 +1,9 @@
 #include "FrameBuffer.h"
 
-extern void memcpy(void *, void *, int);
+extern "C"
+{
+	void memcpy(void *, void *, int);
+}
 
 FrameBuffer::FrameBuffer()
 {
