@@ -103,6 +103,19 @@ Reset_Handler:
 	ldmia r0!, {r2-r8, r10}
 	stmia r1!, {r2-r8, r10}
 
+	/* Clear bss section */
+	ldr r0, _bss_start
+	ldr r2, _bss_end
+	sub r2, r2, r0
+	mov r1, #0
+	bl memset
+
 	B     boot_main
+
+
+_bss_start:
+	.long __bss_start
+_bss_end:
+	.long __bss_end
 
 	.end
