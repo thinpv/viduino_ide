@@ -369,7 +369,7 @@ void do_scanline_and_draw(uint8* buf)
 __attribute__ ((aligned(1024))) unsigned int NES_BUFF[3][NES_DH][NES_DW];
 __attribute__ ((aligned(4))) unsigned int NES_Palette_argb8888[64];
 
-extern uint32_t LCDbuff[800*480];
+// extern uint32_t LCDbuff[800*480];
 
 int buff_inx=0;
 int buff_inx_n=0;

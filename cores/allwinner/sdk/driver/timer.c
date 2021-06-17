@@ -46,9 +46,17 @@ void delay(unsigned long ms)
 
 void delayMicroseconds(unsigned int usec)
 {
-	uint64_t time_to_delay = micros() + usec;
-	while (micros() < time_to_delay)
-		;
+	// uint64_t time_to_delay = micros() + usec;
+	// while (micros() < time_to_delay)
+	// 	;
+	volatile unsigned int cnt, i, s;
+	s = (unsigned int)((float)usec * 13.6351); //��cache
+																					 //	s=us;
+	for (cnt = 0; cnt < s; cnt++)
+	{
+		for (i = 0; i < 1; i++)
+			;
+	}
 }
 
 void timer0_set()

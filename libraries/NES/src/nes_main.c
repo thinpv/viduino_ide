@@ -73,8 +73,8 @@ u8* romfile;			//nes文件指针,指向整个nes文件的起始地址.
 
 
 void NES_Palette_to_argb8888(void);
-extern unsigned int NES_BUFF[3][NES_DH][NES_DW];
-extern uint32_t LCDbuff[800*480];
+extern __attribute__ ((aligned(1024))) unsigned int NES_BUFF[3][NES_DH][NES_DW];
+// extern uint32_t LCDbuff[480*272];
 
 //defe初始化+16位色变32位色
 void defe_color_init(void)
@@ -84,7 +84,7 @@ void defe_color_init(void)
 //缩放
 	Defe_Init();
 	// Defe_Config((u32)(NES_BUFF[0]));
-	Defe_Config_argb8888_to_argb8888(NES_DW,NES_DH,800,480,NES_BUFF[0]);	
+	Defe_Config_argb8888_to_argb8888(NES_DW,NES_DH,480,272,NES_BUFF[0]);	
 	// Defe_Config_argb8888_to_argb8888(NES_DW,NES_DH,LV_HOR_RES_MAX,LV_VER_RES_MAX,LCDbuff);	
 	Defe_Start();	
 }
