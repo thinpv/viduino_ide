@@ -28,7 +28,7 @@ void FrameBuffer::setBright(int bright)
 void FrameBuffer::areaPresent(int x1, int x2, int y1, int y2, unsigned short *data)
 {
 	uint16_t x = x2 - x1 + 1;
-	uint16_t size_of_row = x * sizeof(uint32_t);
+	uint16_t size_of_row = x * sizeof(uint16_t);
 	for (int i = y1; i < y2 + 1; i++)
 	{
 		memcpy(&BT1[i * width + x1], data, size_of_row);
