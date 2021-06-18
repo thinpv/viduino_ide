@@ -36,7 +36,7 @@ extern "C"
 #define F1C100S_IRQ_DMA (18)
 #define F1C100S_IRQ_TP (20)
 #define F1C100S_IRQ_AUDIO (21)
-#define F1C100S_IRQ_LRADC (22)
+#define F1C100S_IRQ_KEYADC (22)
 #define F1C100S_IRQ_MMC0 (23)
 #define F1C100S_IRQ_MMC1 (24)
 #define F1C100S_IRQ_USBOTG (26)

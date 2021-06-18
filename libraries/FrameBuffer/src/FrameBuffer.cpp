@@ -14,6 +14,7 @@ int FrameBuffer::begin(int width, int height, int bright)
 	Sys_LCD_Init(width, height, (unsigned int *)LCDbuff, NULL);
 	this->width = width;
 	this->height = height;
+	return 1;
 }
 
 void FrameBuffer::setBright(int bright)
