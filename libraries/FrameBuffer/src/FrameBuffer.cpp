@@ -29,12 +29,51 @@ void FrameBuffer::areaPresent(int x1, int x2, int y1, int y2, unsigned short *da
 {
 	uint16_t x = x2 - x1 + 1;
 	uint16_t size_of_row = x * sizeof(uint16_t);
-	for (int i = y1; i < y2 + 1; i++)
+	for (int i = y1; i <= y2; i++)
 	{
 		memcpy(&BT1[i * width + x1], data, size_of_row);
 		data += x;
 	}
 	// return fb_area_present(&framebuffer, x1, x2, y1, y2, (uint32_t *)color_p);
+}
+
+void FrameBuffer::areaPresentX(int x1, int x2, int y1, int y2, unsigned short *data)
+{
+	uint16_t x = x2 - x1 + 1;
+	uint16_t size_of_row = x * sizeof(uint16_t);
+	for (int i = y2; i >= y1; i--)
+	{
+		memcpy(&BT1[i * width + x1], data, size_of_row);
+		data += x;
+	}
+}
+
+void FrameBuffer::areaPresentY(int x1, int x2, int y1, int y2, unsigned short *data)
+{
+	uint16_t x = x2 - x1 + 1;
+	uint16_t size_of_row = x * sizeof(uint16_t);
+	for (int i = y1; i <= y2; i++)
+	{
+		for (int j = x1; j <= x2; j++)
+		{
+			BT1[i * width + x2 - j] = *data;
+			data += 1;
+		}
+	}
+}
+
+void FrameBuffer::areaPresentXY(int x1, int x2, int y1, int y2, unsigned short *data)
+{
+	uint16_t x = x2 - x1 + 1;
+	uint16_t size_of_row = x * sizeof(uint16_t);
+	for (int i = y2; i >= y1; i--)
+	{
+		for (int j = x1; j <= x2; j++)
+		{
+			BT1[i * width + x2 - j] = *data;
+			data += 1;
+		}
+	}
 }
 
 // void FrameBuffer::pixelPresent(int x, int y, uint32_t data)
