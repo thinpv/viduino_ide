@@ -4,6 +4,8 @@
 // #include "fb.h"
 #include <sys_lcd.h>
 
+typedef unsigned short (*lcd_buff_pt)[YSIZE_PHYS][XSIZE_PHYS];
+
 #ifdef __cplusplus
 class FrameBuffer
 {
@@ -20,11 +22,10 @@ public:
 	unsigned short *getBuffer();
 
 private:
-	// framebuffer_t framebuffer;
 	int width;
 	int height;
-	unsigned short *BT1; //
-	__attribute__((aligned(1024))) unsigned int LCDbuff[XSIZE_PHYS * YSIZE_PHYS];
+	lcd_buff_pt bt;
+	__attribute__((aligned(1024))) unsigned short LCDbuff[XSIZE_PHYS * YSIZE_PHYS];
 };
 #endif
 

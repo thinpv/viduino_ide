@@ -1,9 +1,9 @@
 #include "FrameBuffer.h"
-
-extern "C"
-{
-	void memcpy(void *, void *, int);
-}
+#include "Arduino.h"
+// extern "C"
+// {
+// 	void memcpy(void *, void *, int);
+// }
 
 FrameBuffer::FrameBuffer()
 {
@@ -14,7 +14,8 @@ int FrameBuffer::begin(int width, int height, int bright)
 {
 	// fb_init(&framebuffer, width, height);
 	// fb_setbl(&framebuffer, bright);
-	BT1 = (unsigned short *)LCDbuff;
+	// BT1 = (unsigned short *)LCDbuff;
+	bt = (lcd_buff_pt)LCDbuff;
 	Sys_LCD_Init(XSIZE_PHYS, YSIZE_PHYS, (unsigned int *)LCDbuff, NULL);
 	this->width = width;
 	this->height = height;
@@ -27,36 +28,38 @@ void FrameBuffer::setBright(int bright)
 
 void FrameBuffer::areaPresent(int x1, int x2, int y1, int y2, unsigned short *data)
 {
-	uint16_t x = x2 - x1 + 1;
-	uint16_t size_of_row = x * sizeof(uint16_t);
-	for (int i = y1; i <= y2; i++)
+	uint16_t data_in_a_row = x2 - x1 + 1;
+	uint16_t size_of_row = data_in_a_row * sizeof(uint16_t);
+	for (int y = y1; y <= y2; y++)
 	{
-		memcpy(&BT1[i * width + x1], data, size_of_row);
-		data += x;
+		memcpy(&(*bt)[y][x1], data, size_of_row);
+		data += data_in_a_row;
 	}
-	// return fb_area_present(&framebuffer, x1, x2, y1, y2, (uint32_t *)color_p);
 }
 
 void FrameBuffer::areaPresentX(int x1, int x2, int y1, int y2, unsigned short *data)
 {
-	uint16_t x = x2 - x1 + 1;
-	uint16_t size_of_row = x * sizeof(uint16_t);
-	for (int i = y2; i >= y1; i--)
+	uint16_t data_in_a_row = x2 - x1 + 1;
+	uint16_t size_of_row = data_in_a_row * sizeof(uint16_t);
+	for (int y = y2; y >= y1; y--)
 	{
-		memcpy(&BT1[i * width + x1], data, size_of_row);
-		data += x;
+		memcpy(&(*bt)[y][x1], data, size_of_row);
+		data += data_in_a_row;
+		// for (int x = x1; x <= x2; x++)
+		// {
+		// 	(*bt)[y][x] = *data;
+		// 	data += 1;
+		// }
 	}
 }
 
 void FrameBuffer::areaPresentY(int x1, int x2, int y1, int y2, unsigned short *data)
 {
-	uint16_t x = x2 - x1 + 1;
-	uint16_t size_of_row = x * sizeof(uint16_t);
-	for (int i = y1; i <= y2; i++)
+	for (int y = y1; y <= y2; y++)
 	{
-		for (int j = x1; j <= x2; j++)
+		for (int x = x2; x >= x1; x--)
 		{
-			BT1[i * width + x2 - j] = *data;
+			(*bt)[y][x] = *data;
 			data += 1;
 		}
 	}
@@ -64,13 +67,11 @@ void FrameBuffer::areaPresentY(int x1, int x2, int y1, int y2, unsigned short *d
 
 void FrameBuffer::areaPresentXY(int x1, int x2, int y1, int y2, unsigned short *data)
 {
-	uint16_t x = x2 - x1 + 1;
-	uint16_t size_of_row = x * sizeof(uint16_t);
-	for (int i = y2; i >= y1; i--)
+	for (int y = y2; y >= y1; y--)
 	{
-		for (int j = x1; j <= x2; j++)
+		for (int x = x2; x >= x1; x--)
 		{
-			BT1[i * width + x2 - j] = *data;
+			(*bt)[y][x] = *data;
 			data += 1;
 		}
 	}

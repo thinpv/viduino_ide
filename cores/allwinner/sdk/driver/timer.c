@@ -23,7 +23,8 @@ void timer0_interrupt_handle(int arg)
 
 uint64_t timer_get_ticker()
 {
-	return ticker;
+	return xTaskGetTickCount();
+	// return ticker;
 }
 
 unsigned long millis(void)
@@ -34,7 +35,7 @@ unsigned long millis(void)
 
 unsigned long micros(void)
 {
-	return ticker * MICROSECOND_PER_TICK + (0xB71B00 - TIMER->TMR0_CUR_VALUE_REG) / 12;
+	return xTaskGetTickCount() * MICROSECOND_PER_TICK + (0xB71B00 - TIMER->TMR0_CUR_VALUE_REG) / 12;
 }
 
 void delay(unsigned long ms)

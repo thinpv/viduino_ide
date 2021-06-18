@@ -233,7 +233,7 @@ static void vTimerInterruptHandle(int arg)
 
 static void prvSetupTimerInterrupt( void )
 {
-	TIMER->TMR0_INTV_VALUE_REG = 0xB71B00 / 1000;
+	TIMER->TMR0_INTV_VALUE_REG = 12000000 / 1000;
 	TIMER->TMR0_CTRL_REG &= 0xffffff00;
 	TIMER->TMR0_CTRL_REG |= (1 << 4) | (1 << 2);
 	TIMER->TMR0_CTRL_REG |= 1 << 0;
