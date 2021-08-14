@@ -170,8 +170,9 @@ void Tcon_Init(struct fb_f1c100s_pdata_t *pdat)
 	val &= ~(0x1 << 0);
 	write32((virtual_addr_t)&tcon->ctrl, val);
 	// Enable TCON 31
+	// Swap RED and BLUE data at FIFO1
 	val = (pdat->timing.v_front_porch + pdat->timing.v_back_porch + pdat->timing.v_sync_len);
-	write32((virtual_addr_t)&tcon->tcon0_ctrl, ((u64_t)0x1 << 31) | (val & 0x1f) << 4);
+	write32((virtual_addr_t)&tcon->tcon0_ctrl, ((u64_t)0x1 << 31) | (u64_t)0x1 << 23 | (val & 0x1f) << 4);
 	// Set the clock
 	val = F; // 5< DCLKDIV <96
 	write32((virtual_addr_t)&tcon->tcon0_dclk, ((u64_t)0xf << 28) | (val << 0));
