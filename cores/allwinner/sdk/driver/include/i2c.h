@@ -47,14 +47,14 @@ extern "C"
 	} i2c_event_t;
 	/////
 
-	int i2c_set(I2C_Type *i2c, uint32_t rate);
-	void i2c_set_rate(I2C_Type *i2c, u64_t rate);
+	int i2c_init(I2C_Type *i2c, uint32_t rate);
+	void i2c_set_frequency(I2C_Type *i2c, u64_t rate);
 	int i2c_wait_status(I2C_Type *i2c);
 	int i2c_start(I2C_Type *i2c);
 	int i2c_stop(I2C_Type *i2c);
 	int i2c_send_data(I2C_Type *i2c, u8_t dat);
-	uint8_t i2c_read(I2C_Type *i2c, uint8_t addr, uint8_t *buf, size_t len);
-	uint8_t i2c_write(I2C_Type *i2c, uint8_t addr, uint8_t *buf, size_t len);
+	uint8_t i2c_read(I2C_Type *i2c, uint8_t addr, uint8_t *buf, size_t len, uint8_t sendStop);
+	uint8_t i2c_write(I2C_Type *i2c, uint8_t addr, uint8_t *buf, size_t len, uint8_t sendStop);
 
 #ifdef __cplusplus
 }

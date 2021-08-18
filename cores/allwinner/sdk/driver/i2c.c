@@ -36,7 +36,7 @@ enum
 	I2C_STAT_IDLE = 0xf8,
 };
 
-void i2c_set_rate(I2C_Type *i2c, u64_t rate)
+void i2c_set_frequency(I2C_Type *i2c, u64_t rate)
 {
 	u64_t pclk = 600000000;
 	s64_t freq, delta, best = 0x7fffffffffffffffLL;
@@ -62,7 +62,7 @@ void i2c_set_rate(I2C_Type *i2c, u64_t rate)
 	i2c->TWI_CCR_REG = ((tm & 0xf) << 3) | ((tn & 0x7) << 0);
 }
 
-int i2c_set(I2C_Type *i2c, uint32_t rate)
+int i2c_init(I2C_Type *i2c, uint32_t rate)
 {
 	if (i2c == I2C0)
 		ccu_reset(RESET_I2C0, true);
@@ -73,7 +73,7 @@ int i2c_set(I2C_Type *i2c, uint32_t rate)
 
 	i2c->TWI_SRST_REG = 1 << 0;
 	i2c->TWI_SRST_REG = 0 << 0;
-	i2c_set_rate(i2c, rate);
+	i2c_set_frequency(i2c, rate);
 	i2c->TWI_ADDR_REG = 0;
 	i2c->TWI_XADDR_REG = 0;
 	i2c->TWI_CNTR_REG = (1 << 6) | (1 << 4);
@@ -88,7 +88,7 @@ int i2c_set(I2C_Type *i2c, uint32_t rate)
 	} while (timeout > millis());
 	if (i2c->TWI_CNTR_REG & (1 << 4))
 	{
-		//printf("stop error\r\n");
+		// printf("stop error\r\n");
 	}
 	return 1;
 }
@@ -104,42 +104,42 @@ int i2c_wait_status(I2C_Type *i2c)
 			return i2c->TWI_STAT_REG;
 		}
 	} while (timeout > millis());
-	//printf("i2c_wait_status timeout\r\n");
+	// printf("i2c_wait_status timeout\r\n");
 	return I2C_STAT_BUS_ERROR;
 }
 
 int i2c_start(I2C_Type *i2c)
 {
-	i2c->TWI_CNTR_REG &= ~(1 << 3);
-	i2c->TWI_CNTR_REG |= (1 << 7) | (1 << 6) | (1 << 5) | (1 << 2);
+	S_Bit(i2c->TWI_CNTR_REG, 5);
+	C_Bit(i2c->TWI_CNTR_REG, 3);
 	unsigned long timeout = millis() + 100;
 	do
 	{
-		if (!(i2c->TWI_CNTR_REG & (1 << 5)))
+		if (!R_Bit(i2c->TWI_CNTR_REG, 5))
 		{
 			break;
 		}
 	} while (timeout > millis());
-	if (i2c->TWI_CNTR_REG & (1 << 5))
+	if (R_Bit(i2c->TWI_CNTR_REG, 5))
 	{
-		//printf("i2c_start error\r\n");
+		// printf("i2c_start error\r\n");
 	}
 	return i2c_wait_status(i2c);
 }
 
 int i2c_stop(I2C_Type *i2c)
 {
-	i2c->TWI_CNTR_REG |= (1 << 4);
-	i2c->TWI_CNTR_REG &= ~((1 << 7) | (1 << 6) | (1 << 3));
+	S_Bit(i2c->TWI_CNTR_REG, 4);
+	C_Bit(i2c->TWI_CNTR_REG, 3);
 	unsigned long timeout = millis() + 100;
 	do
 	{
-		if (!(i2c->TWI_CNTR_REG & (1 << 4)))
+		if (!R_Bit(i2c->TWI_CNTR_REG, 4))
 			return 1;
 	} while (timeout > millis());
-	if (i2c->TWI_CNTR_REG & (1 << 4))
+	if (R_Bit(i2c->TWI_CNTR_REG, 4))
 	{
-		//printf("i2c_stop error\r\n");
+		// printf("i2c_stop error\r\n");
 	}
 	return 0;
 }
@@ -147,16 +147,22 @@ int i2c_stop(I2C_Type *i2c)
 int i2c_send_data(I2C_Type *i2c, u8_t dat)
 {
 	i2c->TWI_DATA_REG = dat;
-	i2c->TWI_CNTR_REG &= ~(1 << 3);
+	C_Bit(i2c->TWI_CNTR_REG, 3);
 	return i2c_wait_status(i2c);
 }
 
-uint8_t i2c_read(I2C_Type *i2c, uint8_t addr, uint8_t *buf, size_t len)
+uint8_t i2c_read(I2C_Type *i2c, uint8_t addr, uint8_t *buf, size_t len, uint8_t sendStop)
 {
 	uint8_t ret = len;
-	if (i2c_send_data(i2c, (u8_t)(addr << 1 | 1)) != I2C_STAT_TX_AR_ACK)
+	i2c_start(i2c);
+	int rs = i2c_send_data(i2c, (u8_t)(addr << 1 | 1));
+	if (rs != I2C_STAT_TX_AR_ACK)
 	{
-		//printf("i2c_read error\r\n");
+		// printf("i2c_read addr 0x%02X error %d\r\n", addr, rs);
+		if (sendStop)
+		{
+			i2c_stop(i2c);
+		}
 		return 0;
 	}
 
@@ -183,25 +189,43 @@ uint8_t i2c_read(I2C_Type *i2c, uint8_t addr, uint8_t *buf, size_t len)
 			len--;
 			break;
 		default:
+			if (sendStop)
+			{
+				i2c_stop(i2c);
+			}
 			return ret - len;
 		}
+	}
+	if (sendStop)
+	{
+		i2c_stop(i2c);
 	}
 	return ret - len;
 }
 
-uint8_t i2c_write(I2C_Type *i2c, uint8_t addr, uint8_t *buf, size_t len)
+uint8_t i2c_write(I2C_Type *i2c, uint8_t addr, uint8_t *buf, size_t len, uint8_t sendStop)
 {
 	uint8_t ret = len;
-	if (i2c_send_data(i2c, (u8_t)(addr << 1)) != I2C_STAT_TX_AW_ACK)
+	i2c_start(i2c);
+	uint8_t rs = i2c_send_data(i2c, (u8_t)(addr << 1));
+	if (rs != I2C_STAT_TX_AW_ACK)
 	{
-		//printf("i2c_write error\r\n");
-		return 0;
+		// printf("i2c_write error 0x%02X addr 0x%02X\r\n", rs, addr);
+		if (sendStop)
+		{
+			i2c_stop(i2c);
+		}
+		return 2;
 	}
 	while (len > 0)
 	{
 		if (i2c_send_data(i2c, *buf++) != I2C_STAT_TXD_ACK)
-			return 0;
+			return 3;
 		len--;
 	}
-	return ret - len;
+	if (sendStop)
+	{
+		i2c_stop(i2c);
+	}
+	return 0;
 }

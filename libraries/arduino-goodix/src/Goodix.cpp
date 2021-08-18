@@ -9,23 +9,25 @@
 // Interrupt handling
 volatile uint8_t goodixIRQ = 0;
 
-void ICACHE_RAM_ATTR _goodix_irq_handler() {
-  noInterrupts();
+void ICACHE_RAM_ATTR _goodix_irq_handler()
+{
+  // noInterrupts();
   goodixIRQ = 1;
-  interrupts();
+  // interrupts();
 }
-
 
 // Implementation
-Goodix::Goodix() {
-
+Goodix::Goodix()
+{
 }
 
-void Goodix::setHandler(void (*handler)(int8_t, GTPoint*)) {
+void Goodix::setHandler(void (*handler)(int8_t, GTPoint *))
+{
   touchHandler = handler;
 }
 
-bool Goodix::begin(uint8_t interruptPin, uint8_t resetPin, uint8_t addr) {
+bool Goodix::begin(uint8_t interruptPin, uint8_t resetPin, uint8_t addr)
+{
   intPin = interruptPin;
   rstPin = resetPin;
   i2cAddr = addr;
@@ -38,8 +40,8 @@ bool Goodix::begin(uint8_t interruptPin, uint8_t resetPin, uint8_t addr) {
   return result;
 }
 
-
-bool Goodix::reset() {
+bool Goodix::reset()
+{
   msSleep(1);
 
   pinOut(intPin);
@@ -81,12 +83,14 @@ bool Goodix::reset() {
    Read goodix touchscreen version
    set 4 chars + zero productID to target
 */
-uint8_t Goodix::productID(char *target) {
+uint8_t Goodix::productID(char *target)
+{
   uint8_t error;
   uint8_t buf[4];
 
   error = read(GOODIX_REG_ID, buf, 4);
-  if (error) {
+  if (error)
+  {
     return error;
   }
 
@@ -101,14 +105,17 @@ uint8_t Goodix::productID(char *target) {
 
    @client: the i2c client
 */
-uint8_t Goodix::test() {
+uint8_t Goodix::test()
+{
   uint8_t testByte;
-  return read(GOODIX_REG_CONFIG_DATA,  &testByte, 1);
+  return read(GOODIX_REG_CONFIG_DATA, &testByte, 1);
 }
 
-uint8_t Goodix::calcChecksum(uint8_t* buf, uint8_t len) {
+uint8_t Goodix::calcChecksum(uint8_t *buf, uint8_t len)
+{
   uint8_t ccsum = 0;
-  for (uint8_t i = 0; i < len; i++) {
+  for (uint8_t i = 0; i < len; i++)
+  {
     ccsum += buf[i];
   }
   //ccsum %= 256;
@@ -116,7 +123,8 @@ uint8_t Goodix::calcChecksum(uint8_t* buf, uint8_t len) {
   return ccsum;
 }
 
-uint8_t Goodix::readChecksum() {
+uint8_t Goodix::readChecksum()
+{
   uint16_t aStart = GT_REG_CFG;
   uint16_t aStop = 0x80FE;
   uint8_t len = aStop - aStart + 1;
@@ -126,7 +134,8 @@ uint8_t Goodix::readChecksum() {
   return calcChecksum(buf, len);
 }
 
-uint8_t Goodix::fwResolution(uint16_t maxX, uint16_t maxY) {
+uint8_t Goodix::fwResolution(uint16_t maxX, uint16_t maxY)
+{
   uint8_t len = 0x8100 - GT_REG_CFG + 1;
   uint8_t cfg[len];
   read(GT_REG_CFG, cfg, len);
@@ -141,30 +150,35 @@ uint8_t Goodix::fwResolution(uint16_t maxX, uint16_t maxY) {
   write(GT_REG_CFG, cfg, len);
 }
 
-GTConfig* Goodix::readConfig() {
-  read(GT_REG_CFG, (uint8_t *) &config, sizeof(config));
+GTConfig *Goodix::readConfig()
+{
+  read(GT_REG_CFG, (uint8_t *)&config, sizeof(config));
   return &config;
 }
 
-GTInfo* Goodix::readInfo() {
-  read(GT_REG_DATA, (uint8_t *) &info, sizeof(config));
+GTInfo *Goodix::readInfo()
+{
+  read(GT_REG_DATA, (uint8_t *)&info, sizeof(info));
   return &info;
 }
 
-void Goodix::armIRQ() {
+void Goodix::armIRQ()
+{
   attachInterrupt(intPin, _goodix_irq_handler, RISING);
 }
 
-void Goodix::onIRQ() {
+void Goodix::onIRQ()
+{
   //uint8_t buf[1 + GOODIX_CONTACT_SIZE * GOODIX_MAX_CONTACTS];
   int8_t contacts;
 
-  contacts = readInput(points);
+  contacts = readInput((uint8_t *)points);
   if (contacts < 0)
     return;
 
-  if (contacts > 0) {
-    touchHandler(contacts, (GTPoint *)points);
+  if (contacts > 0)
+  {
+    touchHandler(contacts, points);
     /*
         Serial.print("Contacts: ");
         Serial.println(contacts);
@@ -179,7 +193,7 @@ void Goodix::onIRQ() {
           Serial.print(", ");
           Serial.print(points[i].y);
           Serial.print(" s.");
-          Serial.print(points[i].size);
+          Serial.print(points[i].area);
           Serial.println();
         }
     */
@@ -201,19 +215,23 @@ void Goodix::onIRQ() {
   */
 }
 
-void Goodix::loop() {
-  noInterrupts();
-  uint8_t irq = goodixIRQ;
-  goodixIRQ = 0;
-  interrupts();
+void Goodix::loop()
+{
+  // noInterrupts();
+  // uint8_t irq = goodixIRQ;
+  // goodixIRQ = 0;
+  // interrupts();
 
-  if (irq) {
+  if (goodixIRQ)
+  {
+    goodixIRQ = 0;
     onIRQ();
   }
 }
 #define EAGAIN 100 // Try again error
 
-int16_t Goodix::readInput(uint8_t *data) {
+int16_t Goodix::readInput(uint8_t *data)
+{
   int touch_num;
   int error;
 
@@ -222,7 +240,8 @@ int16_t Goodix::readInput(uint8_t *data) {
   error = read(GOODIX_READ_COORD_ADDR, regState, 1);
   //log_printf("regState: %#06x\n", regState);
 
-  if (error) {
+  if (error)
+  {
     //dev_err(&ts->client->dev, "I2C transfer error: %d\n", error);
     return -error;
   }
@@ -236,7 +255,8 @@ int16_t Goodix::readInput(uint8_t *data) {
 
   //log_printf("touch num: %d\n", touch_num);
 
-  if (touch_num > 0) {
+  if (touch_num > 0)
+  {
     /*    data += 1 + GOODIX_CONTACT_SIZE;
         error = read(GOODIX_READ_COORD_ADDR + 1 + GOODIX_CONTACT_SIZE, data,
               GOODIX_CONTACT_SIZE * (touch_num - 1));
@@ -251,26 +271,31 @@ int16_t Goodix::readInput(uint8_t *data) {
 }
 
 //----- Utils -----
-void Goodix::i2cStart(uint16_t reg) {
+void Goodix::i2cStart(uint16_t reg)
+{
   Wire.beginTransmission(i2cAddr);
   Wire.write(highByte(reg));
   Wire.write(lowByte(reg));
 }
 
-void Goodix::i2cRestart() {
+void Goodix::i2cRestart()
+{
   Wire.endTransmission(false);
   Wire.beginTransmission(i2cAddr);
 }
 
-uint8_t Goodix::i2cStop() {
+uint8_t Goodix::i2cStop()
+{
   return Wire.endTransmission(true);
 }
 
-uint8_t Goodix::write(uint16_t reg, uint8_t *buf, size_t len) {
+uint8_t Goodix::write(uint16_t reg, uint8_t *buf, size_t len)
+{
   uint8_t error;
   uint16_t startPos = 0;
 
-  while (startPos < len) {
+  while (startPos < len)
+  {
     i2cStart(reg + startPos);
     startPos += Wire.write(buf + startPos, len - startPos);
     error = Wire.endTransmission();
@@ -280,19 +305,22 @@ uint8_t Goodix::write(uint16_t reg, uint8_t *buf, size_t len) {
   return 0;
 }
 
-uint8_t Goodix::write(uint16_t reg, uint8_t buf) {
+uint8_t Goodix::write(uint16_t reg, uint8_t buf)
+{
   i2cStart(reg);
   Wire.write(buf);
   return Wire.endTransmission();
 }
 
-uint8_t Goodix::read(uint16_t reg, uint8_t *buf, size_t len) {
+uint8_t Goodix::read(uint16_t reg, uint8_t *buf, size_t len)
+{
   uint8_t res;
 
   i2cStart(reg);
 
   res = Wire.endTransmission(false);
-  if (res != GOODIX_OK) {
+  if (res != GOODIX_OK)
+  {
     return res;
   }
 
@@ -300,11 +328,13 @@ uint8_t Goodix::read(uint16_t reg, uint8_t *buf, size_t len) {
   size_t readLen = 0;
   uint8_t maxErrs = 3;
 
-  while (pos < len) {
+  while (pos < len)
+  {
     readLen = Wire.requestFrom(i2cAddr, (len - pos));
 
     prevPos = pos;
-    while (Wire.available()) {
+    while (Wire.available())
+    {
       buf[pos] = Wire.read();
       pos++;
     }
@@ -312,7 +342,8 @@ uint8_t Goodix::read(uint16_t reg, uint8_t *buf, size_t len) {
     if (prevPos == pos)
       maxErrs--;
 
-    if (maxErrs <= 0) {
+    if (maxErrs <= 0)
+    {
       break;
     }
     delay(0);
@@ -320,32 +351,37 @@ uint8_t Goodix::read(uint16_t reg, uint8_t *buf, size_t len) {
   return 0;
 }
 
-void Goodix::pinOut(uint8_t pin) {
+void Goodix::pinOut(uint8_t pin)
+{
   pinMode(pin, OUTPUT);
 }
 
-void Goodix::pinIn(uint8_t pin) {
+void Goodix::pinIn(uint8_t pin)
+{
   pinMode(pin, INPUT);
 }
 
-void Goodix::pinSet(uint8_t pin, uint8_t level) {
+void Goodix::pinSet(uint8_t pin, uint8_t level)
+{
   digitalWrite(pin, level);
 }
 
-void Goodix::pinHold(uint8_t pin) {
+void Goodix::pinHold(uint8_t pin)
+{
   pinSet(pin, LOW);
 }
 
-bool Goodix::pinCheck(uint8_t pin, uint8_t level) {
+bool Goodix::pinCheck(uint8_t pin, uint8_t level)
+{
   return digitalRead(pin) == level;
 }
 
-void Goodix::msSleep(uint16_t milliseconds) {
+void Goodix::msSleep(uint16_t milliseconds)
+{
   delay(milliseconds);
 }
 
-void Goodix::usSleep(uint16_t microseconds) {
+void Goodix::usSleep(uint16_t microseconds)
+{
   delayMicroseconds(microseconds);
 }
-
-

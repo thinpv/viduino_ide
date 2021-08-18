@@ -32,10 +32,12 @@ extern "C"
         {
         case INPUT:
             gpio_set_dir(gpio->port, gpio->pin, GPIO_DIRECTION_INPUT);
+            gpio_set_pull(gpio->port, gpio->pin, GPIO_PULL_NONE);
             break;
 
         case OUTPUT:
             gpio_set_dir(gpio->port, gpio->pin, GPIO_DIRECTION_OUTPUT);
+            gpio_set_pull(gpio->port, gpio->pin, GPIO_PULL_NONE);
             break;
 
         case INPUT_PULLUP:
