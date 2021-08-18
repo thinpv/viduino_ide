@@ -140,6 +140,7 @@ uint8_t Goodix::fwResolution(uint16_t maxX, uint16_t maxY)
   uint8_t cfg[len];
   read(GT_REG_CFG, cfg, len);
 
+  cfg[0]++;
   cfg[1] = (maxX & 0xff);
   cfg[2] = (maxX >> 8);
   cfg[3] = (maxY & 0xff);
@@ -261,7 +262,7 @@ int16_t Goodix::readInput(uint8_t *data)
         error = read(GOODIX_READ_COORD_ADDR + 1 + GOODIX_CONTACT_SIZE, data,
               GOODIX_CONTACT_SIZE * (touch_num - 1));
     */
-    error = read(GOODIX_READ_COORD_ADDR + 1, data, GOODIX_CONTACT_SIZE * (touch_num));
+    error = read(GOODIX_READ_COORD_ADDR, data, GOODIX_CONTACT_SIZE * (touch_num));
 
     if (error)
       return -error;

@@ -8,12 +8,12 @@ typedef struct GTInfo {
 };
 
 struct GTPoint {
-  // 0x814F-0x8156, ... 0x8176 (5 points) 
+  // 0x814E-0x8156, ... 0x8176 (5 points) 
+  uint8_t reserved;
   uint8_t trackId;
   uint16_t x;
   uint16_t y;
   uint16_t area;
-  uint8_t reserved;
 };
 
 struct GTLevelConfig {
