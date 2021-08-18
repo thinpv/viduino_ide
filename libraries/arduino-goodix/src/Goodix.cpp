@@ -6,6 +6,8 @@
 #define ICACHE_RAM_ATTR
 #endif
 
+#define EAGAIN 100 // Try again error
+
 // Interrupt handling
 volatile uint8_t goodixIRQ = 0;
 
@@ -19,6 +21,7 @@ void ICACHE_RAM_ATTR _goodix_irq_handler()
 // Implementation
 Goodix::Goodix()
 {
+  touchHandler = NULL;
 }
 
 void Goodix::setHandler(void (*handler)(int8_t, GTPoint *))
@@ -168,6 +171,24 @@ void Goodix::armIRQ()
   attachInterrupt(intPin, _goodix_irq_handler, RISING);
 }
 
+int Goodix::OnePiontScan(GTPoint *point)
+{
+  uint8_t state;
+  uint8_t error = read(GOODIX_READ_COORD_ADDR, &state, 1);
+  if (!(state & 0x80))
+    return -EAGAIN;
+
+  uint8_t touch_num = state & 0x0f;
+  if (touch_num > 0)
+  {
+    error = read(GOODIX_READ_COORD_ADDR, (uint8_t *)point, GOODIX_CONTACT_SIZE);
+    if (error)
+      return 0;
+  }
+  write(GOODIX_READ_COORD_ADDR, 0);
+  return touch_num;
+}
+
 void Goodix::onIRQ()
 {
   //uint8_t buf[1 + GOODIX_CONTACT_SIZE * GOODIX_MAX_CONTACTS];
@@ -179,7 +200,8 @@ void Goodix::onIRQ()
 
   if (contacts > 0)
   {
-    touchHandler(contacts, points);
+    if (touchHandler)
+      touchHandler(contacts, points);
     /*
         Serial.print("Contacts: ");
         Serial.println(contacts);
@@ -229,7 +251,6 @@ void Goodix::loop()
     onIRQ();
   }
 }
-#define EAGAIN 100 // Try again error
 
 int16_t Goodix::readInput(uint8_t *data)
 {

@@ -122,6 +122,8 @@ public:
 
   int16_t readInput(uint8_t *data);
 
+  int OnePiontScan(GTPoint *point);
+
   //--- Private routines ---
 private:
   uint8_t intPin, rstPin;
