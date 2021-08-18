@@ -6,6 +6,8 @@
 #include <i2c.h>
 #include <ccu.h>
 
+#define TIMEOUT 50000
+
 enum
 {
 	I2C_ADDR = 0x000,
@@ -78,24 +80,25 @@ int i2c_init(I2C_Type *i2c, uint32_t rate)
 	i2c->TWI_XADDR_REG = 0;
 	i2c->TWI_CNTR_REG = (1 << 6) | (1 << 4);
 
-	unsigned long timeout = millis() + 100;
+	volatile int timeout = 0;
 	do
 	{
 		if (!(i2c->TWI_CNTR_REG & (1 << 4)))
 		{
 			break;
 		}
-	} while (timeout > millis());
-	if (i2c->TWI_CNTR_REG & (1 << 4))
-	{
-		// printf("stop error\r\n");
-	}
+		timeout++;
+	} while (timeout <= TIMEOUT);
+	// if (R_Bit(i2c->TWI_CNTR_REG, 4))
+	// {
+	// 	printf("stop error\r\n");
+	// }
 	return 1;
 }
 
 int i2c_wait_status(I2C_Type *i2c)
 {
-	unsigned long timeout = millis() + 100;
+	volatile int timeout = 0;
 	do
 	{
 		if (i2c->TWI_CNTR_REG & (1 << 3))
@@ -103,7 +106,8 @@ int i2c_wait_status(I2C_Type *i2c)
 			//printf("i2c->TWI_STAT_REG: 0x%02X\r\n", i2c->TWI_STAT_REG);
 			return i2c->TWI_STAT_REG;
 		}
-	} while (timeout > millis());
+		timeout++;
+	} while (timeout <= TIMEOUT);
 	// printf("i2c_wait_status timeout\r\n");
 	return I2C_STAT_BUS_ERROR;
 }
@@ -112,18 +116,19 @@ int i2c_start(I2C_Type *i2c)
 {
 	S_Bit(i2c->TWI_CNTR_REG, 5);
 	C_Bit(i2c->TWI_CNTR_REG, 3);
-	unsigned long timeout = millis() + 100;
+	volatile int timeout = 0;
 	do
 	{
 		if (!R_Bit(i2c->TWI_CNTR_REG, 5))
 		{
 			break;
 		}
-	} while (timeout > millis());
-	if (R_Bit(i2c->TWI_CNTR_REG, 5))
-	{
-		// printf("i2c_start error\r\n");
-	}
+		timeout++;
+	} while (timeout <= TIMEOUT);
+	// if (R_Bit(i2c->TWI_CNTR_REG, 5))
+	// {
+	// 	printf("i2c_start error\r\n");
+	// }
 	return i2c_wait_status(i2c);
 }
 
@@ -131,16 +136,17 @@ int i2c_stop(I2C_Type *i2c)
 {
 	S_Bit(i2c->TWI_CNTR_REG, 4);
 	C_Bit(i2c->TWI_CNTR_REG, 3);
-	unsigned long timeout = millis() + 100;
+	volatile int timeout = 0;
 	do
 	{
 		if (!R_Bit(i2c->TWI_CNTR_REG, 4))
 			return 1;
-	} while (timeout > millis());
-	if (R_Bit(i2c->TWI_CNTR_REG, 4))
-	{
-		// printf("i2c_stop error\r\n");
-	}
+		timeout++;
+	} while (timeout <= TIMEOUT);
+	// if (R_Bit(i2c->TWI_CNTR_REG, 4))
+	// {
+	// 	printf("i2c_stop error\r\n");
+	// }
 	return 0;
 }
 
@@ -165,7 +171,7 @@ uint8_t i2c_read(I2C_Type *i2c, uint8_t addr, uint8_t *buf, size_t len, uint8_t 
 		}
 		return 0;
 	}
-
+	S_Bit(i2c->TWI_CNTR_REG, 2);
 	while (len > 0)
 	{
 		switch (i2c_wait_status(i2c))
