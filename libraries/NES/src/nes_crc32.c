@@ -1,9 +1,9 @@
-/////////////////////////////////////////////////////////////////////////////// 	 
+///////////////////////////////////////////////////////////////////////////////
 
 #define u8 unsigned char
 #define u32 unsigned long int
 
-static const u32 crc_table[256] = {            //CRC32Õý¹æ²éÑ¯±í
+static const u32 crc_table[256] = { //CRC32ï¿½ï¿½ï¿½ï¿½ï¿½Ñ¯ï¿½ï¿½
 	0x00000000L, 0x77073096L, 0xee0e612cL, 0x990951baL, 0x076dc419L,
 	0x706af48fL, 0xe963a535L, 0x9e6495a3L, 0x0edb8832L, 0x79dcb8a4L,
 	0xe0d5e91eL, 0x97d2d988L, 0x09b64c2bL, 0x7eb17cbdL, 0xe7b82d07L,
@@ -55,46 +55,46 @@ static const u32 crc_table[256] = {            //CRC32Õý¹æ²éÑ¯±í
 	0xbdbdf21cL, 0xcabac28aL, 0x53b39330L, 0x24b4a3a6L, 0xbad03605L,
 	0xcdd70693L, 0x54de5729L, 0x23d967bfL, 0xb3667a2eL, 0xc4614ab8L,
 	0x5d681b02L, 0x2a6f2b94L, 0xb40bbe37L, 0xc30c8ea1L, 0x5a05df1bL,
-	0x2d02ef8dL
-};
+	0x2d02ef8dL};
 
 /* =========================================================================
- * This function can be used by asm versions of crc32()Õâ¸öº¯Êý¿ÉÒÔÊ¹ÓÃasmµÄcrc32µÄ°æ±¾
+ * This function can be used by asm versions of crc32()ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê¹ï¿½ï¿½asmï¿½ï¿½crc32ï¿½Ä°æ±¾
  */
-const u32* get_crc_table()
+const u32 *get_crc_table()
 {
-	return (const u32*)crc_table;
+	return (const u32 *)crc_table;
 }
 
 /* ========================================================================= */
 #define DO1(buf) crc = crc_table[((int)crc ^ (*buf++)) & 0xff] ^ (crc >> 8);
-#define DO2(buf)  DO1(buf); DO1(buf);
-#define DO4(buf)  DO2(buf); DO2(buf);
-#define DO8(buf)  DO4(buf); DO4(buf);
+#define DO2(buf) \
+	DO1(buf);    \
+	DO1(buf);
+#define DO4(buf) \
+	DO2(buf);    \
+	DO2(buf);
+#define DO8(buf) \
+	DO4(buf);    \
+	DO4(buf);
 
 /* ========================================================================= */
-u32 get_crc32(u8* buf, u32 len)
-    
+u32 get_crc32(u8 *buf, u32 len)
+
 {
 	//if (buf == Z_NULL) return 0L;
-	u32 crc = 0;   //¼Ä´æÆ÷ÖÐÔ¤ÖÃ³õÊ¼Öµ 
+	u32 crc = 0; //ï¿½Ä´ï¿½ï¿½ï¿½ï¿½ï¿½Ô¤ï¿½Ã³ï¿½Ê¼Öµ
 	crc = crc ^ 0xffffffffL;
 	while (len >= 8)
 	{
 		DO8(buf);
 		len -= 8;
 	}
-	if (len) 
+	if (len)
 	{
-		do 
+		do
 		{
 			DO1(buf);
-		}while (--len);
+		} while (--len);
 	}
 	return crc ^ 0xffffffffL;
 }
-
-
-
-
-

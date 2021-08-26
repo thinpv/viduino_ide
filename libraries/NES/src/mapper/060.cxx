@@ -4,13 +4,13 @@
 // Mapper 60
 void NES_mapper60::Reset()
 {
-  set_CPU_banks(0,1,2,3);
-  set_PPU_banks(0,1,2,3,4,5,6,7);
+  set_CPU_banks(0, 1, 2, 3);
+  set_PPU_banks(0, 1, 2, 3, 4, 5, 6, 7);
 }
 
 void NES_mapper60::MemoryWrite(uint32 addr, uint8 data)
 {
-  if(addr & 0x80)
+  if (addr & 0x80)
   {
     set_CPU_bank4(2 * ((addr & 0x70) >> 4) + 0);
     set_CPU_bank5(2 * ((addr & 0x70) >> 4) + 1);
@@ -34,7 +34,7 @@ void NES_mapper60::MemoryWrite(uint32 addr, uint8 data)
   set_PPU_bank6(8 * (addr & 0x07) + 6);
   set_PPU_bank7(8 * (addr & 0x07) + 7);
 
-  if(data & 0x08)
+  if (data & 0x08)
   {
     set_mirroring(NES_PPU::MIRROR_HORIZ);
   }

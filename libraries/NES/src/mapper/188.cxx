@@ -5,13 +5,13 @@
 void NES_mapper188::Reset()
 {
   // set CPU bank pointers
-  if(num_8k_ROM_banks > 16)
+  if (num_8k_ROM_banks > 16)
   {
-    set_CPU_banks(0,1,14,15);
+    set_CPU_banks(0, 1, 14, 15);
   }
   else
   {
-    set_CPU_banks(0,1,num_8k_ROM_banks-2,num_8k_ROM_banks-1);
+    set_CPU_banks(0, 1, num_8k_ROM_banks - 2, num_8k_ROM_banks - 1);
   }
 
   NES_6502::Context context;
@@ -30,13 +30,13 @@ void NES_mapper188::MemoryWrite(uint32 addr, uint8 data)
     if (data & 0x10)
     {
       data &= 0x07;
-      set_CPU_bank4(data*2);
-      set_CPU_bank5(data*2+1);
+      set_CPU_bank4(data * 2);
+      set_CPU_bank5(data * 2 + 1);
     }
     else
     {
-      set_CPU_bank4(data*2+16);
-      set_CPU_bank5(data*2+17);
+      set_CPU_bank4(data * 2 + 16);
+      set_CPU_bank5(data * 2 + 17);
     }
   }
   else

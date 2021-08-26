@@ -4,13 +4,12 @@
 class NES_mapper0 : public NES_mapper
 {
 public:
-  NES_mapper0(NES* parent) : NES_mapper(parent) {}
+  NES_mapper0(NES *parent) : NES_mapper(parent) {}
   ~NES_mapper0() {}
 
-  void  Reset();
+  void Reset();
 
 protected:
 private:
 };
 /////////////////////////////////////////////////////////////////////
-

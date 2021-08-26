@@ -1,61 +1,59 @@
 #ifndef __NES_APU_H
-#define __NES_APU_H 
+#define __NES_APU_H
 #include "nes_main.h"
 
-#define NES_APU_BUF_NUM			20						//6¸öAPU BUF
-#define APU_SAMPLE_RATE 		22050					//APUÒôÆµÊä³öÎª22.050Khz 
-#define APU_PCMBUF_SIZE  		APU_SAMPLE_RATE/60		//44100/60=735		22050/60=367
+#define NES_APU_BUF_NUM 20					 //6ï¿½ï¿½APU BUF
+#define APU_SAMPLE_RATE 22050				 //APUï¿½ï¿½Æµï¿½ï¿½ï¿½Îª22.050Khz
+#define APU_PCMBUF_SIZE APU_SAMPLE_RATE / 60 //44100/60=735		22050/60=367
 
-
-#undef   NULL
-#define  NULL 0  
-#ifndef  TRUE
-#define  TRUE     1
+#undef NULL
+#define NULL 0
+#ifndef TRUE
+#define TRUE 1
 #endif
-#ifndef  FALSE
-#define  FALSE    0
+#ifndef FALSE
+#define FALSE 0
 #endif
 
 /* define this for realtime generated noise */
-#define  REALTIME_NOISE  
+#define REALTIME_NOISE
 
-#define  APU_WRA0       0x4000
-#define  APU_WRA1       0x4001
-#define  APU_WRA2       0x4002
-#define  APU_WRA3       0x4003
-#define  APU_WRB0       0x4004
-#define  APU_WRB1       0x4005
-#define  APU_WRB2       0x4006
-#define  APU_WRB3       0x4007
-#define  APU_WRC0       0x4008
-#define  APU_WRC2       0x400A
-#define  APU_WRC3       0x400B
-#define  APU_WRD0       0x400C
-#define  APU_WRD2       0x400E
-#define  APU_WRD3       0x400F
-#define  APU_WRE0       0x4010
-#define  APU_WRE1       0x4011
-#define  APU_WRE2       0x4012
-#define  APU_WRE3       0x4013
+#define APU_WRA0 0x4000
+#define APU_WRA1 0x4001
+#define APU_WRA2 0x4002
+#define APU_WRA3 0x4003
+#define APU_WRB0 0x4004
+#define APU_WRB1 0x4005
+#define APU_WRB2 0x4006
+#define APU_WRB3 0x4007
+#define APU_WRC0 0x4008
+#define APU_WRC2 0x400A
+#define APU_WRC3 0x400B
+#define APU_WRD0 0x400C
+#define APU_WRD2 0x400E
+#define APU_WRD3 0x400F
+#define APU_WRE0 0x4010
+#define APU_WRE1 0x4011
+#define APU_WRE2 0x4012
+#define APU_WRE3 0x4013
 
-#define  APU_SMASK      0x4015
+#define APU_SMASK 0x4015
 
 /* length of generated noise */
-#define  APU_NOISE_32K  0x7FFF
-#define  APU_NOISE_93   93
+#define APU_NOISE_32K 0x7FFF
+#define APU_NOISE_93 93
 
-#define  APU_BASEFREQ   1789772.7272727272727272
+#define APU_BASEFREQ 1789772.7272727272727272
 
 /* to/from 16.16 fixed point */
-#define  APU_TO_FIXED(x)    ((x) << 16)
-#define  APU_FROM_FIXED(x)  ((x) >> 16)
-
+#define APU_TO_FIXED(x) ((x) << 16)
+#define APU_FROM_FIXED(x) ((x) >> 16)
 
 /* channel structures */
 /* As much data as possible is precalculated,
 ** to keep the sample processing as lean as possible
 */
- 
+
 typedef struct rectangle_s
 {
 	u8 regs[4];
@@ -160,10 +158,10 @@ typedef struct dmc_s
 
 	u8 looping;
 	u8 irq_gen;
-	u8 irq_occurred; 
+	u8 irq_occurred;
 } dmc_t;
 
-enum        //¶¨ÒåÃ¶¾Ù±äÁ¿
+enum //ï¿½ï¿½ï¿½ï¿½Ã¶ï¿½Ù±ï¿½ï¿½ï¿½
 {
 	APU_FILTER_NONE,
 	APU_FILTER_LOWPASS,
@@ -187,19 +185,19 @@ typedef struct
 /* external sound chip stuff */
 typedef struct apuext_s
 {
-	void  (*init)(void);
-	void  (*shutdown)(void);
-	void  (*reset)(void);
+	void (*init)(void);
+	void (*shutdown)(void);
+	void (*reset)(void);
 	//DCR
-	void  (*paramschanged)(void);
+	void (*paramschanged)(void);
 	int (*process)(void);
 	apu_memread *mem_read;
 	apu_memwrite *mem_write;
-} apuext_t; 
+} apuext_t;
 
 /* APU queue structure */
-#define  APUQUEUE_SIZE  256  //4096
-#define  APUQUEUE_MASK  (APUQUEUE_SIZE - 1)
+#define APUQUEUE_SIZE 256 //4096
+#define APUQUEUE_MASK (APUQUEUE_SIZE - 1)
 
 /* apu ring buffer member */
 typedef struct apudata_s
@@ -208,16 +206,15 @@ typedef struct apudata_s
 	u8 value;
 } apudata_t;
 
-
 typedef struct apu_s
 {
 	int decay_lut[16];
 	int vbl_lut[32];
 	int trilength_lut[128];
-	rectangle_t rectangle[2];	
+	rectangle_t rectangle[2];
 	u8 mix_enable[6];
 
-	apudata_t queue[APUQUEUE_SIZE];//APUQUEUE_SIZE
+	apudata_t queue[APUQUEUE_SIZE]; //APUQUEUE_SIZE
 	triangle_t triangle;
 	noise_t noise;
 	dmc_t dmc;
@@ -226,10 +223,9 @@ typedef struct apu_s
 	int q_head, q_tail;
 	u32 elapsed_cycles;
 
-	void *buffer; /* pointer to output bufferÊä³ö»º³åÇøÖ¸Õë */
+	void *buffer; /* pointer to output bufferï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö¸ï¿½ï¿½ */
 	int num_samples;
 
-	
 	int filter_type;
 
 	int cycle_rate;
@@ -238,33 +234,28 @@ typedef struct apu_s
 	int sample_bits;
 	int refresh_rate;
 
-
-	/* external sound chip Íâ²¿ÉùÒôÐ¾Æ¬*/
+	/* external sound chip ï¿½â²¿ï¿½ï¿½ï¿½ï¿½Ð¾Æ¬*/
 	apuext_t *ext;
 } apu_t;
 
 extern apu_t *apu;
-extern u16 *wave_buffers; 
+extern u16 *wave_buffers;
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif /* __cplusplus */
-extern void apu_init(void);
-extern void apu_setparams(int sample_rate, int refresh_rate, int frag_size,int sample_bits);
-extern void apu_process(u16 *buffer, int num_samples);
-extern void apu_reset(void);
-	
-extern u8 Apu_Read4015(u32 address);
-extern void Apu_Write(u8 value,u32 address);
-	
-void apu_soundoutput(void);
-void apu_write4017(u32 address, u8 value);  
+	extern void apu_init(void);
+	extern void apu_setparams(int sample_rate, int refresh_rate, int frag_size, int sample_bits);
+	extern void apu_process(u16 *buffer, int num_samples);
+	extern void apu_reset(void);
+
+	extern u8 Apu_Read4015(u32 address);
+	extern void Apu_Write(u8 value, u32 address);
+
+	void apu_soundoutput(void);
+	void apu_write4017(u32 address, u8 value);
 #ifdef __cplusplus
 }
-#endif  
-#endif  
-
-
-
-
-
+#endif
+#endif

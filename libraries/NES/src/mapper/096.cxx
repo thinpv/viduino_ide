@@ -4,19 +4,19 @@
 void NES_mapper96::Reset()
 {
   // set CPU bank pointers
-  set_CPU_banks(0,1,2,3);
+  set_CPU_banks(0, 1, 2, 3);
 
   // set PPU bank pointers
   vbank0 = vbank1 = 0;
   sync_PPU_banks();
   parent_NES->ppu->vram_size = 0x8000;
 
-  set_mirroring(0,0,0,0);
+  set_mirroring(0, 0, 0, 0);
 }
 
 void NES_mapper96::PPU_Latch_Address(uint32 addr)
 {
-  if((addr & 0xF000) == 0x2000)
+  if ((addr & 0xF000) == 0x2000)
   {
     vbank1 = (addr & 0x0300) >> 8;
     sync_PPU_banks();
@@ -46,4 +46,3 @@ void NES_mapper96::sync_PPU_banks()
   set_VRAM_bank(7, vbank0 * 16 + 15);
 }
 /////////////////////////////////////////////////////////////////////
-

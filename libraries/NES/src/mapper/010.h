@@ -3,18 +3,18 @@
 // Mapper 10
 class NES_mapper10 : public NES_mapper
 {
-  friend void adopt_MPRD(SnssMapperBlock* block, NES* nes);
-  friend int extract_MPRD(SnssMapperBlock* block, NES* nes);
+  friend void adopt_MPRD(SnssMapperBlock *block, NES *nes);
+  friend int extract_MPRD(SnssMapperBlock *block, NES *nes);
 
 public:
-  NES_mapper10(NES* parent) : NES_mapper(parent) {}
+  NES_mapper10(NES *parent) : NES_mapper(parent) {}
   ~NES_mapper10() {}
 
-  void  Reset();
+  void Reset();
 
-  void  MemoryWrite(uint32 addr, uint8 data);
+  void MemoryWrite(uint32 addr, uint8 data);
 
-  void  PPU_Latch_FDFE(uint32 addr);
+  void PPU_Latch_FDFE(uint32 addr);
 
 protected:
   uint8 regs[6];
@@ -29,4 +29,3 @@ protected:
 private:
 };
 /////////////////////////////////////////////////////////////////////
-

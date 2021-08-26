@@ -1,18 +1,15 @@
 #ifndef _MAPPER000_H_
 #define _MAPPER000_H_
-#include "nes_mapper.h" 
+#include "nes_mapper.h"
 
 void Mapper000_Reset()
 {
-
 }
-void Mapper000_Write( uint8 data,uint16 addr)
+void Mapper000_Write(uint8 data, uint16 addr)
 {
-
 }
-void Mapper000_HSync( int scanline )
+void Mapper000_HSync(int scanline)
 {
-
 }
 void Mapper000_Init()
 {

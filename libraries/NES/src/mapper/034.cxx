@@ -4,13 +4,13 @@
 // Mapper 34
 void MAP34_Reset()
 {
-//  // set CPU bank pointers
-//  set_CPU_banks(0,1,num_8k_ROM_banks-2,num_8k_ROM_banks-1);
+  //  // set CPU bank pointers
+  //  set_CPU_banks(0,1,num_8k_ROM_banks-2,num_8k_ROM_banks-1);
 
   // set PPU bank pointers
-  if(num_1k_VROM_banks)
+  if (num_1k_VROM_banks)
   {
-    set_PPU_banks(0,1,2,3,4,5,6,7);
+    set_PPU_banks(0, 1, 2, 3, 4, 5, 6, 7);
   }
 }
 
@@ -46,36 +46,10 @@ void MAP34_Reset()
 
 void MAP34_MemoryWrite(uint16 addr, uint8 data)
 {
-  set_CPU_banks(data*4,data*4+1,data*4+2,data*4+3);
+  set_CPU_banks(data * 4, data * 4 + 1, data * 4 + 2, data * 4 + 3);
 }
 void MAP34_Init()
 {
-	NES_Mapper->Reset = MAP34_Reset;
-	NES_Mapper->Write = MAP34_MemoryWrite;  
+  NES_Mapper->Reset = MAP34_Reset;
+  NES_Mapper->Write = MAP34_MemoryWrite;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

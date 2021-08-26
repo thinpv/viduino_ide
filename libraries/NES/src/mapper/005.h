@@ -3,23 +3,23 @@
 // Mapper 5
 class NES_mapper5 : public NES_mapper
 {
-  friend void adopt_MPRD(SnssMapperBlock* block, NES* nes);
-  friend int extract_MPRD(SnssMapperBlock* block, NES* nes);
+  friend void adopt_MPRD(SnssMapperBlock *block, NES *nes);
+  friend int extract_MPRD(SnssMapperBlock *block, NES *nes);
 
-  friend void adopt_ExMPRD(const char* fn, NES* nes);
-  friend void extract_ExMPRD(const char* fn, NES* nes);
+  friend void adopt_ExMPRD(const char *fn, NES *nes);
+  friend void extract_ExMPRD(const char *fn, NES *nes);
 
 public:
-  NES_mapper5(NES* parent) : NES_mapper(parent) {}
+  NES_mapper5(NES *parent) : NES_mapper(parent) {}
   ~NES_mapper5() {}
 
-  void  Reset();
+  void Reset();
 
   uint8 MemoryReadLow(uint32 addr);
-  void  MemoryWriteLow(uint32 addr, uint8 data);
-  void  MemoryWriteSaveRAM(uint32 addr, uint8 data);
-  void  MemoryWrite(uint32 addr, uint8 data);
-  void  HSync(uint32 scanline);
+  void MemoryWriteLow(uint32 addr, uint8 data);
+  void MemoryWriteSaveRAM(uint32 addr, uint8 data);
+  void MemoryWrite(uint32 addr, uint8 data);
+  void HSync(uint32 scanline);
   uint8 PPU_Latch_RenderScreen(uint8 mode, uint32 addr);
 
 protected:
@@ -28,7 +28,7 @@ protected:
   void sync_Chr_banks(uint8 page);
 
   uint32 wb[8];
-  uint8 wram[8*0x2000];
+  uint8 wram[8 * 0x2000];
   uint8 wram_size;
 
   uint8 chr_reg[8][2];
@@ -51,4 +51,3 @@ protected:
 private:
 };
 /////////////////////////////////////////////////////////////////////
-

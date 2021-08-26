@@ -3,24 +3,24 @@
 // Mapper 1
 class NES_mapper1 : public NES_mapper
 {
-  friend void adopt_MPRD(SnssMapperBlock* block, NES* nes);
-  friend int extract_MPRD(SnssMapperBlock* block, NES* nes);
+  friend void adopt_MPRD(SnssMapperBlock *block, NES *nes);
+  friend int extract_MPRD(SnssMapperBlock *block, NES *nes);
 
 public:
-  NES_mapper1(NES* parent) : NES_mapper(parent) {}
+  NES_mapper1(NES *parent) : NES_mapper(parent) {}
   ~NES_mapper1() {}
 
-  void  Reset();
-  void  MemoryWriteSaveRAM(uint32 addr, uint8 data);
-  void  MemoryWrite(uint32 addr, uint8 data);
+  void Reset();
+  void MemoryWriteSaveRAM(uint32 addr, uint8 data);
+  void MemoryWrite(uint32 addr, uint8 data);
 
 protected:
   // this uses MMC1_256K_base and MMC1_bankX
   void MMC1_set_CPU_banks();
 
   uint32 write_count;
-  uint8  bits;
-  uint8  regs[4];
+  uint8 bits;
+  uint8 regs[4];
   uint32 last_write_addr;
 
   // Best Play - Pro Yakyuu Special
@@ -47,7 +47,7 @@ protected:
 
   uint32 MMC1_HI1;
   uint32 MMC1_HI2;
+
 private:
 };
 /////////////////////////////////////////////////////////////////////
-
