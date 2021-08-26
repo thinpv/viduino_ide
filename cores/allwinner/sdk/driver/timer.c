@@ -6,8 +6,10 @@
 #include <timer.h>
 #include <irq.h>
 
+#ifdef USE_FREERTOS
 #include "FreeRTOS.h"
 #include "task.h"
+#endif
 
 #define TICK_PER_SECOND 1000
 #define TICK_PER_MILLISECOND (TICK_PER_SECOND / 1000)
@@ -23,26 +25,41 @@ void timer0_interrupt_handle(int arg)
 
 uint64_t timer_get_ticker()
 {
+#ifdef USE_FREERTOS
 	return xTaskGetTickCount();
-	// return ticker;
+#else
+	return ticker;
+#endif
 }
 
 unsigned long millis(void)
 {
+#ifdef USE_FREERTOS
 	return xTaskGetTickCount();
-	// return ticker/TICK_PER_MILLISECOND;
+#else
+	return ticker / TICK_PER_MILLISECOND;
+#endif
 }
 
 unsigned long micros(void)
 {
+#ifdef USE_FREERTOS
 	return xTaskGetTickCount() * MICROSECOND_PER_TICK + (0xB71B00 - TIMER->TMR0_CUR_VALUE_REG) / 12;
+#else
+	return ticker;
+#endif
 }
 
 void delay(unsigned long ms)
 {
+#ifdef USE_FREERTOS
 	vTaskDelay(ms / portTICK_PERIOD_MS);
-	// uint64_t time_to_delay = ticker + ms*TICK_PER_MILLISECOND;
-	// while(ticker < time_to_delay);
+#else
+	uint64_t time_to_delay = ticker + ms * TICK_PER_MILLISECOND;
+	while (ticker < time_to_delay)
+	{
+	}
+#endif
 }
 
 void delayMicroseconds(unsigned int usec)
@@ -52,7 +69,7 @@ void delayMicroseconds(unsigned int usec)
 	// 	;
 	volatile unsigned int cnt, i, s;
 	s = (unsigned int)((float)usec * 13.6351); //��cache
-																					 //	s=us;
+											   //	s=us;
 	for (cnt = 0; cnt < s; cnt++)
 	{
 		for (i = 0; i < 1; i++)

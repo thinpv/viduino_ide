@@ -14,6 +14,7 @@
 
 int maincpp(void);
 
+#ifdef USE_FREERTOS
 #include "FreeRTOS.h"
 #include "task.h"
 
@@ -21,6 +22,7 @@ static void arduino(void *pvParameters)
 {
 	maincpp();
 }
+#endif
 
 int boot_main(int argc, char **argv)
 {
@@ -36,6 +38,7 @@ int boot_main(int argc, char **argv)
 	sys_init();
 
 	irq_init();
+#ifdef USE_FREERTOS
 	xTaskCreate(arduino, "arduino", 1024, NULL, tskIDLE_PRIORITY + 2, NULL);
 	vTaskStartScheduler();
 	for (;;)
@@ -43,13 +46,18 @@ int boot_main(int argc, char **argv)
 		printf("loop\r\n");
 		vTaskDelay(1000 / portTICK_PERIOD_MS);
 	}
+#else
+	timer0_set();
+	maincpp();
+#endif
 	return 0;
 }
 
 void __fatal_error(const char *msg)
 {
 	while (1)
-		;
+	{
+	}
 }
 
 #ifndef NDEBUG

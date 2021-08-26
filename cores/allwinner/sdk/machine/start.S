@@ -55,12 +55,22 @@ ZeroAddr:       .word   0
 IRQ_Addr:       .word   IRQ_Handler
 FIQ_Addr:       .word   FIQ_Handler
 
+
+#ifdef USE_FREERTOS
 Undef_Handler:  b       Undef_Handler
 SWI_Handler:    b       vPortYieldProcessor
 PAbt_Handler:   b       PAbt_Handler
 DAbt_Handler:   b       DAbt_Handler
 IRQ_Handler:    b       vPreemptiveTick
 FIQ_Handler:    b       FIQ_Handler
+#else
+Undef_Handler:  b       Undef_Handler
+SWI_Handler:    b       SWI_Handler
+PAbt_Handler:   b       PAbt_Handler
+DAbt_Handler:   b       DAbt_Handler
+IRQ_Handler:    b       irq
+FIQ_Handler:    b       fiq
+#endif
 
 Reset_Handler:
 	/* --------------------------------
@@ -111,6 +121,46 @@ Reset_Handler:
 	bl memset
 
 	B     boot_main
+
+	.align 5
+irq:
+	ldr SP,=IRQ_Stack 
+	sub sp, sp, #72
+	stmia sp, {r0 - r12}
+	add r8, sp, #60
+	stmdb r8, {sp, lr}^
+	nop
+	str lr, [r8, #0]
+	mrs r6, spsr
+	str r6, [r8, #4]
+	str r0, [r8, #8]
+	mov r0, sp
+	bl arm32_do_irq
+	ldmia sp, {r0 - lr}^
+	mov r0, r0
+	ldr lr, [sp, #60]
+	add sp, sp, #72
+	subs pc, lr, #4
+
+	.align 5
+fiq:
+	ldr SP,=FIQ_Stack 
+	sub sp, sp, #72
+	stmia sp, {r0 - r12}
+	add r8, sp, #60
+	stmdb r8, {sp, lr}^
+	nop
+	str lr, [r8, #0]
+	mrs r6, spsr
+	str r6, [r8, #4]
+	str r0, [r8, #8]
+	mov r0, sp
+	bl arm32_do_fiq
+	ldmia sp, {r0 - lr}^
+	mov r0, r0
+	ldr lr, [sp, #60]
+	add sp, sp, #72
+	subs pc, lr, #4
 
 
 _bss_start:

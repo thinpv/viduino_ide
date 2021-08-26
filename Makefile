@@ -90,7 +90,7 @@ SRC_C += \
 	$(SDKSRC)/driver/irq_gpio.c \
 	$(SDKSRC)/driver/pwm.c \
 	$(SDKSRC)/driver/ccu.c \
-	$(SDKSRC)/driver/fb.c \
+	$(SDKSRC)/driver/sys_lcd.c \
 	$(SDKSRC)/driver/i2c.c \
 	$(SDKSRC)/driver/spi.c \
 	$(SDKSRC)/driver/usb_phy.c \
@@ -161,17 +161,17 @@ SRC_C += \
 	libraries/FATFS013/src/ffunicode.c
 
 #freertos
-INCDIRS		+= -Icores/allwinner/sdk/freertos/include -Icores/allwinner/sdk/freertos/portable/GCC/ARM926EJ-S
-SRC_C += \
-	cores/allwinner/sdk/freertos/croutine.c \
-	cores/allwinner/sdk/freertos/event_groups.c \
-	cores/allwinner/sdk/freertos/list.c \
-	cores/allwinner/sdk/freertos/queue.c \
-	cores/allwinner/sdk/freertos/tasks.c \
-	cores/allwinner/sdk/freertos/timers.c \
-	cores/allwinner/sdk/freertos/portable/MemMang/heap_2.c \
-	cores/allwinner/sdk/freertos/portable/GCC/ARM926EJ-S/port.c \
-	cores/allwinner/sdk/freertos/portable/GCC/ARM926EJ-S/portISR.c \
+# INCDIRS		+= -Icores/allwinner/sdk/freertos/include -Icores/allwinner/sdk/freertos/portable/GCC/ARM926EJ-S
+# SRC_C += \
+# 	cores/allwinner/sdk/freertos/croutine.c \
+# 	cores/allwinner/sdk/freertos/event_groups.c \
+# 	cores/allwinner/sdk/freertos/list.c \
+# 	cores/allwinner/sdk/freertos/queue.c \
+# 	cores/allwinner/sdk/freertos/tasks.c \
+# 	cores/allwinner/sdk/freertos/timers.c \
+# 	cores/allwinner/sdk/freertos/portable/MemMang/heap_2.c \
+# 	cores/allwinner/sdk/freertos/portable/GCC/ARM926EJ-S/port.c \
+# 	cores/allwinner/sdk/freertos/portable/GCC/ARM926EJ-S/portISR.c \
 
 OBJ_S   = $(addprefix $(BUILD)/, $(SRC_S:.S=.o))
 OBJ_C   = $(addprefix $(BUILD)/, $(SRC_C:.c=.o))
