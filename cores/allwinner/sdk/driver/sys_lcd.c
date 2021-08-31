@@ -11,6 +11,8 @@
 
 #include <irq.h>
 #include <io.h>
+#include <ccu.h>
+#include <debe.h>
 
 /*---------------------------------------------------
 TCON interrupt
@@ -258,50 +260,8 @@ void Tcon_Init(struct fb_f1c100s_pdata_t *pdat)
 void Debe_Init(struct fb_f1c100s_pdata_t *pdat)
 {
 	struct f1c100s_debe_reg_t *debe = (struct f1c100s_debe_reg_t *)pdat->virtdebe;
-	//	u32_t val;
-	//-----------------------------------------DEBE clock and reset-------------------------------------------------
-	// Enable DEBE clock
-	write32(CCU_BUS_CLK_GATING_REG1, read32(CCU_BUS_CLK_GATING_REG1) | (1) << 12);
-	// Enable DEBE reset
-	write32(CCU_BUS_SOFT_RST_REG1, read32(CCU_BUS_SOFT_RST_REG1) | ((1) << 12));
-	delay_ms(1);
-
-	// Enable DEBE
-	S_BIT((virtual_addr_t)&debe->mode, 0);
-	// Set layer 0 parameters
-	write32((virtual_addr_t)&debe->disp_size, (((pdat->height) - 1) << 16) | (((pdat->width) - 1) << 0));
-	write32((virtual_addr_t)&debe->layer0_size, (((pdat->height) - 1) << 16) | (((pdat->width) - 1) << 0));
-	write32((virtual_addr_t)&debe->layer0_stride, ((pdat->width) << 4));
-	write32((virtual_addr_t)&debe->layer0_addr_low32b, (u32)(pdat->vram[0]) << 3);
-	write32((virtual_addr_t)&debe->layer0_addr_high4b, (u32)(pdat->vram[0]) >> 29);
-	write32((virtual_addr_t)&debe->layer0_attr1_ctrl, 0x05 << 8); // Layer 0 attribute 5=RGB565
-	S_BIT((virtual_addr_t)&debe->mode, 8);												// Layer 0 enable
-
-	// // Set layer 1 parameters
-	// write32((virtual_addr_t)&debe->disp_size, (((pdat->height) - 1) << 16) | (((pdat->width) - 1) << 0));
-	// write32((virtual_addr_t)&debe->layer1_size, (((pdat->height) - 1) << 16) | (((pdat->width) - 1) << 0));
-	// write32((virtual_addr_t)&debe->layer1_stride, ((pdat->width) << 4));
-	// write32((virtual_addr_t)&debe->layer1_addr_low32b, (u32)(pdat->vram[1]) << 3);
-	// write32((virtual_addr_t)&debe->layer1_addr_high4b, (u32)(pdat->vram[1]) >> 29);
-	// write32((virtual_addr_t)&debe->layer1_attr1_ctrl, 0x0A << 8); // Layer 0 attribute 5=RGB565
-	// //
-	// S_BIT((virtual_addr_t)&debe->layer1_attr0_ctrl, 10); // priority
-	// S_BIT((virtual_addr_t)&debe->layer1_attr0_ctrl, 15); // 1: select Pipe 1
-	// //
-	// S_BIT((virtual_addr_t)&debe->mode, 9); // Layer 1 enable
-
-	// load
-	S_BIT((virtual_addr_t)&debe->reg_ctrl, 0);
-	// DEBE start
-	S_BIT((virtual_addr_t)&debe->mode, 1);
-}
-
-void f1c100s_debe_set_address(struct fb_f1c100s_pdata_t *pdat, void *vram)
-{
-	struct f1c100s_debe_reg_t *debe = (struct f1c100s_debe_reg_t *)pdat->virtdebe;
-
-	write32((virtual_addr_t)&debe->layer0_addr_low32b, (u32_t)vram << 3);
-	write32((virtual_addr_t)&debe->layer0_addr_high4b, (u32_t)vram >> 29);
+	debe_init(pdat->width, pdat->height, pdat->vram[0]);
+	debe_enable();
 }
 
 void f1c100s_tcon_enable(struct fb_f1c100s_pdata_t *pdat)

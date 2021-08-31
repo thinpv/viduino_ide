@@ -91,6 +91,7 @@ SRC_C += \
 	$(SDKSRC)/driver/pwm.c \
 	$(SDKSRC)/driver/ccu.c \
 	$(SDKSRC)/driver/sys_lcd.c \
+	$(SDKSRC)/driver/debe.c \
 	$(SDKSRC)/driver/i2c.c \
 	$(SDKSRC)/driver/spi.c \
 	$(SDKSRC)/driver/usb_phy.c \
