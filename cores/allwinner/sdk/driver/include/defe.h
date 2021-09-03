@@ -21,6 +21,11 @@
 #define __s32 int
 #define __s64 long long
 
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
 //
 // Detail information of registers
 //
@@ -1628,4 +1633,10 @@ void Defe_Start(void);
 void Defe_conversion_buff(u32 src_addr);
 void Defe_Config_video_uvcombined_yuv422_to_argb_x(int inx, int iny, int outx, int outy, int buff_y, int buff_c);
 void Defe_Config_argb8888_to_argb8888(int inx, int iny, int outx, int outy, int argb8888);
+
+
+#ifdef __cplusplus
+}
+#endif
+
 #endif

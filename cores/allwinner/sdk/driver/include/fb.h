@@ -27,6 +27,17 @@ extern "C"
 		uint8_t a;
 	} color_format_t;
 
+	// typedef union
+	// {
+	// 	uint16_t data;
+	// 	struct
+	// 	{
+	// 		uint8_t r:5;
+	// 		uint8_t g:6;
+	// 		uint8_t b:5;
+	// 	} rgb;
+	// } color_format_t;
+
 	typedef struct render_st
 	{
 		/* The width of render */
@@ -79,11 +90,11 @@ extern "C"
 
 	void fb_destroy(framebuffer_t *fb, render_t *render);
 
-	void fb_present(framebuffer_t *fb, render_t *render);
-	void fb_area_present(framebuffer_t *fb, uint16_t x1, uint16_t x2, uint16_t y1, uint16_t y2, uint32_t *data);
-	void fb_pixel_present(framebuffer_t *fb, uint16_t x, uint16_t y, uint32_t data);
+	// void fb_present(framebuffer_t *fb, render_t *render);
+	// void fb_area_present(framebuffer_t *fb, uint16_t x1, uint16_t x2, uint16_t y1, uint16_t y2, uint32_t *data);
+	// void fb_pixel_present(framebuffer_t *fb, uint16_t x, uint16_t y, uint32_t data);
 
-	void fb_init(framebuffer_t *fb, int32_t width, int32_t height);
+	// void fb_init(framebuffer_t *fb, int32_t width, int32_t height);
 
 	void fb_remove(framebuffer_t *fb);
 

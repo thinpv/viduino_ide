@@ -1,6 +1,7 @@
 #include "Arduino.h"
+#include <defe.h>
 
-#if 1
+#if 0
 
 #include <lvgl.h>
 #include <../lv_conf.h>
@@ -116,11 +117,21 @@ void loop()
 #include <FrameBuffer.h>
 #include <audio.h>
 
+FrameBuffer framebuffer;
+
 void gpio_interrupt_handle()
 {
 	Serial.println("gpio_interrupt_handle");
 }
 
+void fb_run(int x, int y, int w, int h, pixel_format *data)
+{
+	Defe_conversion_buff((u32)data);
+	// framebuffer.areaPresent(x, y, w, h, data);
+}
+
+#include <io.h>
+#include <reg-debe.h>
 void setup()
 {
 	Serial.begin(115200);
@@ -136,22 +147,34 @@ void setup()
 	// irq_gpio_settype(GPIOF_INT, 2, IRQ_TYPE_EDGE_FALLING, gpio_interrupt_handle);
 	// irq_gpio_enable(GPIOF_INT, 2);
 
-	gpio_set_pull(GPIOF, 2, GPIO_PULL_UP);
-	attachInterrupt(24, gpio_interrupt_handle, FALLING);
+	// gpio_set_pull(GPIOF, 2, GPIO_PULL_UP);
+	// attachInterrupt(24, gpio_interrupt_handle, FALLING);
 
 	FrameBuffer framebuffer;
 	framebuffer.begin(480, 272, 100);
 	Serial.println("audio_play_wav_init");
 	audio_play_wav_init();
-	nes_load_for_ram(_aczdcr, sizeof(_aczdcr));
+	set_video_callback(fb_run);
+	set_audio_callback(audio_play_wav);
+
+	Defe_Init();
+	Defe_Config_argb8888_to_argb8888(NES_DW, NES_DH, 480, 272, (int)framebuffer.getBuffer());
+	Defe_Start();
+	S_Bit(DEBE->DEBE_LAY0_ATT_CTRL_REG0, 1);
+
+	nes_load(_aczdcr, sizeof(_aczdcr));
 }
 
 void loop()
 {
+	nes_loop();
+	delay(10);
 	// uint32_t val = irq_gpio_status(GPIOF_INT);
-	Serial.println("loop ");
+	// Serial.println("loop ");
 	// Serial.println(val);
+#ifdef USE_FREERTOS
 	vTaskDelay(1000 / portTICK_PERIOD_MS);
+#endif
 }
 
 #endif

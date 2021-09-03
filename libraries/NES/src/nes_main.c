@@ -40,9 +40,9 @@ void mymemset(void *s, u8 c, u32 count)
 		*xs++ = c;
 }
 
-extern u8 frame;  //nes帧计数器
+extern u8 frame;	//nes帧计数器
 u8 nes_frame_cnt; //nes帧计数器
-int MapperNo;	  //map编号
+int MapperNo;			//map编号
 int NES_scanline; //nes扫描线
 int VROM_1K_SIZE;
 int VROM_8K_SIZE;
@@ -56,7 +56,7 @@ NES_header *RomHeader; //rom文件头
 MAPPER *NES_Mapper;
 MapperCommRes *MAPx;
 
-u8 *spr_ram;   //精灵RAM,256字节
+u8 *spr_ram;	 //精灵RAM,256字节
 ppu_data *ppu; //ppu指针
 u8 *VROM_banks;
 u8 *VROM_tiles;
@@ -69,19 +69,19 @@ u16 *i2sbuf2; //音频缓冲帧,占用内存数 367*4 字节@22050Hz
 u16 num = 0;
 u8 *romfile; //nes文件指针,指向整个nes文件的起始地址.
 
-void NES_Palette_to_argb8888(void);
-extern __attribute__((aligned(1024))) unsigned int NES_BUFF[3][NES_DH][NES_DW];
+// void NES_Palette_to_argb8888(void);
+// extern __attribute__((aligned(1024))) unsigned short NES_BUFF[3][NES_DH][NES_DW];
 // extern uint32_t LCDbuff[480*272];
 
 //defe初始化+16位色变32位色
 void defe_color_init(void)
 {
 	//色彩变换
-	NES_Palette_to_argb8888();
+	// NES_Palette_to_argb8888();
 	//缩放
 	Defe_Init();
 	// Defe_Config((u32)(NES_BUFF[0]));
-	Defe_Config_argb8888_to_argb8888(NES_DW, NES_DH, 480, 272, NES_BUFF[0]);
+	// Defe_Config_argb8888_to_argb8888(NES_DW, NES_DH, 480, 272, NES_BUFF[0]);
 	// Defe_Config_argb8888_to_argb8888(NES_DW,NES_DH,LV_HOR_RES_MAX,LV_VER_RES_MAX,LCDbuff);
 	Defe_Start();
 }
@@ -106,7 +106,7 @@ u8 nes_load_rom(void)
 		RomHeader->flags_1 = p[6];
 		RomHeader->flags_2 = p[7];
 		if (RomHeader->flags_1 & 0x04)
-			p += 512;						  //有512字节的trainer:
+			p += 512;														//有512字节的trainer:
 		if (RomHeader->num_8k_vrom_banks > 0) //存在VROM,进行预解码
 		{
 			VROM_banks = p + 16 + (RomHeader->num_16k_rom_banks * 0x4000);
@@ -247,7 +247,7 @@ u8 nes_sram_malloc(u32 romsize)
 	{
 		NES_SRAM = mymalloc(SRAMIN, i * 4);
 		NES_RAM = mymalloc(SRAMIN, 0X800); //申请2K字节,必须1024字节对齐
-		if ((u32)NES_RAM % 1024)		   //不是1024字节对齐
+		if ((u32)NES_RAM % 1024)					 //不是1024字节对齐
 		{
 			myfree(SRAMIN, (void *)NES_RAM); //释放内存,然后重新尝试分配
 			myfree(SRAMIN, (void *)NES_SRAM);
@@ -268,7 +268,7 @@ u8 nes_sram_malloc(u32 romsize)
 	i2sbuf1 = mymalloc(SRAMIN, APU_PCMBUF_SIZE * 2);
 	i2sbuf2 = mymalloc(SRAMIN, APU_PCMBUF_SIZE * 2);
 	romfile = mymalloc(SRAMIN, romsize); //申请游戏rom空间,等于nes文件大小
-	while (romfile == NULL)				 //内存不够?释放主界面占用内存,再重新申请
+	while (romfile == NULL)							 //内存不够?释放主界面占用内存,再重新申请
 	{
 		printf("内存不足\r\n");
 
@@ -281,16 +281,16 @@ u8 nes_sram_malloc(u32 romsize)
 		return 1;
 	}
 
-	memset(NES_SRAM, 0, 0X2000);				  //清零
-	memset(RomHeader, 0, sizeof(NES_header));	  //清零
-	memset(NES_Mapper, 0, sizeof(MAPPER));		  //清零
-	memset(spr_ram, 0, 0X100);					  //清零
-	memset(ppu, 0, sizeof(ppu_data));			  //清零
-	memset(apu, 0, sizeof(apu_t));				  //清零
+	memset(NES_SRAM, 0, 0X2000);									//清零
+	memset(RomHeader, 0, sizeof(NES_header));			//清零
+	memset(NES_Mapper, 0, sizeof(MAPPER));				//清零
+	memset(spr_ram, 0, 0X100);										//清零
+	memset(ppu, 0, sizeof(ppu_data));							//清零
+	memset(apu, 0, sizeof(apu_t));								//清零
 	memset(wave_buffers, 0, APU_PCMBUF_SIZE * 2); //清零
-	memset(i2sbuf1, 0, APU_PCMBUF_SIZE * 2);	  //清零
-	memset(i2sbuf2, 0, APU_PCMBUF_SIZE * 2);	  //清零
-	memset(romfile, 0, romsize);				  //清零
+	memset(i2sbuf1, 0, APU_PCMBUF_SIZE * 2);			//清零
+	memset(i2sbuf2, 0, APU_PCMBUF_SIZE * 2);			//清零
+	memset(romfile, 0, romsize);									//清零
 	return 0;
 }
 //开始nes游戏
@@ -306,7 +306,7 @@ u8 nes_load_for_fat(s8 *pname)
 	UINT br;
 	u8 res = 0;
 	//defe初始化+16位色变32位色
-	defe_color_init();
+	// defe_color_init();
 	/////////////////////////////////////////后加
 	file = mymalloc(SRAMIN, sizeof(FIL));
 	if (file == 0)
@@ -324,7 +324,7 @@ u8 nes_load_for_fat(s8 *pname)
 	if (res == 0)
 	{
 		printf("初始化中 \r\n");
-		f_read(file, romfile, f_size(file), &br);				   //读取nes文件
+		f_read(file, romfile, f_size(file), &br);									 //读取nes文件
 		NESrom_crc32 = get_crc32(romfile + 16, f_size(file) - 16); //获取CRC32的值
 		printf("加载rom\r\n");
 		res = nes_load_rom(); //加载ROM
@@ -348,7 +348,7 @@ u8 nes_load_for_fat(s8 *pname)
 	printf("退出\r\n");
 	f_close(file);
 	myfree(SRAMIN, file); //释放内存
-	nes_sram_free();	  //释放内存
+	nes_sram_free();			//释放内存
 	return res;
 }
 u8 nes_xoff = 0; //显示在x轴方向的偏移量(实际显示宽度=256-2*nes_xoff)
@@ -367,7 +367,7 @@ u8 nes_load_for_ram(unsigned char *dat, int dat_len)
 	printf("Built-in [ROM]\r\n");
 	nes_key_init();
 	//defe初始化+16位色变32位色
-	defe_color_init();
+	// defe_color_init();
 	/////////////////////////////////////////后加
 	res = nes_sram_malloc(dat_len); //申请内存
 	memcpy(romfile, dat, dat_len);
@@ -409,9 +409,9 @@ void get_key(void)
 	PADdata0 = key1;
 	PADdata1 = key2;
 }
+int frame_count = 0, time = 0;
+u8 nes_frame = 0;
 //nes模拟器主循环
-extern int au_f; //thinpv
-// int au_f;
 void nes_emulate_frame(void)
 {
 	int frame_count = 0, time = 0;
@@ -466,13 +466,89 @@ void nes_emulate_frame(void)
 		//Display frame number
 		if ((millis() - time) > 1000)
 		{
-			printf("Frame=%d-AUDIO=%d\r\n", frame_count, au_f);
+			printf("Frame=%d-AUDIO=\r\n", frame_count);
 			frame_count = 0;
-			au_f = 0;
 			time = millis();
 		}
 		apu_soundoutput(); //Output game sound
 	}
+}
+
+u8 nes_load(unsigned char *dat, int dat_len)
+{
+	u8 res = 0;
+	printf("Built-in [ROM]\r\n");
+	nes_key_init();
+	res = nes_sram_malloc(dat_len); //申请内存
+	memcpy(romfile, dat, dat_len);
+	if (res == 0)
+	{
+		NESrom_crc32 = get_crc32(romfile + 16, dat_len - 16); //获取CRC32的值
+		res = nes_load_rom(); //加载ROM
+		if (res == 0)
+		{
+			printf("Load rom successfully\r\n");
+			cpu6502_init(); //初始化6502,并复位
+			Mapper_Init(); //map初始化
+			PPU_reset(); //ppu复位
+			apu_init(); //apu初始化
+		}
+	}
+	return res;
+}
+
+void nes_loop()
+{
+	// LINES 0-239
+	PPU_start_frame();
+
+	for (NES_scanline = 0; NES_scanline < 240; NES_scanline++)
+	{
+		run6502(113 * 256);
+		NES_Mapper->HSync(NES_scanline);
+		//Scan a line
+		if (nes_frame == 0)
+			scanline_draw(NES_scanline);
+		else
+			do_scanline_and_dont_draw(NES_scanline);
+	}
+	NES_scanline = 240;
+	run6502(113 * 256); //Run 1 line
+	NES_Mapper->HSync(NES_scanline);
+	start_vblank();
+	if (NMI_enabled())
+	{
+		cpunmi = 1;
+		run6502(7 * 256); //Operation interrupted
+	}
+	NES_Mapper->VSync();
+	// LINES 242-261
+	for (NES_scanline = 241; NES_scanline < 262; NES_scanline++)
+	{
+		run6502(113 * 256);
+		NES_Mapper->HSync(NES_scanline);
+	}
+	end_vblank();
+	get_key(); //Query USB every 3 frames
+
+	nes_frame_cnt++;
+	nes_frame++;
+	frame_count++;
+
+	//
+	if (nes_frame > NES_SKIP_FRAME)
+		nes_frame = 0; //Skip frame
+	if (system_task_return)
+		return; //TPAD返回
+
+	//Display frame number
+	if ((millis() - time) > 1000)
+	{
+		printf("Frame=%d-AUDIO=\r\n", frame_count);
+		frame_count = 0;
+		time = millis();
+	}
+	apu_soundoutput(); //Output game sound
 }
 //在6502.s里面被调用
 void debug_6502(u16 reg0, u8 reg1)
@@ -496,5 +572,18 @@ void nes_sound_close(void)
 
 void nes_apu_fill_buffer(int samples, u16 *wavebuf)
 {
-	audio_play_wav((u8 *)wavebuf, APU_PCMBUF_SIZE * 2); //thinpv
+	if (audio_play_callback)
+		audio_play_callback((u8 *)wavebuf, APU_PCMBUF_SIZE * 2);
+}
+
+video_run_func video_run_callback = NULL;
+void set_video_callback(video_run_func _video_run_callback)
+{
+	video_run_callback = _video_run_callback;
+}
+
+audio_play_func audio_play_callback = NULL;
+void set_audio_callback(audio_play_func _audio_play_callback)
+{
+	audio_play_callback = _audio_play_callback;
 }

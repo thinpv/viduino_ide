@@ -10,11 +10,13 @@ int FrameBuffer::begin(int width, int height, int bright)
 {
 	// fb_init(&framebuffer, width, height);
 	// fb_setbl(&framebuffer, bright);
-	LCDbuff = (unsigned short *)malloc(width * height * sizeof(uint16_t));
-	Sys_LCD_Init(width, height, (unsigned int *)LCDbuff, NULL);
-	this->width = width;
-	this->height = height;
+	fb_init(width, height);
 	return 1;
+}
+
+int begin(pixel_format *data, int width = 480, int height = 272, int bright = 100)
+{
+	fb_init_buffer(data, width, height);
 }
 
 void FrameBuffer::setBright(int bright)
@@ -22,66 +24,32 @@ void FrameBuffer::setBright(int bright)
 	// return fb_setbl(&framebuffer, bright);
 }
 
-void FrameBuffer::areaPresent(int x1, int x2, int y1, int y2, unsigned short *data)
+void FrameBuffer::areaPresent(int x, int y, int w, int h, pixel_format *data)
 {
-	uint16_t data_in_a_row = x2 - x1 + 1;
-	uint16_t size_of_row = data_in_a_row * sizeof(uint16_t);
-	for (int y = y1; y <= y2; y++)
-	{
-		memcpy(&LCDbuff[y * width + x1], data, size_of_row);
-		data += data_in_a_row;
-	}
+	fb_area_present(x, y, w, h, data);
 }
 
-void FrameBuffer::areaPresentX(int x1, int x2, int y1, int y2, unsigned short *data)
+void FrameBuffer::areaPresentX(int x, int y, int w, int h, pixel_format *data)
 {
-	uint16_t data_in_a_row = x2 - x1 + 1;
-	uint16_t size_of_row = data_in_a_row * sizeof(uint16_t);
-	int y11 = height - y2 - 1;
-	int y21 = height - y1 - 1;
-	for (int y = y21; y >= y11; y--)
-	{
-		memcpy(&LCDbuff[y * width + x1], data, size_of_row);
-		data += data_in_a_row;
-	}
+	fb_area_present_x(x, y, w, h, data);
 }
 
-void FrameBuffer::areaPresentY(int x1, int x2, int y1, int y2, unsigned short *data)
+void FrameBuffer::areaPresentY(int x, int y, int w, int h, pixel_format *data)
 {
-	int x11 = width - x2 - 1;
-	int x21 = width - x1 - 1;
-	for (int y = y1; y <= y2; y++)
-	{
-		for (int x = x21; x >= x11; x--)
-		{
-			LCDbuff[y * width + x] = *data;
-			data += 1;
-		}
-	}
+	fb_area_present_y(x, y, w, h, data);
 }
 
-void FrameBuffer::areaPresentXY(int x1, int x2, int y1, int y2, unsigned short *data)
+void FrameBuffer::areaPresentXY(int x, int y, int w, int h, pixel_format *data)
 {
-	int x11 = width - x2 - 1;
-	int x21 = width - x1 - 1;
-	int y11 = height - y2 - 1;
-	int y21 = height - y1 - 1;
-	for (int y = y21; y >= y11; y--)
-	{
-		for (int x = x21; x >= x11; x--)
-		{
-			LCDbuff[y * width + x] = *data;
-			data += 1;
-		}
-	}
+	fb_area_present_xy(x, y, w, h, data);
 }
 
-void FrameBuffer::pixelPresent(int x, int y, unsigned short data)
+void FrameBuffer::pixelPresent(int x, int y, pixel_format data)
 {
-	LCDbuff[y * width + x] = data;
+	fb_pixel_present(x, y, data);
 }
 
-unsigned short * FrameBuffer::getBuffer()
+pixel_format *FrameBuffer::getBuffer()
 {
-	return LCDbuff;
+	return fb_get_buffer();
 }

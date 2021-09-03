@@ -10,19 +10,15 @@ class FrameBuffer
 public:
 	FrameBuffer();
 	// ~FrameBuffer();
-	int begin(int width = 800, int height = 480, int bright = 100);
+	int begin(int width = 480, int height = 272, int bright = 100);
+	int begin(pixel_format *data, int width = 480, int height = 272, int bright = 100);
 	void setBright(int bright);
-	void areaPresent(int x1, int x2, int y1, int y2, unsigned short *color_p);
-	void areaPresentX(int x1, int x2, int y1, int y2, unsigned short *color_p);
-	void areaPresentY(int x1, int x2, int y1, int y2, unsigned short *color_p);
-	void areaPresentXY(int x1, int x2, int y1, int y2, unsigned short *color_p);
-	void pixelPresent(int x, int y, unsigned short data);
-	unsigned short * getBuffer();
-
-private:
-	int width;
-	int height;
-	unsigned short *LCDbuff;
+	void areaPresent(int x, int y, int w, int h, pixel_format *data);
+	void areaPresentX(int x, int y, int w, int h, pixel_format *data);
+	void areaPresentY(int x, int y, int w, int h, pixel_format *data);
+	void areaPresentXY(int x, int y, int w, int h, pixel_format *data);
+	void pixelPresent(int x, int y, pixel_format data);
+	pixel_format * getBuffer();
 };
 #endif
 

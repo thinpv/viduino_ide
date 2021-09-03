@@ -14,6 +14,10 @@
 #include <ccu.h>
 #include <debe.h>
 
+pixel_format *fb_buffer;
+int fb_width;
+int fb_height;
+
 /*---------------------------------------------------
 TCON interrupt
 ----------------------------------------------------*/
@@ -350,21 +354,92 @@ void F1C100S_LCD_Init(int width, int height, unsigned int *buff1, unsigned int *
 void LCD_IO_Init(void)
 {
 	int i = 0;
-	for (i = 0; i <= 21; i++)
+	for (i = 1; i <= 11; i++)
 	{
 		gpio_set_cfg(GPIOD, i, GPIO_FUNC_010);
 		gpio_set_pull(GPIOD, i, GPIO_PULL_NONE);
 		gpio_set_drv(GPIOD, i, GPIO_DRV_STRONG);
 	}
-	// GPIO_Congif(GPIOD, i, GPIO_Mode_010, GPIO_PuPd_NOPULL);
+	for (i = 13; i <= 21; i++)
+	{
+		gpio_set_cfg(GPIOD, i, GPIO_FUNC_010);
+		gpio_set_pull(GPIOD, i, GPIO_PULL_NONE);
+		gpio_set_drv(GPIOD, i, GPIO_DRV_STRONG);
+	}
 }
 
 /*
 LCD initialization
 */
 
-void Sys_LCD_Init(int width, int height, unsigned int *buff1, unsigned int *buff2)
+void fb_init(int width, int height)
 {
-	LCD_IO_Init();																 // IO initialization
-	F1C100S_LCD_Init(width, height, buff1, buff2); // TCON DEBE initialization
+	fb_width = width;
+	fb_height = height;
+	fb_buffer = (pixel_format *)malloc(width * height * sizeof(pixel_format));
+	LCD_IO_Init();																				 // IO initialization
+	F1C100S_LCD_Init(width, height, fb_buffer, fb_buffer); // TCON DEBE initialization
+}
+
+void fb_init_buffer(pixel_format *buffer, int width, int height)
+{
+	fb_width = width;
+	fb_height = height;
+	fb_buffer = buffer;
+	LCD_IO_Init();																				 // IO initialization
+	F1C100S_LCD_Init(width, height, fb_buffer, fb_buffer); // TCON DEBE initialization
+}
+
+void fb_area_present(int x, int y, int w, int h, pixel_format *data)
+{
+	uint16_t size_of_row = w * sizeof(pixel_format);
+	for (int i = y; i < y + h; i++)
+	{
+		memcpy(&fb_buffer[i * fb_width + x], data, size_of_row);
+		data += w;
+	}
+}
+
+void fb_area_present_x(int x, int y, int w, int h, pixel_format *data)
+{
+	uint16_t size_of_row = w * sizeof(pixel_format);
+	for (int i = fb_height - y - 1; i >= fb_height - y - h; i--)
+	{
+		memcpy(&fb_buffer[i * fb_width + x], data, size_of_row);
+		data += w;
+	}
+}
+
+void fb_area_present_y(int x, int y, int w, int h, pixel_format *data)
+{
+	for (int i = y; i < y + h; i++)
+	{
+		for (int j = fb_width - x - 1; j >= fb_width - x - w; j--)
+		{
+			fb_buffer[i * fb_width + j] = *data;
+			data += 1;
+		}
+	}
+}
+
+void fb_area_present_xy(int x, int y, int w, int h, pixel_format *data)
+{
+	for (int i = fb_height - y - 1; i >= fb_height - y - h; i--)
+	{
+		for (int j = fb_width - x - 1; j >= fb_width - x - w; j--)
+		{
+			fb_buffer[i * fb_width + j] = *data;
+			data += 1;
+		}
+	}
+}
+
+void fb_pixel_present(int x, int y, pixel_format data)
+{
+	fb_buffer[y * fb_width + x] = data;
+}
+
+pixel_format *fb_get_buffer()
+{
+	return fb_buffer;
 }
