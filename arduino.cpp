@@ -1,5 +1,6 @@
 #include "Arduino.h"
-#include <defe.h>
+#include <timer.h>
+#include <printf.h>
 
 #if 0
 
@@ -112,30 +113,32 @@ void loop()
 // #include <usb.h>
 // #include <usb_keyboard.h>
 
-#include <nes_main.h>
-#include <rom/zdcr.h> //dat bom
-#include <FrameBuffer.h>
+// #include <FrameBuffer.h>
 #include <audio.h>
-
-FrameBuffer framebuffer;
-
-void gpio_interrupt_handle()
-{
-	Serial.println("gpio_interrupt_handle");
-}
-
-void fb_run(int x, int y, int w, int h, pixel_format *data)
-{
-	Defe_conversion_buff((u32)data);
-	// framebuffer.areaPresent(x, y, w, h, data);
-}
-
+#include <defe.h>
+#include <fb.h>
 #include <io.h>
 #include <reg-debe.h>
+#include <stdlib.h>
+
+// FrameBuffer framebuffer;
+
+// #define NES
+
+#ifdef NES
+#include <nes_main.h>
+#include <rom/zdcr.h> //dat bom
+void fb_run(int x, int y, int w, int h, unsigned int *data)
+{
+	Defe_conversion_buff((u32)data, 0);
+	// framebuffer.areaPresent(x, y, w, h, data);
+}
+#endif
+
 void setup()
 {
-	Serial.begin(115200);
-	Serial.println("setup");
+	// Serial.begin(115200);
+	// Serial.println("setup");
 
 	// nofrendo_main(0, NULL);
 
@@ -150,25 +153,31 @@ void setup()
 	// gpio_set_pull(GPIOF, 2, GPIO_PULL_UP);
 	// attachInterrupt(24, gpio_interrupt_handle, FALLING);
 
-	FrameBuffer framebuffer;
-	framebuffer.begin(480, 272, 100);
-	Serial.println("audio_play_wav_init");
+	// FrameBuffer framebuffer;
+	// framebuffer.begin(480, 272, 100);
+	// Serial.println("audio_play_wav_init");
+#ifdef NES
+	fb_init(480, 272);
 	audio_play_wav_init();
 	set_video_callback(fb_run);
 	set_audio_callback(audio_play_wav);
-
 	Defe_Init();
-	Defe_Config_argb8888_to_argb8888(NES_DW, NES_DH, 480, 272, (int)framebuffer.getBuffer());
+	Defe_Config_argb8888_to_argb8888(NES_DW, NES_DH, 480, 272, (int)fb_get_buffer());
 	Defe_Start();
 	S_Bit(DEBE->DEBE_LAY0_ATT_CTRL_REG0, 1);
-
 	nes_load(_aczdcr, sizeof(_aczdcr));
+#endif
 }
 
 void loop()
 {
+#ifdef NES
 	nes_loop();
-	delay(10);
+#else
+	delay(1000);
+	printf("loop\r\n");
+#endif
+	// delay(10);
 	// uint32_t val = irq_gpio_status(GPIOF_INT);
 	// Serial.println("loop ");
 	// Serial.println(val);

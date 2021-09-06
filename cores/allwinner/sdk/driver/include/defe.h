@@ -1630,9 +1630,13 @@ void Defe_Init(void);
 void Defe_Demo(void);
 void Defe_Config(u32 src_addr);
 void Defe_Start(void);
-void Defe_conversion_buff(u32 src_addr);
+void Defe_conversion_buff(u32 src_addr, u32 src_addr2);
 void Defe_Config_video_uvcombined_yuv422_to_argb_x(int inx, int iny, int outx, int outy, int buff_y, int buff_c);
 void Defe_Config_argb8888_to_argb8888(int inx, int iny, int outx, int outy, int argb8888);
+
+void Defe_Config_video_uvcombined_yuv422_to_argb(int inx,int iny,int outx,int outy, int buff_y, int buff_c);
+void Defe_Config_yuv_to_argb(int in_format,int inw,int inh,int outw,int outh,unsigned char* inbuf_y,unsigned char* inbuf_c,unsigned char* outbuf_argb);
+void Defe_Config_yuv_to_argb_video(int in_format,int inw,int inh,int outw,int outh,unsigned char* inbuf_y,unsigned char* inbuf_c);
 
 
 #ifdef __cplusplus

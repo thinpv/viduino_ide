@@ -116,7 +116,8 @@ extern "C"
 	extern sys_pvFunPtr sysIrqHandlerTable[];
 
 	void irq_register(int32_t nIntTypeLevel, int32_t eIntNo, sys_pvFunPtr pvNewISR, uint8_t Priority);
-
+	void irq_enable(int32_t eIntNo);
+	void irq_disable(int32_t eIntNo);
 	void irq_init();
 	int32_t irq_handle();
 

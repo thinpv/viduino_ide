@@ -489,7 +489,7 @@ class ESPLoader(object):
                 # This workaround only works on revision 0 ESP32 chips,
                 # it exploits a silicon bug spurious watchdog reset.
                 time.sleep(0.6)  # allow watchdog reset to occur
-            time.sleep(0.05)
+            time.sleep(0.5)
             self._setDTR(False)  # IO0=HIGH, done
 
         for _ in range(5):
@@ -3614,7 +3614,6 @@ def main(custom_commandline=None):
             # the ESP is now running the loaded image, so let it run
             print('Exiting immediately.')
         elif args.after == 'hard_reset':
-            time.sleep(0.2)
             print('Hard resetting via RTS pin...')
             esp.hard_reset()
         elif args.after == 'soft_reset':

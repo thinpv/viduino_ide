@@ -97,6 +97,68 @@ sys_pvFunPtr sysFiqHandlerTable[] = {
 		F1C100S_Interrupt_Shell	 /* 40 */
 };
 
+void irq_enable(int32_t eIntNo)
+{
+	int en;
+	arm32_interrupt_disable();
+	if (eIntNo > 63)
+	{
+		printf("irq number too large");
+	}
+	else if (eIntNo >= 48)
+	{
+		en = eIntNo - 32;
+		S_Bit(INTC->INTC_EN_REG1, en); //Write interrupt enable
+	}
+	else if (eIntNo >= 32)
+	{
+		en = eIntNo - 32;
+		S_Bit(INTC->INTC_EN_REG1, en); //Write interrupt enable
+	}
+	else if (eIntNo >= 16)
+	{
+		en = eIntNo - 0;
+		S_Bit(INTC->INTC_EN_REG0, en); //Write interrupt enable
+	}
+	else if (eIntNo >= 1)
+	{
+		en = eIntNo - 0;
+		S_Bit(INTC->INTC_EN_REG0, en); //Write interrupt enable
+	}
+	arm32_interrupt_enable();
+}
+
+void irq_disable(int32_t eIntNo)
+{
+	int en;
+	arm32_interrupt_disable();
+	if (eIntNo > 63)
+	{
+		printf("irq number too large");
+	}
+	else if (eIntNo >= 48)
+	{
+		en = eIntNo - 32;
+		C_Bit(INTC->INTC_EN_REG1, en); //Write interrupt enable
+	}
+	else if (eIntNo >= 32)
+	{
+		en = eIntNo - 32;
+		C_Bit(INTC->INTC_EN_REG1, en); //Write interrupt enable
+	}
+	else if (eIntNo >= 16)
+	{
+		en = eIntNo - 0;
+		C_Bit(INTC->INTC_EN_REG0, en); //Write interrupt enable
+	}
+	else if (eIntNo >= 1)
+	{
+		en = eIntNo - 0;
+		C_Bit(INTC->INTC_EN_REG0, en); //Write interrupt enable
+	}
+	arm32_interrupt_enable();
+}
+
 void irq_register(int32_t nIntTypeLevel, int32_t eIntNo, sys_pvFunPtr pvNewISR, uint8_t Priority)
 {
 	int prio;

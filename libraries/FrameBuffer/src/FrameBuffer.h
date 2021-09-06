@@ -1,8 +1,8 @@
 #ifndef __FRAME_BUFFER_H_
 #define __FRAME_BUFFER_H_
 
-// #include "fb.h"
-#include <sys_lcd.h>
+#include <fb.h>
+// #include <sys_lcd.h>
 
 #ifdef __cplusplus
 class FrameBuffer

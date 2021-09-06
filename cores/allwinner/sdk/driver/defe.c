@@ -1811,6 +1811,228 @@ void Defe_Config_argb8888_to_argb8888(int inx, int iny, int outx, int outy, int 
 	DE_SCAL_Output_Select(0, 0); //out<0:debe0;  3:writeback>//Output selection
 	DE_SCAL_Set_Reg_Rdy(0);			 //Register has been set
 }
+/*********************************************************************************************
+DEFE配置
+配置video_yuv422_to_argb
+*********************************************************************************************/
+// extern unsigned char buff_y[720 * 576];
+// extern unsigned char buff_c[720 * 576];
+void Defe_Config_video_uvcombined_yuv422_to_argb(int inx, int iny, int outx, int outy, int buff_y, int buff_c)
+{
+	//-------------------------输入
+	__scal_buf_addr_t src_buf_addr;
+	__scal_scan_mod_t src_scan;
+	__scal_src_size_t src_size;
+	__scal_src_type_t src_type;
+	//-------------------------输出
+	__scal_buf_addr_t backaddr;
+	__scal_scan_mod_t out_scan;
+	__scal_out_type_t out_type;
+	__scal_out_size_t out_size;
+
+	//-------------------------------------------输入
+	src_scan.field = 0;	 //0:frame scan; 1:field scan
+	src_scan.bottom = 0; //0:top field; 1:bottom field
+	src_buf_addr.ch0_addr = (u32)buff_y;
+	src_buf_addr.ch1_addr = (u32)buff_c;
+	src_buf_addr.ch2_addr = 0;
+	src_size.src_width = inx;
+	src_size.src_height = iny;
+	src_size.x_off = 0;
+	src_size.y_off = 0;
+	src_size.scal_width = inx;
+	src_size.scal_height = iny;
+	src_type.sample_method = 0;
+	src_type.byte_seq = D0D1D2D3;
+	src_type.mod = DE_SCAL_UVCOMBINED; //平面UV混合
+	src_type.fmt = DE_SCAL_INYUV422;
+	src_type.ps = 0;
+	DE_SCAL_Config_Src(0, &src_buf_addr, &src_size, &src_type, 0, 0); //配置输入
+
+	//-------------------------------------------输出
+	out_scan.field = 0;									//0:frame scan; 1:field scan
+	out_scan.bottom = 0;								//0:top field; 1:bottom field
+	out_type.byte_seq = D3D2D1D0;				//0:D0D1D2D3; 1:D3D2D1D0
+	out_type.fmt = DE_SCAL_OUTI0RGB888; //0:plannar rgb888; 1: argb(byte0,byte1, byte2, byte3); 2:bgra; 4:yuv444; 5:yuv420; 6:yuv422; 7:yuv411
+	out_size.width = outx;
+	out_size.height = outy; //when ouput interlace enable,  the height is the 2x height of scale, for example, ouput is 480i, this value is 480
+	out_size.x_off = 0;
+	out_size.y_off = 0;
+	out_size.fb_width = outx;
+	out_size.fb_height = outy;
+
+	//	backaddr.ch0_addr=0;//一个地址
+	//	backaddr.ch1_addr=0;
+	//	backaddr.ch2_addr=0;
+	//	DE_SCAL_Set_Writeback_Addr_ex(0,&backaddr,&out_size,&out_type);
+	//	DE_SCAL_Set_Writeback_Addr(0,&backaddr);
+	//	DE_SCAL_Writeback_Enable(0);
+	DE_SCAL_Set_CSC_Coef(0, csc_bt601, csc_bt601, csc_YUV, csc_RGB, 0, 0); //颜色转换系数
+	DE_SCAL_Set_Scaling_Factor(0, &src_scan, &src_size, &src_type, &out_scan, &out_size, &out_type);
+	DE_SCAL_Set_Init_Phase(0, &src_scan, &src_size, &src_type, &out_scan, &out_size, &out_type, 0);
+	DE_SCAL_Set_Scaling_Coef(0, &src_scan, &src_size, &src_type, &out_scan, &out_size, &out_type, 0);
+	DE_SCAL_Set_Scaling_Coef_for_video(0, &src_scan, &src_size, &src_type, &out_scan, &out_size, &out_type, 0);
+	DE_SCAL_Set_Out_Format(0, &out_type);
+	DE_SCAL_Set_Out_Size(0, &out_scan, &out_type, &out_size);
+	//***********************************************************************************
+	//  S_BIT(DEFE_Base_Address+0X08,0);
+
+	DE_SCAL_Output_Select(0, 0); //out<0:debe0;  3:writeback>//输出选择
+	DE_SCAL_Set_Reg_Rdy(0);			 //寄存器已设置好
+}
+/*********************************************************************************************
+DEFE配置
+硬转MB32-YUV格式到ARGB8888格式
+*********************************************************************************************/
+void Defe_Config_yuv_to_argb(int in_format, int inw, int inh, int outw, int outh, unsigned char *inbuf_y, unsigned char *inbuf_c, unsigned char *outbuf_argb)
+{
+	int DEFE_BACK = 1;
+	__s32 i = 0;
+	//-------------------------输入
+	__scal_buf_addr_t src_buf_addr;
+	__scal_scan_mod_t src_scan;
+	__scal_src_size_t src_size;
+	__scal_src_type_t src_type;
+	//-------------------------输出
+	__scal_buf_addr_t backaddr;
+	__scal_scan_mod_t out_scan;
+	__scal_out_type_t out_type;
+	__scal_out_size_t out_size;
+	//-------------------------复位
+	DE_SCAL_Reset(0);
+	//-------------------------------------------输入
+	src_scan.field = 0;	 //0:frame scan; 1:field scan
+	src_scan.bottom = 0; //0:top field; 1:bottom field
+	src_buf_addr.ch0_addr = (u32)inbuf_y;
+	src_buf_addr.ch1_addr = (u32)inbuf_c;
+	src_buf_addr.ch2_addr = 0;
+	src_size.src_width = inw;
+	src_size.src_height = inh;
+	src_size.x_off = 0;
+	src_size.y_off = 0;
+	src_size.scal_width = inw;
+	src_size.scal_height = inh;
+	src_type.sample_method = 0;
+	src_type.byte_seq = D0D1D2D3;
+	src_type.mod = DE_SCAL_UVCOMBINEDMB;															//平面UV混合带基线
+	src_type.fmt = in_format;																					//
+	src_type.ps = 0;																									//UV顺序 In UV combined data mode: (UV component)00: V1U1V0U0 01: U1V1U0V0
+	DE_SCAL_Config_Src(0, &src_buf_addr, &src_size, &src_type, 0, 0); //配置输入
+
+	//-------------------------------------------输出
+	out_scan.field = 0;									//0:frame scan; 1:field scan
+	out_scan.bottom = 0;								//0:top field; 1:bottom field
+	out_type.byte_seq = D3D2D1D0;				//0:D0D1D2D3; 1:D3D2D1D0
+	out_type.fmt = DE_SCAL_OUTI0RGB888; //0:plannar rgb888; 1: argb(byte0,byte1, byte2, byte3); 2:bgra; 4:yuv444; 5:yuv420; 6:yuv422; 7:yuv411
+	out_size.width = outw;
+	out_size.height = outh; //when ouput interlace enable,  the height is the 2x height of scale, for example, ouput is 480i, this value is 480
+	out_size.x_off = 0;
+	out_size.y_off = 0;
+	out_size.fb_width = outw;
+	out_size.fb_height = outh;
+
+	if (DEFE_BACK == 1)
+	{
+		backaddr.ch0_addr = (u32)outbuf_argb; //一个地址
+		backaddr.ch1_addr = 0;
+		backaddr.ch2_addr = 0;
+		DE_SCAL_Set_Writeback_Addr_ex(0, &backaddr, &out_size, &out_type);
+		DE_SCAL_Set_Writeback_Addr(0, &backaddr);
+		DE_SCAL_Writeback_Enable(0);
+	}
+
+	DE_SCAL_Set_CSC_Coef(0, csc_bt601, csc_bt601, csc_YUV, csc_RGB, 0, 0); //颜色转换系数
+	DE_SCAL_Set_Scaling_Factor(0, &src_scan, &src_size, &src_type, &out_scan, &out_size, &out_type);
+	DE_SCAL_Set_Init_Phase(0, &src_scan, &src_size, &src_type, &out_scan, &out_size, &out_type, 0);
+	DE_SCAL_Set_Scaling_Coef(0, &src_scan, &src_size, &src_type, &out_scan, &out_size, &out_type, 0);
+	//  DE_SCAL_Set_Scaling_Coef_for_video(0,&src_scan,&src_size,&src_type,  &out_scan,&out_size,&out_type,0);
+	DE_SCAL_Set_Out_Format(0, &out_type);
+	DE_SCAL_Set_Out_Size(0, &out_scan, &out_type, &out_size);
+	//***********************************************************************************
+	//  S_BIT(DEFE_Base_Address+0X08,0);
+	//	if(DEFE_BACK==1)
+	DE_SCAL_Output_Select(0, 3); //out<0:debe0;  3:writeback>//输出选择
+															 //	else
+															 //		DE_SCAL_Output_Select(0,0);//out<0:debe0;  3:writeback>//输出选择
+	DE_SCAL_Set_Reg_Rdy(0);			 //寄存器已设置好
+	//开始
+	DE_SCAL_Start(0);
+	//等待完成
+	//sysprintf("wait defe end...\r\n");
+	while (i < 500)
+	{
+		//等待
+		// Defe_Other_tasks();
+
+		if (DE_SCAL_QueryINT(0) & Wb_end)
+		{
+			DE_SCAL_ClearINT(0, Wb_end); //write 1 to clear
+			//sysprintf("转码完成...\r\n");
+			break;
+		}
+		i++;
+	}
+}
+
+/*********************************************************************************************
+DEFE配置
+配置MB32-YUV到ARGB8888-视频播放使用
+*********************************************************************************************/
+void Defe_Config_yuv_to_argb_video(int in_format, int inw, int inh, int outw, int outh, unsigned char *inbuf_y, unsigned char *inbuf_c)
+{
+	//-------------------------输入
+	__scal_buf_addr_t src_buf_addr;
+	__scal_scan_mod_t src_scan;
+	__scal_src_size_t src_size;
+	__scal_src_type_t src_type;
+	//-------------------------输出
+	__scal_scan_mod_t out_scan;
+	__scal_out_type_t out_type;
+	__scal_out_size_t out_size;
+	//-------------------------------------------输入
+	src_scan.field = 0;	 //0:frame scan; 1:field scan
+	src_scan.bottom = 0; //0:top field; 1:bottom field
+	src_buf_addr.ch0_addr = (u32)inbuf_y;
+	src_buf_addr.ch1_addr = (u32)inbuf_c;
+	src_buf_addr.ch2_addr = 0;
+	src_size.src_width = inw;
+	src_size.src_height = inh;
+	src_size.x_off = 0;
+	src_size.y_off = 0;
+	src_size.scal_width = inw;
+	src_size.scal_height = inh;
+	src_type.sample_method = 0;
+	src_type.byte_seq = D0D1D2D3;
+	src_type.mod = DE_SCAL_UVCOMBINEDMB; //平面UV混合带基线
+	src_type.fmt = in_format;
+	src_type.ps = 0;																									//UV顺序 In UV combined data mode: (UV component)00: V1U1V0U0 01: U1V1U0V0
+	DE_SCAL_Config_Src(0, &src_buf_addr, &src_size, &src_type, 0, 0); //配置输入
+
+	//-------------------------------------------输出
+	out_scan.field = 0;									//0:frame scan; 1:field scan
+	out_scan.bottom = 0;								//0:top field; 1:bottom field
+	out_type.byte_seq = D3D2D1D0;				//0:D0D1D2D3; 1:D3D2D1D0
+	out_type.fmt = DE_SCAL_OUTI0RGB888; //0:plannar rgb888; 1: argb(byte0,byte1, byte2, byte3); 2:bgra; 4:yuv444; 5:yuv420; 6:yuv422; 7:yuv411
+	out_size.width = outw;
+	out_size.height = outh; //when ouput interlace enable,  the height is the 2x height of scale, for example, ouput is 480i, this value is 480
+	out_size.x_off = 0;
+	out_size.y_off = 0;
+	out_size.fb_width = outw;
+	out_size.fb_height = outh;
+
+	DE_SCAL_Set_CSC_Coef(0, csc_bt601, csc_bt601, csc_YUV, csc_RGB, 0, 0); //颜色转换系数
+	DE_SCAL_Set_Scaling_Factor(0, &src_scan, &src_size, &src_type, &out_scan, &out_size, &out_type);
+	DE_SCAL_Set_Init_Phase(0, &src_scan, &src_size, &src_type, &out_scan, &out_size, &out_type, 0);
+	DE_SCAL_Set_Scaling_Coef(0, &src_scan, &src_size, &src_type, &out_scan, &out_size, &out_type, 0);
+	DE_SCAL_Set_Scaling_Coef_for_video(0, &src_scan, &src_size, &src_type, &out_scan, &out_size, &out_type, 0);
+	DE_SCAL_Set_Out_Format(0, &out_type);
+	DE_SCAL_Set_Out_Size(0, &out_scan, &out_type, &out_size);
+	//***********************************************************************************
+	DE_SCAL_Output_Select(0, 0); //out<0:debe0;  3:writeback>//输出选择
+	DE_SCAL_Set_Reg_Rdy(0);			 //寄存器已设置好
+	//开始
+	DE_SCAL_Start(0);
+}
 /*
 Configure video_argb_to_argb
 */
@@ -1821,11 +2043,11 @@ Configure video_argb_to_argb
 /*********************************************************************************************
 DEFE switch cache
 *********************************************************************************************/
-void Defe_conversion_buff(u32 src_addr)
+void Defe_conversion_buff(u32 src_addr, u32 src_addr2)
 {
 	__scal_buf_addr_t src_buf_addr;
 	src_buf_addr.ch0_addr = src_addr;
-	src_buf_addr.ch1_addr = 0;
+	src_buf_addr.ch1_addr = src_addr2;
 	src_buf_addr.ch2_addr = 0;
 	DE_SCAL_Set_Fb_Addr(0, &src_buf_addr);
 	DE_SCAL_Set_Reg_Rdy(0); //Register has been set

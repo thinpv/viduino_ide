@@ -11,12 +11,13 @@ int FrameBuffer::begin(int width, int height, int bright)
 	// fb_init(&framebuffer, width, height);
 	// fb_setbl(&framebuffer, bright);
 	fb_init(width, height);
-	return 1;
+	return 0;
 }
 
 int begin(pixel_format *data, int width = 480, int height = 272, int bright = 100)
 {
 	fb_init_buffer(data, width, height);
+	return 0;
 }
 
 void FrameBuffer::setBright(int bright)

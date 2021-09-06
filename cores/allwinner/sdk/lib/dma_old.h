@@ -1,5 +1,5 @@
-#ifndef __DMA_ALLOC_H__
-#define __DMA_ALLOC_H__
+#ifndef __DMA_H__
+#define __DMA_H__
 
 #ifdef __cplusplus
 extern "C" {
@@ -24,4 +24,4 @@ void do_init_dma_pool(void);
 }
 #endif
 
-#endif /* __DMA_ALLOC_H__ */
+#endif /* __DMA_H__ */

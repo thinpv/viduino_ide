@@ -1,109 +1,145 @@
-#ifndef __FB_H__
-#define __FB_H__
+#ifndef __SYS_LCD_H__
+#define __SYS_LCD_H__
+
+// #include "sys_types.h"
+#include <types.h>
+
+//����LCD
+#define LCD_TYPE_RGB43_480_272
+//#define LCD_TYPE_RGB43_800_480
+//#define LCD_TYPE_Vga_1024_768
+//#define LCD_TYPE_Vga_640_480_60HZ
+//#define  LCD_TYPE_Vga_640_480_75HZ
+//#define  LCD_TYPE_TV_PAL_720_576
+
+typedef unsigned short pixel_format;
+
+//-------------------------------------------
+#ifdef LCD_TYPE_TV_PAL_720_576
+#define XSIZE_PHYS (unsigned int)720
+#define YSIZE_PHYS (unsigned int)576
+#endif
+//-------------------------------------------
+#ifdef LCD_TYPE_RGB43_480_272
+#define XSIZE_PHYS (unsigned int)480
+#define YSIZE_PHYS (unsigned int)272
+#endif
+//-------------------------------------------
+#ifdef LCD_TYPE_RGB43_800_480
+#define XSIZE_PHYS (unsigned int)800
+#define YSIZE_PHYS (unsigned int)480
+#endif
+//-------------------------------------------
+#ifdef LCD_TYPE_Vga_1024_768
+#define XSIZE_PHYS (unsigned int)1024
+#define YSIZE_PHYS (unsigned int)768
+#endif
+//-------------------------------------------
+#ifdef LCD_TYPE_Vga_640_480_75HZ
+#define XSIZE_PHYS (unsigned int)640
+#define YSIZE_PHYS (unsigned int)480
+#endif
+//-------------------------------------------
+#ifdef LCD_TYPE_Vga_640_480_60HZ
+#define XSIZE_PHYS (unsigned int)640
+#define YSIZE_PHYS (unsigned int)480
+#endif
+//-------------------------------------------
 
 #ifdef __cplusplus
 extern "C"
 {
 #endif
 
-#include <stdint.h>
-#include <types.h>
+/*******************************常用色定义****************/
+#define WHITE 0xFFFF
+#define BLACK 0x0000
+#define BLUE 0x001F //蓝
+#define BRED 0XF81F
+#define GRED 0XFFE0
+#define GBLUE 0X07FF
+#define RED 0xF800
+#define MAGENTA 0xF81F
+#define GREEN 0x07E0
+#define CYAN 0x7FFF
+#define YELLOW 0xFFE0
+#define BROWN 0XBC40		 //棕色
+#define BRRED 0XFC07		 //棕红色
+#define GRAY 0X8430			 //灰色
+#define DARKBLUE 0X01CF	 //深蓝色
+#define LIGHTBLUE 0X7D7C //浅蓝色
+#define GRAYBLUE 0X5458	 //灰蓝色
+												 /********************************************************/
 
-	typedef enum
+#define TCON_Base_Address (u32_t)0x01c0c000
+#define CCU_Base_Address (u32_t)0x01C20000
+#define CCU_TCON_CLK_REG (u32_t) CCU_Base_Address + 0x0118
+#define CCU_BUS_SOFT_RST_REG0 (u32_t) CCU_Base_Address + 0x02C0
+#define CCU_BUS_SOFT_RST_REG1 (u32_t) CCU_Base_Address + 0x02C4
+#define CCU_BUS_CLK_GATING_REG0 (u32_t) CCU_Base_Address + 0x0060
+#define CCU_BUS_CLK_GATING_REG1 (u32_t) CCU_Base_Address + 0x0064
+#define DMA_Base_Address (u32_t)0x01C02000
+#define DEBE_Base_Address (u32_t)0x01E60000
+#define DEFE_Base_Address (u32_t)0x01E00000
+
+	struct fb_f1c100s_pdata_t
 	{
-		PIXEL_FORMAT_ARGB32 = 0,
-		PIXEL_FORMAT_RGB24 = 1,
-		PIXEL_FORMAT_A8 = 2,
-		PIXEL_FORMAT_A1 = 3,
-		PIXEL_FORMAT_RGB16_565 = 4,
-		PIXEL_FORMAT_RGB30 = 5,
-	} pixel_format_t;
+		virtual_addr_t virtdefe;
+		virtual_addr_t virtdebe;
+		virtual_addr_t virttcon;
 
-	typedef struct
-	{
-		uint8_t b;
-		uint8_t g;
-		uint8_t r;
-		uint8_t a;
-	} color_format_t;
+		int mode;
+		int width;
+		int height;
+		int pwidth;
+		int pheight;
+		int bits_per_pixel;
+		int bytes_per_pixel;
+		int index;
+		void *vram[2];
 
-	// typedef union
-	// {
-	// 	uint16_t data;
-	// 	struct
-	// 	{
-	// 		uint8_t r:5;
-	// 		uint8_t g:6;
-	// 		uint8_t b:5;
-	// 	} rgb;
-	// } color_format_t;
+		struct
+		{
+			int pixel_clock_hz;
+			int h_front_porch;
+			int h_back_porch;
+			int h_sync_len;
+			int v_front_porch;
+			int v_back_porch;
+			int v_sync_len;
+			int h_sync_active;
+			int v_sync_active;
+			int den_active;
+			int clk_active;
+		} timing;
+	};
 
-	typedef struct render_st
-	{
-		/* The width of render */
-		uint32_t width;
+	extern struct fb_f1c100s_pdata_t *lcd_pdat;
 
-		/* The height of render */
-		uint32_t height;
+	extern pixel_format *fb_buffer;
+	extern int fb_width;
+	extern int fb_height;
 
-		/* The pitch of one scan line */
-		uint32_t pitch;
+	// void Sys_LCD_Init(int width, int height, unsigned int *buff1, unsigned int *buff2);
+	void F1C100S_LCD_Init(int width, int height, unsigned int *buff1, unsigned int *buff2);
+	void YUV_OUT_Enable(char mode);
+	void Wait_tcon_te(void);
 
-		/* Pixel format */
-		pixel_format_t format;
+	void fb_init(int width, int height);
+	void fb_init_buffer(pixel_format *buffer, int width, int height);
+	void fb_clear(pixel_format data);
+	void fb_area_present(int x, int y, int w, int h, pixel_format *data);
+	void fb_area_present_x(int x, int y, int w, int h, pixel_format *data);
+	void fb_area_present_y(int x, int y, int w, int h, pixel_format *data);
+	void fb_area_present_xy(int x, int y, int w, int h, pixel_format *data);
+	void fb_pixel_present(int x, int y, pixel_format data);
+	pixel_format *fb_get_buffer();
+	void fb_area_present_888(int x, int y, int w, int h, uint32_t *data);//untest
 
-		/* Pixel data */
-		void *pixels;
-
-		/* Pixel data length */
-		size_t pixlen;
-
-		/* Private data */
-		void *priv;
-	} render_t;
-
-	typedef struct framebuffer_st
-	{
-		/* Framebuffer name */
-		char *name;
-
-		/* The width and height in pixel */
-		int32_t width, height;
-
-		/* The physical size in millimeter */
-		int32_t pwidth, pheight;
-
-		/* The bit per pixel */
-		int32_t bpp;
-
-		/* Alone render - create by register */
-		render_t *alone;
-
-		/* Private data */
-		void *priv;
-	} framebuffer_t;
-
-	void fb_setbl(framebuffer_t *fb, int32_t brightness);
-	int32_t fb_getbl(framebuffer_t *fb);
-
-	render_t *fb_create(framebuffer_t *fb);
-
-	void fb_destroy(framebuffer_t *fb, render_t *render);
-
-	// void fb_present(framebuffer_t *fb, render_t *render);
-	// void fb_area_present(framebuffer_t *fb, uint16_t x1, uint16_t x2, uint16_t y1, uint16_t y2, uint32_t *data);
-	// void fb_pixel_present(framebuffer_t *fb, uint16_t x, uint16_t y, uint32_t data);
-
-	// void fb_init(framebuffer_t *fb, int32_t width, int32_t height);
-
-	void fb_remove(framebuffer_t *fb);
-
-	void fb_suspend(framebuffer_t *fb);
-
-	void fb_resume(framebuffer_t *fb);
+	void swap_r_b(uint8_t enable);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* __FB_H__ */
+#endif
