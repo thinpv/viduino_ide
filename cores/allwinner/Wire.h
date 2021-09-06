@@ -33,7 +33,7 @@ class TwoWire : public Stream
     TwoWire();
     TwoWire(I2CPinDescription* i2c);
     void begin();
-    void begin(uint8_t);
+    void begin(uint32_t);
     void begin(int);
     void end();
     void setClock(uint32_t);

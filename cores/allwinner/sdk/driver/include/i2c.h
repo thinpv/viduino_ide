@@ -47,7 +47,7 @@ extern "C"
 	} i2c_event_t;
 	/////
 
-	int i2c_init(I2C_Type *i2c, uint32_t rate);
+	int i2c_init(I2C_Type *i2c);
 	void i2c_set_frequency(I2C_Type *i2c, u64_t rate);
 	int i2c_wait_status(I2C_Type *i2c);
 	int i2c_start(I2C_Type *i2c);

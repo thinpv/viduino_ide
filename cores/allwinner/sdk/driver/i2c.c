@@ -64,7 +64,7 @@ void i2c_set_frequency(I2C_Type *i2c, u64_t rate)
 	i2c->TWI_CCR_REG = ((tm & 0xf) << 3) | ((tn & 0x7) << 0);
 }
 
-int i2c_init(I2C_Type *i2c, uint32_t rate)
+int i2c_init(I2C_Type *i2c)
 {
 	if (i2c == I2C0)
 		ccu_reset(RESET_I2C0, true);
@@ -75,7 +75,6 @@ int i2c_init(I2C_Type *i2c, uint32_t rate)
 
 	i2c->TWI_SRST_REG = 1 << 0;
 	i2c->TWI_SRST_REG = 0 << 0;
-	i2c_set_frequency(i2c, rate);
 	i2c->TWI_ADDR_REG = 0;
 	i2c->TWI_XADDR_REG = 0;
 	i2c->TWI_CNTR_REG = (1 << 6) | (1 << 4);

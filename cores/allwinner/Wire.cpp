@@ -39,6 +39,11 @@ TwoWire::TwoWire(I2CPinDescription *i2c) : i2c(i2c)
 
 void TwoWire::begin(void)
 {
+	begin(100000);
+}
+
+void TwoWire::begin(uint32_t frequency)
+{
 	rxBufferIndex = 0;
 	rxBufferLength = 0;
 
@@ -55,20 +60,14 @@ void TwoWire::begin(void)
 		gpio_set_cfg(i2c->pintype[1].P, i2c->pintype[1].num, i2c->pintype[1].type);
 		gpio_set_pull(i2c->pintype[0].P, i2c->pintype[0].num, GPIO_PULL_UP);
 		gpio_set_pull(i2c->pintype[1].P, i2c->pintype[1].num, GPIO_PULL_UP);
-
-		i2c_init(i2c->I, 400000);
+		i2c_init(i2c->I);
+		i2c_set_frequency(i2c->I, frequency);
 	}
 }
 
-void TwoWire::begin(uint8_t address)
+void TwoWire::begin(int frequency)
 {
-	begin();
-	i2c_set_frequency(i2c->I, address);
-}
-
-void TwoWire::begin(int address)
-{
-	begin((uint8_t)address);
+	begin((uint32_t)frequency);
 }
 
 void TwoWire::end(void)
@@ -381,13 +380,8 @@ void TwoWire::scan(int start, int end)
 	uint8_t temp;
 	for (int addr = start; addr < end; ++addr)
 	{
-		// int ret = i2c_p->writeto(self, addr, NULL, 0, true);
-		// printf("find %x\n",addr);
-		// int ret = readTransmission(addr,&temp, 1, 1);
-		// printf("ret:%x\n",ret);
 		beginTransmission(addr);
 		int ret = endTransmission(true);
-		// printf("ret:%x\n",ret);
 		if (ret == 0)
 		{
 			Serial.print("SCAN Find device: 0x");
