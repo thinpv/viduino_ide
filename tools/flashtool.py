@@ -226,7 +226,7 @@ class ESPLoader(object):
     # Maximum block sized for RAM and Flash writes, respectively.
     ESP_RAM_BLOCK   = 0x1800
 
-    FLASH_WRITE_SIZE = 0x400
+    FLASH_WRITE_SIZE = 0x4000
 
     # Default baudrate. The ROM auto-bauds, so we can use more or less whatever we want.
     ESP_ROM_BAUD    = 115200
@@ -3520,6 +3520,7 @@ def main(custom_commandline=None):
     expand_file_arguments()
 
     args = parser.parse_args(custom_commandline)
+    args.no_stub = True #remove --no-stub flag
 
     # print('esptool.py v%s' % __version__)
 
