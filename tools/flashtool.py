@@ -317,7 +317,7 @@ class ESPLoader(object):
                     # don't connect a second time
                     inst = cls(detect_port._port, baud, trace_enabled=trace_enabled)
                     inst._post_connect()
-                    print(' %s' % inst.CHIP_NAME, end='')
+                    # print(' %s' % inst.CHIP_NAME, end='')
                     return inst
         except UnsupportedCommandError:
             raise FatalError("Unsupported Command Error received. Probably this means Secure Download Mode is enabled, "
@@ -327,10 +327,12 @@ class ESPLoader(object):
         raise FatalError("Unexpected CHIP magic value 0x%08x. Failed to autodetect chip type." % (chip_magic_value))
 
     """ Read a SLIP packet from the serial port """
+
     def read(self):
         return next(self._slip_reader)
 
     """ Write bytes to the serial port while performing SLIP escaping """
+
     def write(self, packet):
         buf = b'\xc0' \
               + (packet.replace(b'\xdb', b'\xdb\xdd').replace(b'\xc0', b'\xdb\xdc')) \
@@ -362,6 +364,7 @@ class ESPLoader(object):
         return state
 
     """ Send a request and read the response """
+
     def command(self, op=None, data=b"", chk=0, wait_response=True, timeout=DEFAULT_TIMEOUT):
         saved_timeout = self._port.timeout
         new_timeout = min(timeout, MAX_TIMEOUT)
@@ -489,7 +492,7 @@ class ESPLoader(object):
                 # This workaround only works on revision 0 ESP32 chips,
                 # it exploits a silicon bug spurious watchdog reset.
                 time.sleep(0.6)  # allow watchdog reset to occur
-            time.sleep(0.5)
+            time.sleep(0.8)
             self._setDTR(False)  # IO0=HIGH, done
 
         for _ in range(5):
@@ -565,6 +568,7 @@ class ESPLoader(object):
         return val
 
     """ Write to memory address in target """
+
     def write_reg(self, addr, value, mask=0xFFFFFFFF, delay_us=0, delay_after_us=0):
         command = struct.pack('<IIII', addr, value, mask, delay_us)
         if delay_after_us > 0:
@@ -588,6 +592,7 @@ class ESPLoader(object):
         return val
 
     """ Start downloading an application image to RAM """
+
     def mem_begin(self, size, blocks, blocksize, offset):
         if self.IS_STUB:  # check we're not going to overwrite a running stub with this data
             stub = self.STUB_CODE
@@ -605,12 +610,14 @@ class ESPLoader(object):
                                   struct.pack('<IIII', size, blocks, blocksize, offset))
 
     """ Send a block of an image to RAM """
+
     def mem_block(self, data, seq):
         return self.check_command("write to target RAM", self.ESP_MEM_DATA,
                                   struct.pack('<IIII', len(data), seq, 0, 0) + data,
                                   self.checksum(data))
 
     """ Leave download mode and run the application """
+
     def mem_finish(self, entrypoint=0):
         # Sending ESP_MEM_END usually sends a correct response back, however sometimes
         # (with ROM loader) the executed code may reset the UART or change the baud rate
@@ -630,6 +637,7 @@ class ESPLoader(object):
 
     Returns number of blocks (of size self.FLASH_WRITE_SIZE) to write.
     """
+
     def flash_begin(self, size, offset, begin_rom_encrypted=False):
         num_blocks = (size + self.FLASH_WRITE_SIZE - 1) // self.FLASH_WRITE_SIZE
         erase_size = self.get_erase_size(offset, size)
@@ -650,6 +658,7 @@ class ESPLoader(object):
         return num_blocks
 
     """ Write block to flash """
+
     def flash_block(self, data, seq, timeout=DEFAULT_TIMEOUT):
         self.check_command("write to target Flash after seq %d" % seq,
                            self.ESP_FLASH_DATA,
@@ -658,6 +667,7 @@ class ESPLoader(object):
                            timeout=timeout)
 
     """ Encrypt before writing to flash """
+
     def flash_encrypt_block(self, data, seq, timeout=DEFAULT_TIMEOUT):
         if isinstance(self, (ESP32S2ROM, ESP32C3ROM)) and not self.IS_STUB:
             # ROM support performs the encrypted writes via the normal write command,
@@ -671,18 +681,21 @@ class ESPLoader(object):
                            timeout=timeout)
 
     """ Leave flash mode and run/reboot """
+
     def flash_finish(self, reboot=False):
         pkt = struct.pack('<I', int(not reboot))
         # stub sends a reply to this command
         self.check_command("leave Flash mode", self.ESP_FLASH_END, pkt)
 
     """ Run application code in flash """
+
     def run(self, reboot=False):
         # Fake flash begin immediately followed by flash end
         self.flash_begin(0, 0)
         self.flash_finish(reboot)
 
     """ Read SPI flash manufacturer and device id """
+
     def flash_id(self):
         SPIFLASH_RDID = 0x9F
         return self.run_spiflash_command(SPIFLASH_RDID, b"", 24)
@@ -1288,7 +1301,6 @@ class ESP32ROM(ESPLoader):
     """ Try to read the BLOCK1 (encryption key) and check if it is valid """
 
     def is_flash_encryption_key_valid(self):
-
         """ Bit 0 of efuse_rd_disable[3:0] is mapped to BLOCK1
         this bit is at position 16 in EFUSE_BLK0_RDATA0_REG """
         word0 = self.read_efuse(0)
@@ -1953,6 +1965,7 @@ def LoadFirmwareImage(chip, filename):
 class ImageSegment(object):
     """ Wrapper class for a segment in an ESP image
     (very similar to a section in an ELFImage also) """
+
     def __init__(self, addr, data, file_offs=None):
         self.addr = addr
         self.data = data
@@ -1991,6 +2004,7 @@ class ImageSegment(object):
 class ELFSection(ImageSegment):
     """ Wrapper class for a section in an ELF image, has a section
     name as well as the common properties of an ImageSegment. """
+
     def __init__(self, name, addr, data):
         super(ELFSection, self).__init__(addr, data)
         self.name = name.decode("utf-8")
@@ -2004,6 +2018,7 @@ class BaseFirmwareImage(object):
     SHA256_DIGEST_LEN = 32
 
     """ Base class with common firmware image functions """
+
     def __init__(self):
         self.segments = []
         self.entrypoint = 0
@@ -2720,6 +2735,7 @@ class HexFormatter(object):
     printed as separately indented lines, with ASCII decoding at the end
     of each line.
     """
+
     def __init__(self, binary_string, auto_split=True):
         self._s = binary_string
         self._auto_split = auto_split
@@ -2752,6 +2768,7 @@ class FatalError(RuntimeError):
     Wrapper class for runtime errors that aren't caused by internal bugs, but by
     ESP8266 responses or input content.
     """
+
     def __init__(self, message):
         RuntimeError.__init__(self, message)
 
@@ -2770,6 +2787,7 @@ class NotImplementedInROMError(FatalError):
     Wrapper class for the error thrown when a particular ESP bootloader function
     is not implemented in the ROM bootloader.
     """
+
     def __init__(self, bootloader, func):
         FatalError.__init__(self, "%s ROM does not support function %s." % (bootloader.CHIP_NAME, func.__name__))
 
@@ -2790,6 +2808,7 @@ class UnsupportedCommandError(RuntimeError):
 
     Usually this indicates the loader is running in Secure Download Mode.
     """
+
     def __init__(self, esp, op):
         if esp.secure_download_mode:
             msg = "This command (0x%x) is not supported in Secure Download Mode" % op
@@ -3502,7 +3521,7 @@ def main(custom_commandline=None):
 
     args = parser.parse_args(custom_commandline)
 
-    print('esptool.py v%s' % __version__)
+    # print('esptool.py v%s' % __version__)
 
     # operation function can take 1 arg (args), 2 args (esp, arg)
     # or be a member function of the ESPLoader class.
@@ -3562,10 +3581,11 @@ def main(custom_commandline=None):
         if esp.secure_download_mode:
             print("Chip is %s in Secure Download Mode" % esp.CHIP_NAME)
         else:
-            print("Chip is %s" % (esp.get_chip_description()))
-            print("Features: %s" % ", ".join(esp.get_chip_features()))
-            print("Crystal is %dMHz" % esp.get_crystal_freq())
-            read_mac(esp, args)
+            print("Chip is F1c100s")
+            #  % (esp.get_chip_description()))
+            # print("Features: %s" % ", ".join(esp.get_chip_features()))
+            # print("Crystal is %dMHz" % esp.get_crystal_freq())
+            # read_mac(esp, args)
 
         if not args.no_stub:
             if esp.secure_download_mode:
@@ -3583,22 +3603,22 @@ def main(custom_commandline=None):
             except NotImplementedInROMError:
                 print("WARNING: ROM doesn't support changing baud rate. Keeping initial baud rate %d" % initial_baud)
 
-        # override common SPI flash parameter stuff if configured to do so
-        if hasattr(args, "spi_connection") and args.spi_connection is not None:
-            if esp.CHIP_NAME != "ESP32":
-                raise FatalError("Chip %s does not support --spi-connection option." % esp.CHIP_NAME)
-            print("Configuring SPI flash mode...")
-            esp.flash_spi_attach(args.spi_connection)
-        elif args.no_stub:
-            print("Enabling default SPI flash mode...")
-            # ROM loader doesn't enable flash unless we explicitly do it
-            esp.flash_spi_attach(0)
+        # # override common SPI flash parameter stuff if configured to do so
+        # if hasattr(args, "spi_connection") and args.spi_connection is not None:
+        #     if esp.CHIP_NAME != "ESP32":
+        #         raise FatalError("Chip %s does not support --spi-connection option." % esp.CHIP_NAME)
+        #     print("Configuring SPI flash mode...")
+        #     esp.flash_spi_attach(args.spi_connection)
+        # elif args.no_stub:
+        #     print("Enabling default SPI flash mode...")
+        #     # ROM loader doesn't enable flash unless we explicitly do it
+        #     esp.flash_spi_attach(0)
 
-        if hasattr(args, "flash_size"):
-            print("Configuring flash size...")
-            detect_flash_size(esp, args)
-            if args.flash_size != 'keep':  # TODO: should set this even with 'keep'
-                esp.flash_set_parameters(flash_size_bytes(args.flash_size))
+        # if hasattr(args, "flash_size"):
+        #     print("Configuring flash size...")
+        #     detect_flash_size(esp, args)
+        #     if args.flash_size != 'keep':  # TODO: should set this even with 'keep'
+        #         esp.flash_set_parameters(flash_size_bytes(args.flash_size))
 
         try:
             operation_func(esp, args)
@@ -3656,6 +3676,7 @@ class FlashSizeAction(argparse.Action):
 
     (At next major relase, remove deprecated sizes and this can become a 'normal' choices= argument again.)
     """
+
     def __init__(self, option_strings, dest, nargs=1, auto_detect=False, **kwargs):
         super(FlashSizeAction, self).__init__(option_strings, dest, nargs, **kwargs)
         self._auto_detect = auto_detect
@@ -3690,6 +3711,7 @@ class FlashSizeAction(argparse.Action):
 class SpiConnectionAction(argparse.Action):
     """ Custom action to parse 'spi connection' override. Values are SPI, HSPI, or a sequence of 5 pin numbers separated by commas.
     """
+
     def __call__(self, parser, namespace, value, option_string=None):
         if value.upper() == "SPI":
             value = 0
@@ -3717,6 +3739,7 @@ class SpiConnectionAction(argparse.Action):
 
 class AddrFilenamePairAction(argparse.Action):
     """ Custom parser class for the address/filename pairs passed as arguments """
+
     def __init__(self, option_strings, dest, nargs='+', **kwargs):
         super(AddrFilenamePairAction, self).__init__(option_strings, dest, nargs, **kwargs)
 
