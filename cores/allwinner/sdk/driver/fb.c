@@ -377,6 +377,7 @@ void fb_init(int width, int height)
 	fb_width = width;
 	fb_height = height;
 	fb_buffer = (pixel_format *)malloc(width * height * sizeof(pixel_format));
+	memset(fb_buffer, 0xFF, width * height * sizeof(pixel_format));
 	LCD_IO_Init();																				 // IO initialization
 	F1C100S_LCD_Init(width, height, fb_buffer, fb_buffer); // TCON DEBE initialization
 }
