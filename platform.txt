@@ -81,14 +81,14 @@ recipe.c.combine.pattern="{compiler.path}{compiler.cpp.cmd}" {compiler.ld.flags}
 
 ## Create binary
 recipe.objcopy.eep.1.pattern="{compiler.path}{compiler.objcopy.cmd}" {compiler.objcopy.eep.flags} -v --output-format=binary "{build.path}/{build.project_name}.elf" "{build.path}/{build.project_name}.bin"
-recipe.objcopy.eep.2.pattern=python3 "{runtime.platform.path}/tools/lzma/lzmatool.py" "{build.path}/{build.project_name}.bin" "{build.path}/{build.project_name}.lzma"
+recipe.objcopy.eep.2.pattern={runtime.tools.python3.path}/python3 "{runtime.platform.path}/tools/lzmatool.py" "{build.path}/{build.project_name}.bin" "{build.path}/{build.project_name}.lzma"
 
 ## Create hex
 recipe.objcopy.hex.pattern=
 #"{compiler.path}{compiler.elf2hex.cmd}" {compiler.elf2hex.flags} -O srec "{build.path}/{build.project_name}.elf" "{build.path}/{build.project_name}.hex"
 
 ## Compute size
-recipe.size.pattern="{compiler.path}{compiler.size.cmd}" -B "{build.path}/{build.project_name}.elf"
+recipe.size.pattern={runtime.tools.python3.path}/python3 "{runtime.platform.path}/tools/getsizetool.py" "{build.path}/{build.project_name}.lzma"
 recipe.size.regex=\s*[0-9]+\s+[0-9]+\s+[0-9]+\s+([0-9]+).*
 
 ## Save hex
@@ -125,5 +125,4 @@ tools.esptool.upload.params.quiet=
 # First, potentially perform an erase or nothing
 # Next, do the binary upload
 # Combined in one rule because Arduino doesn't suport upload.1.pattern/upload.3.pattern
-# tools.esptool.upload.pattern="{cmd}" "{runtime.platform.path}/tools/esptool/esptool.py" --no-stub --port "{serial.port}" --baud "{upload.speed}" "{upload.verbose}" write_flash 0x80000 "{build.path}/{build.project_name}.bin"
-tools.esptool.upload.pattern="{cmd}" "{runtime.platform.path}/tools/upload.py" --no-stub --port "{serial.port}" --baud "{upload.speed}" "{upload.verbose}" write_flash 0x80000 "{build.path}/{build.project_name}.lzma"
+tools.esptool.upload.pattern="{cmd}" "{runtime.platform.path}/tools/upload.py" --port "{serial.port}" --baud "{upload.speed}" write_flash 0x80000 "{build.path}/{build.project_name}.lzma"

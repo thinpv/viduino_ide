@@ -166,7 +166,7 @@ write:
 	sudo sunxi-fel -p spiflash-write 0 $(BUILD)/firmware.bin
 
 write2:
-	python3 tools/upload.py --no-stub --port /dev/ttyUSB0 --baud 921600 write_flash 0x200000 build/firmware.bin
+	python3 tools/upload.py --no-stub --port /dev/ttyUSB0 --baud 921600 write_flash 0x80000 build/firmware.bin
 
 clean:
 	rm -rf $(BUILD)

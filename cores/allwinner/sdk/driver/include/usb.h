@@ -19,7 +19,7 @@ extern "C"
 #if 0
 #define usbprint printf_r //�����ӡ
 #else
-#define usbprint printf
+#define usbprint //printf
 #endif
 
 #define u8 uint8_t
