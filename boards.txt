@@ -1,60 +1,107 @@
 ############# Viduino Uno Board ###############
 
-vuno.name=Viduino Uno
+vuno32.name=Viduino Uno 32MB
 
 ## Toolchain
-vuno.menu.toolsloc.default=Default
-#vuno.menu.toolsloc.default.compiler.path={runtime.tools.riscv64-unknown-elf-gcc.path}/bin/
+vuno32.menu.toolsloc.default=Default
 
-vuno.program.tool=esptool
-vuno.upload.tool=esptool
-#vuno.upload.speed=115200
-vuno.upload.resetmethod=nodemcu
-vuno.upload.maximum_size=8044464
-vuno.upload.maximum_data_size=81920
-vuno.upload.wait_for_upload_port=true
-#vuno.serial.disableDTR=true
-#vuno.serial.disableRTS=true
+vuno32.program.tool=flashtool
+vuno32.upload.tool=flashtool
+vuno32.upload.maximum_size=8044464
+vuno32.upload.maximum_data_size=81920
+vuno32.upload.wait_for_upload_port=true
+vuno32.serial.disableDTR=false
+vuno32.serial.disableRTS=false
 
 ## CPU Clock
-vuno.menu.clksrc.400=400MHz CPU Clock Frequency
-vuno.menu.clksrc.500=500MHz CPU Clock Frequency
-vuno.menu.clksrc.600=600MHz CPU Clock Frequency
-vuno.menu.clksrc.400.build.f_cpu=400000000L
-vuno.menu.clksrc.500.build.f_cpu=500000000L
-vuno.menu.clksrc.600.build.f_cpu=600000000L
+vuno32.menu.clksrc.400=400MHz CPU Clock Frequency
+vuno32.menu.clksrc.500=500MHz CPU Clock Frequency
+vuno32.menu.clksrc.600=600MHz CPU Clock Frequency
+vuno32.menu.clksrc.400.build.f_cpu=400000000L
+vuno32.menu.clksrc.500.build.f_cpu=500000000L
+vuno32.menu.clksrc.600.build.f_cpu=600000000L
 
 ## Burn baud rate
 menu.UploadSpeed=UploadSpeed
-vuno.menu.UploadSpeed.115200=115200
-vuno.menu.UploadSpeed.115200.upload.speed=115200
-vuno.menu.UploadSpeed.256000.windows=256000
-vuno.menu.UploadSpeed.256000.upload.speed=256000
-vuno.menu.UploadSpeed.230400.linux=230400
-vuno.menu.UploadSpeed.230400.macosx=230400
-vuno.menu.UploadSpeed.230400.upload.speed=230400
-vuno.menu.UploadSpeed.460800.linux=460800
-vuno.menu.UploadSpeed.460800.macosx=460800
-vuno.menu.UploadSpeed.460800.upload.speed=460800
-vuno.menu.UploadSpeed.512000.windows=512000
-vuno.menu.UploadSpeed.512000.upload.speed=512000
-vuno.menu.UploadSpeed.921600=921600
-vuno.menu.UploadSpeed.921600.upload.speed=921600
-
-## Burn tool firmware
-vuno.menu.burn_tool_firmware.dan=Default
-vuno.menu.burn_tool_firmware.dan.build.burn_tool_firmware=dan
+vuno32.menu.UploadSpeed.921600=921600
+vuno32.menu.UploadSpeed.921600.upload.speed=921600
+vuno32.menu.UploadSpeed.115200=115200
+vuno32.menu.UploadSpeed.115200.upload.speed=115200
+vuno32.menu.UploadSpeed.256000.windows=256000
+vuno32.menu.UploadSpeed.256000.upload.speed=256000
+vuno32.menu.UploadSpeed.230400.linux=230400
+vuno32.menu.UploadSpeed.230400.macosx=230400
+vuno32.menu.UploadSpeed.230400.upload.speed=230400
+vuno32.menu.UploadSpeed.460800.linux=460800
+vuno32.menu.UploadSpeed.460800.macosx=460800
+vuno32.menu.UploadSpeed.460800.upload.speed=460800
+vuno32.menu.UploadSpeed.512000.windows=512000
+vuno32.menu.UploadSpeed.512000.upload.speed=512000
 
 ## Point to the file for ./variants/<variant>/pins_arduino.h
-vuno.build.variant=viduino_uno
+vuno32.build.variant=viduino_uno
 
 ## "The 'core' file directory for this board, in ./cores
-vuno.build.core=allwinner
+vuno32.build.core=allwinner
 
 ## This sets a define for use in the compiled code.
-vuno.build.board=VIDUINO_UNO
-vuno.build.sdata.size=512
+vuno32.build.board=VIDUINO_UNO
+vuno32.build.sdata.size=512
 
-## Limit is the 16MB Flash. Assume half is used for something else.
-vuno.upload.maximum_size=8388608
-vuno.build.ldscript="{runtime.platform.path}/variants/viduino_uno/f1c100s.ld"
+## Limit is the 7.5MB Flash
+vuno32.upload.maximum_size=7864320
+vuno32.build.ldscript="{runtime.platform.path}/variants/viduino_uno/f1c100s_32.ld"
+
+############################
+
+vuno64.name=Viduino Uno 64MB
+
+## Toolchain
+vuno64.menu.toolsloc.default=Default
+
+vuno64.program.tool=flashtool
+vuno64.upload.tool=flashtool
+vuno64.upload.maximum_size=8044464
+vuno64.upload.maximum_data_size=81920
+vuno64.upload.wait_for_upload_port=true
+vuno64.serial.disableDTR=false
+vuno64.serial.disableRTS=false
+
+## CPU Clock
+vuno64.menu.clksrc.400=400MHz CPU Clock Frequency
+vuno64.menu.clksrc.500=500MHz CPU Clock Frequency
+vuno64.menu.clksrc.600=600MHz CPU Clock Frequency
+vuno64.menu.clksrc.400.build.f_cpu=400000000L
+vuno64.menu.clksrc.500.build.f_cpu=500000000L
+vuno64.menu.clksrc.600.build.f_cpu=600000000L
+
+## Burn baud rate
+menu.UploadSpeed=UploadSpeed
+vuno64.menu.UploadSpeed.921600=921600
+vuno64.menu.UploadSpeed.921600.upload.speed=921600
+vuno64.menu.UploadSpeed.115200=115200
+vuno64.menu.UploadSpeed.115200.upload.speed=115200
+vuno64.menu.UploadSpeed.256000.windows=256000
+vuno64.menu.UploadSpeed.256000.upload.speed=256000
+vuno64.menu.UploadSpeed.230400.linux=230400
+vuno64.menu.UploadSpeed.230400.macosx=230400
+vuno64.menu.UploadSpeed.230400.upload.speed=230400
+vuno64.menu.UploadSpeed.460800.linux=460800
+vuno64.menu.UploadSpeed.460800.macosx=460800
+vuno64.menu.UploadSpeed.460800.upload.speed=460800
+vuno64.menu.UploadSpeed.512000.windows=512000
+vuno64.menu.UploadSpeed.512000.upload.speed=512000
+
+## Point to the file for ./variants/<variant>/pins_arduino.h
+vuno64.build.variant=viduino_uno
+
+## "The 'core' file directory for this board, in ./cores
+vuno64.build.core=allwinner
+
+## This sets a define for use in the compiled code.
+vuno64.build.board=VIDUINO_UNO
+vuno64.build.sdata.size=512
+
+## Limit is the 15.5MB Flash
+vuno64.upload.maximum_size=16252928
+vuno64.build.ldscript="{runtime.platform.path}/variants/viduino_uno/f1c100s_64.ld"
