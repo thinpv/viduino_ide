@@ -16,77 +16,64 @@ MKDIR = mkdir
 SED = sed
 PYTHON = python
 
-CROSS_COMPILE = /home/thinpv/.arduino15/packages/arduino/tools/arm-none-eabi-gcc/7-2017q4/bin/arm-none-eabi-
-CC	          = $(CROSS_COMPILE)gcc
-CXX	          = $(CROSS_COMPILE)g++
-AS	          = $(CROSS_COMPILE)gcc -x assembler-with-cpp
-AR	          = $(CROSS_COMPILE)ar rcs
-LD	          = $(CROSS_COMPILE)ld
-OBJCOPY	      = $(CROSS_COMPILE)objcopy
-OBJDUMP       = $(CROSS_COMPILE)objdump
-SIZE 		  = $(CROSS_COMPILE)size
+COMPILE			= /home/thinpv/.arduino15/packages/arduino/tools/arm-none-eabi-gcc/7-2017q4/bin/arm-none-eabi-
+CC					= $(COMPILE)gcc
+CXX					= $(COMPILE)g++
+AS					= $(COMPILE)gcc -x assembler-with-cpp
+AR					= $(COMPILE)ar rcs
+LD					= $(COMPILE)ld
+OBJCOPY			= $(COMPILE)objcopy
+OBJDUMP			= $(COMPILE)objdump
+SIZE				= $(COMPILE)size
 
-MACHINE			= cores/allwinner/sdk/machine
+BOOT				= cores/allwinner/sdk/boot
 DRIVER			= cores/allwinner/sdk/driver
 LIB					= cores/allwinner/sdk/lib
-FATFS				= cores/allwinner/sdk/fatfs
 API					= cores/allwinner/api
 CORES				= cores/allwinner
 
-# DEFINES		+= -DLVGL
-# DEFINES				+= -DLCD_RGB888
-
-DEFINES		+= -D__ARM32_ARCH__=5 -D__ARM926EJS__ -D__ARM32__ -Wno-unused-function
+DEFINES			+= -D__ARM32_ARCH__=5 -D__ARM926EJS__ -D__ARM32__ -Wno-unused-function
 
 ASFLAGS			:= -g -ggdb -Wall -O3
 CFLAGS			:= -g -ggdb -Wall -O3
 CPFLAGS			:= -g -ggdb -Wall -O3
 LDFLAGS			:= -T variants/viduino_uno/f1c100s_32.ld -nostdlib
-MCFLAGS		:= -march=armv5te -mtune=arm926ej-s -mfloat-abi=soft -marm -mno-thumb-interwork
+MCFLAGS			:= -march=armv5te -mtune=arm926ej-s -mfloat-abi=soft -marm -mno-thumb-interwork
 
-ASFLAGS		+=	-ffunction-sections -fdata-sections -ffreestanding -std=gnu11 $(DEFINES)
-CFLAGS		+=	-ffunction-sections -fdata-sections -ffreestanding -std=gnu11 $(DEFINES)
-CPFLAGS		+=	-ffunction-sections -fdata-sections -ffreestanding -std=gnu++11 $(DEFINES) -fno-rtti
-LDFLAGS		+=	-Wl,-gc-sections 
+ASFLAGS			+=	-ffunction-sections -fdata-sections -ffreestanding -std=gnu11 $(DEFINES)
+CFLAGS			+=	-ffunction-sections -fdata-sections -ffreestanding -std=gnu11 $(DEFINES)
+CPFLAGS			+=	-ffunction-sections -fdata-sections -ffreestanding -std=gnu++11 $(DEFINES) -fno-rtti -fno-use-cxa-atexit
+LDFLAGS			+=	-Wl,-gc-sections
 
-LIBS 			:= -lgcc -lm -lc -lnosys
+LIBS 				:= -lgcc -lm -lc -lnosys
 
-SRCDIRS		+= .
+SRCDIRS			+= .
 
-INCDIRS		+= $(MACHINE)/include $(MACHINE)/include/f1c100s
-SRCDIRS		+= $(MACHINE)
+INCDIRS			+= $(BOOT)/include $(BOOT)/include/f1c100s
+SRCDIRS			+= $(BOOT)
 
-INCDIRS		+= $(LIB) $(LIB)/include
-SRCDIRS		+= $(LIB)
+INCDIRS			+= $(LIB) $(LIB)/include
+SRCDIRS			+= $(LIB)
 
-INCDIRS		+= $(DRIVER)/include
-SRCDIRS		+= $(DRIVER)
+INCDIRS			+= $(DRIVER)/include
+SRCDIRS			+= $(DRIVER)
 
-INCDIRS		+= $(FATFS)
-SRCDIRS		+= $(FATFS)
+INCDIRS			+= $(API)
+SRCDIRS			+= $(API)
 
-INCDIRS		+= $(API)
-SRCDIRS		+= $(API)
+INCDIRS			+= $(CORES)
+SRCDIRS			+= $(CORES)
 
-INCDIRS		+= $(CORES)
-SRCDIRS		+= $(CORES)
+INCDIRS			+= libraries/fatfs/src
+SRCDIRS			+= libraries/fatfs/src
 
-INCDIRS		+= libraries/FrameBuffer/src
-SRCDIRS		+= libraries/FrameBuffer/src
+INCDIRS			+= libraries/FrameBuffer/src
+SRCDIRS			+= libraries/FrameBuffer/src
 
-INCDIRS		+= libraries/NS2009/src
-SRCDIRS		+= libraries/NS2009/src
+INCDIRS			+= libraries/NS2009/src
+SRCDIRS			+= libraries/NS2009/src
 
-# INCDIRS		+= libraries/fatfs/src
-# SRCDIRS		+= libraries/fatfs/src
-
-# INCDIRS		+= libraries/png/libz
-# SRCDIRS		+= libraries/png/libz
-
-# INCDIRS		+= libraries/png/libpng
-# SRCDIRS		+= libraries/png/libpng
-
-INCDIRS		+= libraries/lv_arduino/src \
+INCDIRS			+= libraries/lv_arduino/src \
 	libraries/lv_arduino/src/src \
 	libraries/lv_arduino/src/src/lv_core \
 	libraries/lv_arduino/src/src/lv_draw \
@@ -97,7 +84,7 @@ INCDIRS		+= libraries/lv_arduino/src \
 	libraries/lv_arduino/src/src/lv_themes \
 	libraries/lv_arduino/src/src/lv_widgets \
 	libraries/lv_arduino/examples/lv_demo_music
-SRCDIRS		+= libraries/lv_arduino/src/src/lv_core \
+SRCDIRS			+= libraries/lv_arduino/src/src/lv_core \
 	libraries/lv_arduino/src/src/lv_draw \
 	libraries/lv_arduino/src/src/lv_font \
 	libraries/lv_arduino/src/src/lv_gpu \
@@ -107,17 +94,23 @@ SRCDIRS		+= libraries/lv_arduino/src/src/lv_core \
 	libraries/lv_arduino/src/src/lv_widgets \
 	libraries/lv_arduino/examples/lv_demo_music
 
-# INCDIRS		+= libraries/nes/src
-# SRCDIRS		+= libraries/nes/src
+# INCDIRS			+= libraries/png/libz
+# SRCDIRS			+= libraries/png/libz
 
-# INCDIRS		+= libraries/png/png
-# SRCDIRS		+= libraries/png/png
+# INCDIRS			+= libraries/png/libpng
+# SRCDIRS			+= libraries/png/libpng
 
-# LIBFILES	+= libraries/mjpegDecorder/jpeg_dec.a
-# INCDIRS		+= libraries/mjpegDecorder \
+# INCDIRS			+= libraries/nes/src
+# SRCDIRS			+= libraries/nes/src
+
+# INCDIRS			+= libraries/png/png
+# SRCDIRS			+= libraries/png/png
+
+# LIBFILES		+= libraries/mjpegDecorder/jpeg_dec.a
+# INCDIRS			+= libraries/mjpegDecorder \
 # 	libraries/mjpegDecorder/videoplay \
 # 	libraries/mjpegDecorder/test_jpeg
-# SRCDIRS		+= libraries/mjpegDecorder \
+# SRCDIRS			+= libraries/mjpegDecorder \
 # 	libraries/mjpegDecorder/videoplay
 
 SFILES	:=	$(foreach dir, $(SRCDIRS), $(wildcard $(dir)/*.S))
@@ -154,8 +147,6 @@ $(BUILD)/%.o: %.cpp
 
 $(BUILD)/firmware.bin: $(BUILD)/firmware.elf
 	$(OBJCOPY) -v -O binary $^ $@
-	#@echo Make header information for brom booting
-	#@$(MKSUNXI) $@
 
 $(BUILD)/firmware.elf: $(OBJ)
 	$(ECHO) "LINK $@"
@@ -163,9 +154,6 @@ $(BUILD)/firmware.elf: $(OBJ)
 	$(SIZE) $@
 
 write:
-	sudo sunxi-fel -p spiflash-write 0x80000 $(BUILD)/firmware.bin
-
-write2:
 	python3 tools/upload.py --port /dev/ttyUSB0 --baud 921600 write_flash 0x80000 build/firmware.bin
 
 clean:

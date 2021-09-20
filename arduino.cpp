@@ -18,7 +18,7 @@ static int temp_touch;
 /* Display flushing */
 void my_disp_flush(lv_disp_drv_t *disp, const lv_area_t *area, lv_color_t *color_p)
 {
-	framebuffer.areaPresent(area->x1, area->x2, area->y1, area->y2, (unsigned short *)color_p);
+	framebuffer.areaPresent(area->x1, area->y1, area->x2 - area->x1 + 1, area->y2 - area->y1 + 1, (pixel_format *)color_p);
 	lv_disp_flush_ready(disp);
 }
 
@@ -33,11 +33,14 @@ static bool read_encoder(lv_indev_drv_t *drv, lv_indev_data_t *data)
 		data->state = LV_INDEV_STATE_REL;
 	else
 		data->state = LV_INDEV_STATE_PR;
-	Serial.print(data->point.x);
-	Serial.print(" - ");
-	Serial.print(data->point.y);
-	Serial.print(" --> ");
-	Serial.println(temp_touch);
+	if (temp_touch > 1)
+	{
+		Serial.print(data->point.x);
+		Serial.print(" - ");
+		Serial.print(data->point.y);
+		Serial.print(" --> ");
+		Serial.println(temp_touch);
+	}
 	return false; /*No buffering now so no more data read*/
 }
 
@@ -57,7 +60,7 @@ void setup()
 	Serial.begin(115200);
 	Serial.println("setup start");
 
-	framebuffer.begin(LV_HOR_RES_MAX, LV_VER_RES_MAX, 100);
+	framebuffer.begin();
 
 	lv_init();
 	lv_disp_buf_init(&disp_buf, buf, NULL, LV_HOR_RES_MAX * 10);
@@ -137,8 +140,10 @@ void fb_run(int x, int y, int w, int h, unsigned int *data)
 
 void setup()
 {
-	// Serial.begin(115200);
-	// Serial.println("setup");
+	Serial.begin(115200);
+	Serial.println("setup");
+
+	pinMode(16, OUTPUT);
 
 	// nofrendo_main(0, NULL);
 
@@ -174,6 +179,7 @@ void loop()
 #ifdef NES
 	nes_loop();
 #else
+	digitalWrite(16, 1-digitalRead(16));
 	delay(1000);
 	printf("loop\r\n");
 #endif
