@@ -41,7 +41,7 @@ DEFINES		+= -D__ARM32_ARCH__=5 -D__ARM926EJS__ -D__ARM32__ -Wno-unused-function
 ASFLAGS			:= -g -ggdb -Wall -O3
 CFLAGS			:= -g -ggdb -Wall -O3
 CPFLAGS			:= -g -ggdb -Wall -O3
-LDFLAGS			:= -T variants/viduino_uno/f1c100s.ld -nostdlib
+LDFLAGS			:= -T variants/viduino_uno/f1c100s_32.ld -nostdlib
 MCFLAGS		:= -march=armv5te -mtune=arm926ej-s -mfloat-abi=soft -marm -mno-thumb-interwork
 
 ASFLAGS		+=	-ffunction-sections -fdata-sections -ffreestanding -std=gnu11 $(DEFINES)

@@ -31,7 +31,7 @@ extern u32 Data_Buffer[BULK_MAX_PACKET_SIZE];
 
 extern int SPIx;
 // extern int SPI_FLASH_FAT_START_ADD;//spi开始地址
-extern int SPI_FLASH_FAT_Size;//spi大小
+// extern int FATFS_SPI_SIZE;//spi大小
 #define MSC_DDR_Size     	(4*1024*1024)//定义文件系统DDR RAM大小
 
 

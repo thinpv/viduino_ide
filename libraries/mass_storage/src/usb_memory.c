@@ -172,7 +172,7 @@ void Read_SPIFLASH_Memory(uint8_t lun, uint32_t Memory_Offset, uint32_t Transfer
 			if (!Block_Read_count)
 			{
 				//一次性读出
-				sys_spi_flash_read(FATFS_START_ADDR+(Memory_Offset* Mass_Block_Size[lun]),(unsigned char *)WR_Data_Buffer,(Transfer_Length* Mass_Block_Size[lun]));
+				sys_spi_flash_read(FATFS_SPI_START_ADDR+(Memory_Offset* Mass_Block_Size[lun]),(unsigned char *)WR_Data_Buffer,(Transfer_Length* Mass_Block_Size[lun]));
 	 			STA=0;		
 				if(STA)USB_STATUS_REG|=0X08;//SD卡读错误!
 				//传输一次
@@ -299,8 +299,8 @@ void Write_SPIFLASH_Memory (uint8_t lun, uint32_t Memory_Offset, uint32_t Transf
 	//传输完成，存储
 	if ((scount>=W_Length) || (Bot_State == BOT_CSW_Send))
 	{
-		// SPI_Flash_Write(SPIx,(unsigned char *)WR_Data_Buffer,FATFS_START_ADDR+(W_Offset* Mass_Block_Size[lun]),W_Length* Mass_Block_Size[lun]);
-		sys_spi_flash_erase_then_write(FATFS_START_ADDR+(W_Offset* Mass_Block_Size[lun]),(unsigned char *)WR_Data_Buffer,W_Length* Mass_Block_Size[lun]);
+		// SPI_Flash_Write(SPIx,(unsigned char *)WR_Data_Buffer,FATFS_SPI_START_ADDR+(W_Offset* Mass_Block_Size[lun]),W_Length* Mass_Block_Size[lun]);
+		sys_spi_flash_erase_then_write(FATFS_SPI_START_ADDR+(W_Offset* Mass_Block_Size[lun]),(unsigned char *)WR_Data_Buffer,W_Length* Mass_Block_Size[lun]);
 		STA=0;
 		if(STA)USB_STATUS_REG|=0X04;//SD卡写错误!		
     scount=0;
@@ -341,7 +341,7 @@ void Memory_init(void)
 	else if(MemoryType==MemoryTypeDDR)
 		Mass_Memory_Size[0]=MSC_DDR_Size;
 	else if(MemoryType==MemoryTypeSPIFLASH)
-		Mass_Memory_Size[0]=SPI_FLASH_FAT_Size;
+		Mass_Memory_Size[0]=FATFS_SPI_SIZE;
 	
 	Mass_Block_Count[0]=(u32)((uint64_t)Mass_Memory_Size[0]/(uint64_t)Mass_Block_Size[0]);//块计数	
 	

@@ -12,7 +12,7 @@
 // #define SDx SD0
 // int SPIx=SPI0;
 // int SPI_FLASH_FAT_START_ADD=8*1024*1024;//spi开始地址
-int SPI_FLASH_FAT_Size = 4 * 1024 * 1024; //spi大小
+// int FATFS_SPI_SIZE = 4 * 1024 * 1024;
 
 /*-------------------------------------------------------------------------------------------*/
 /* Inidialize a Drive                                                                        */
@@ -26,7 +26,7 @@ DSTATUS disk_initialize(
 
 	switch (pdrv)
 	{
-	case FS_SD: /* SD卡 */
+	case FS_SD:
 		if (sdc_init(SDC0))
 		{
 			stat = RES_OK;
@@ -116,20 +116,16 @@ DRESULT disk_read(
 	switch (pdrv)
 	{
 	case FS_SD:
-		if ((unsigned int)(long)buff & 0x3) //û�ж���
+		if ((unsigned int)(long)buff & 0x3)
 		{
-			/*�����ڴ�*/
 			b = (unsigned char *)malloc(count * SECTOR_SIZE);
 			if (b != NULL)
 			{
-				/*�����ڴ�*/
 				if (sdc_read_in(SDC0, sector, count, (unsigned char *)b))
 					res = RES_OK;
 				else
 					res = RES_ERROR;
-				/*�����ڴ浽buff*/
 				memcpy(buff, b, count * SECTOR_SIZE);
-				/*�Ƿ��ڴ�*/
 				free(b);
 			}
 			else
@@ -155,7 +151,7 @@ DRESULT disk_read(
 		break;
 
 	case FS_SPI: /* SPI Flash */
-		if (sys_spi_flash_read(FATFS_START_ADDR + (sector * SECTOR_SIZE), buff, count * SECTOR_SIZE) == 0)
+		if (sys_spi_flash_read(FATFS_SPI_START_ADDR + (sector * SECTOR_SIZE), buff, count * SECTOR_SIZE) == 0)
 			res = RES_OK;
 		break;
 
@@ -187,20 +183,16 @@ DRESULT disk_write(
 	switch (pdrv)
 	{
 	case FS_SD:
-		if ((unsigned int)(long)buff & 0x3) //û�ж���
+		if ((unsigned int)(long)buff & 0x3)
 		{
-			/*�����ڴ�*/
 			b = (unsigned char *)malloc(count * SECTOR_SIZE);
 			if (b != NULL)
 			{
-				/*�����ڴ浽buff*/
 				memcpy(b, buff, count * SECTOR_SIZE);
-				/*�����ڴ�*/
 				if (sdc_write_out(SDC0, sector, count, (unsigned char *)b))
 					res = RES_OK;
 				else
 					res = RES_ERROR;
-				/*�Ƿ��ڴ�*/
 				free(b);
 			}
 			else
@@ -226,7 +218,7 @@ DRESULT disk_write(
 		break;
 
 	case FS_SPI: /* SPI Flash */
-		if (sys_spi_flash_erase_then_write(FATFS_START_ADDR + (sector * SECTOR_SIZE), buff, count * SECTOR_SIZE) == 0)
+		if (sys_spi_flash_erase_then_write(FATFS_SPI_START_ADDR + (sector * SECTOR_SIZE), buff, count * SECTOR_SIZE) == 0)
 			res = RES_OK;
 		break;
 
@@ -301,7 +293,7 @@ DRESULT disk_ioctl(
 			break;
 
 		case GET_SECTOR_COUNT: /* Get number of sectors on the disk (DWORD) */
-			*(DWORD *)buff = SPI_FLASH_FAT_Size / 512;
+			*(DWORD *)buff = FATFS_SPI_SIZE / 512;
 			res = RES_OK;
 			break;
 
@@ -332,12 +324,12 @@ DRESULT disk_ioctl(
 }
 
 /*
-*********************************************************************************************************
-*	函 数 名: get_fattime
-*	功能说明: 获得系统时间，用于改写文件的创建和修改时间。
-*	形    参：无
-*	返 回 值: 无
-*********************************************************************************************************
+************************************************** ************************************************** *****
+* Function name: get_fattime
+* Function description: Obtain the system time, which is used to rewrite the creation and modification time of the file.
+* Formal parameters: none
+* Return value: None
+************************************************** ************************************************** *****
 */
 
 DWORD get_fattime(void)
