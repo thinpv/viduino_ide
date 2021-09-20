@@ -1,22 +1,19 @@
 #include "fb.h"
 #include "reg-debe.h"
 #include "reg-tcon.h"
-// #include "sys_interrupt.h"
-// #include "sys_uart.h"
-// #include "sys_gpio.h"
-// #include "sys_delay.h"
-// #include "sys_io.h"
 #include <stdlib.h>
-// #include "main.h"
 
 #include <irq.h>
 #include <io.h>
 #include <ccu.h>
 #include <debe.h>
 
+// Global structure
+struct fb_f1c100s_pdata_t f1;
 pixel_format *fb_buffer;
 int fb_width;
 int fb_height;
+
 
 /*---------------------------------------------------
 TCON interrupt
@@ -24,7 +21,8 @@ TCON interrupt
 volatile int LCD_TE = 0;
 void TCON_ISR(void)
 {
-	C_BIT(TCON_Base_Address + 0x04, 13); //Clera TCON0 line trigger interrupt
+	// C_BIT(TCON_Base_Address + 0x04, 13); //Clera TCON0 line trigger interrupt
+	C_Bit(TCON->TCON_INT_REG0, 13);
 	LCD_TE = 1;
 }
 /*---------------------------------------------------
@@ -42,318 +40,23 @@ void Wait_tcon_te(void)
 			break;
 	}
 }
-// RGB to YUV coefficient
-unsigned int csc_tab2[4][12] =
-		{
-				{0x0204, 0x0107, 0x0064, 0x0100, 0x1ed6, 0x1f68, 0x01c1, 0x0800, 0x1e87, 0x01c1, 0x1fb7, 0x0800}, //bt601 rgb2yuv
-				{0x0274, 0x00bb, 0x003f, 0x0100, 0x1ea5, 0x1f98, 0x01c1, 0x0800, 0x1e67, 0x01c1, 0x1fd7, 0x0800}, //bt709 rgb2yuv
-				{0x0258, 0x0132, 0x0075, 0x0000, 0x1eac, 0x1f53, 0x0200, 0x0800, 0x1e53, 0x0200, 0x1fac, 0x0800}, //DISP_YCC rgb2yuv
-				{0x0274, 0x00bb, 0x003f, 0x0100, 0x1ea5, 0x1f98, 0x01c1, 0x0800, 0x1e67, 0x01c1, 0x1fd7, 0x0800}	//xvYCC rgb2yuv
-};
-/*
-YUV enable output
-mode mode
-*/
-void YUV_OUT_Enable(char mode)
+
+void fb_tcon_enable()
 {
-	int i;
-	for (i = 0x950; i <= 0x97c; i += 4)
-		write32(DEBE_Base_Address + i, csc_tab2[mode][(i - 0x950) / 4] << 16);
-
-	S_BIT(DEBE_Base_Address + 0x800, 5);
-}
-/*
-TCON settings
-*/
-void Tcon_Init(struct fb_f1c100s_pdata_t *pdat)
-{
-	u8 F;
-
-#ifdef LCD_TYPE_Vga_1024_768
-	int ht = 1344;	//HT-1=1344-1
-	int hbp = 296;	//HS+HBP-1=136+160-1
-	int vt = 1612;	//VT*2=806*2
-	int vbp = 35;		//VS+VBP-1=6+29-1
-	int vspw = 6;		//VS-1=6-1
-	int hspw = 136; //HS-1=136-1
-#endif
-
-#ifdef LCD_TYPE_Vga_640_480_75HZ //75HZ
-	int ht = 840;									 //HT-1=-1
-	int hbp = 120 + 64;						 //HS+HBP-1=+-1 【Synchronization Pulse + Back Edge】
-	int vt = 500 * 2;							 //VT*2=*2
-	int vbp = 16 + 3;							 //VS+VBP-1=+-1 【Synchronization Pulse + Back Edge】
-
-	int vspw = 3;	 //VS-1=-1
-	int hspw = 64; //HS-1=-1
-#endif
-
-#ifdef LCD_TYPE_Vga_640_480_60HZ //25090909    , 1      ,	25090909,  		276000000
-	int ht = 800;									 //HT-1=-1
-	int hbp = 48 + 96;						 //HS+HBP-1=+-1 【Synchronization Pulse + Back Edge】
-	int vt = 525 * 2;							 //VT*2=*2
-	int vbp = 33 + 2;							 //VS+VBP-1=+-1 【Synchronization Pulse + Back Edge】
-
-	int vspw = 2;	 //VS-1=-1
-	int hspw = 96; //HS-1=-1
-#endif
-
-#if (defined LCD_TYPE_RGB43_480_272) || (defined LCD_TYPE_RGB43_800_480)
-	int bp, total;
-#endif
-	struct f1c100s_tcon_reg_t *tcon = ((struct f1c100s_tcon_reg_t *)pdat->virttcon);
-	u32_t val;
-
-	//-----------------------------------------Calculate the divisor-------------------------------------------------
-//	float N1,M1,F1;
-//	for(N1=1;N1<=128;N1++)
-//	for(M1=1;M1<=16;M1++)
-//	for(F1=6;F1<=95;F1++)
-
-//if((24.0*N1/M1)==276.0)printf("N=%d M=%d F=%d\r\n",(int)N1,(int)M1,(int)F1);
-
-//-----------------------------------------VGA 60HZ set Video to 65MHZ-------------------------------------------------
-#ifdef LCD_TYPE_Vga_1024_768
-	u8 N = 65, M = 4;
-	F = 6; //(24MHz*N)/M/F=65MHZ
-	C_BIT(CCU_Base_Address + 0x010, 31);
-	write32(CCU_Base_Address + 0x010, ((N - 1) << 8) | ((M - 1) << 0) | (3 << 24));
-	S_BIT(CCU_Base_Address + 0x010, 31);
-	delay_ms(1);
-#endif
-//-----------------------------------------VGA 75HZ set Video to 31.5MHZ-------------------------------------------------
-#ifdef LCD_TYPE_Vga_640_480_75HZ //75HZ
-	u8 N = 63, M = 8;
-	F = 6;
-	C_BIT(CCU_Base_Address + 0x010, 31);
-	write32(CCU_Base_Address + 0x010, ((N - 1) << 8) | ((M - 1) << 0) | (3 << 24));
-	S_BIT(CCU_Base_Address + 0x010, 31);
-	delay_ms(1);
-#endif
-
-#ifdef LCD_TYPE_Vga_640_480_60HZ //60HZ
-	u8 N = 23, M = 2;
-	F = 11; //LCD=276000000/11=25090909
-	C_BIT(CCU_Base_Address + 0x010, 31);
-	write32(CCU_Base_Address + 0x010, ((N - 1) << 8) | ((M - 1) << 0) | (3 << 24));
-	S_BIT(CCU_Base_Address + 0x010, 31);
-	delay_ms(1);
-#endif
-
-#ifdef LCD_TYPE_RGB43_480_272
-	// Set the video clock to 390MHZ
-	u8 N = 65, M = 4;
-	F = 25; //(24MHz*N)/M/F=15.6MHZ
-	C_BIT(CCU_Base_Address + 0x010, 31);
-	write32(CCU_Base_Address + 0x010, ((N - 1) << 8) | ((M - 1) << 0) | (3 << 24));
-	S_BIT(CCU_Base_Address + 0x010, 31);
-	delay_ms(1);
-#endif
-
-#ifdef LCD_TYPE_RGB43_800_480
-	// Set the video clock to 390MHZ
-	u8 N = 65, M = 4;
-	F = 9; //(24MHz*N)/M/F=43.33MHZ
-	C_BIT(CCU_Base_Address + 0x010, 31);
-	write32(CCU_Base_Address + 0x010, ((N - 1) << 8) | ((M - 1) << 0) | (3 << 24));
-	S_BIT(CCU_Base_Address + 0x010, 31);
-	delay_ms(1);
-#endif
-
-	//-----------------------------------------TCON clock and reset-------------------------------------------------
-	//	printf("VEdoi=%08x\r\n",read32(CCU_Base_Address+0x10));
-	// Enable LCD clock
-	write32(CCU_BUS_CLK_GATING_REG1, read32(CCU_BUS_CLK_GATING_REG1) | (1) << 4);
-	// Enable TCON clock
-	write32(CCU_TCON_CLK_REG, read32(CCU_TCON_CLK_REG) | (u64_t)(1) << 31);
-	// Enable LCD reset
-	write32(CCU_BUS_SOFT_RST_REG1, read32(CCU_BUS_SOFT_RST_REG1) | ((1) << 4));
-	delay_ms(1);
-
-	//-----------------------------------------TCON related settings-------------------------------------------------
-	// Set to TCON0
-	val = read32((virtual_addr_t)&tcon->ctrl);
-	val &= ~(0x1 << 0);
-	write32((virtual_addr_t)&tcon->ctrl, val);
-	// Enable TCON 31
-	// Swap RED and BLUE data at FIFO1
-	val = (pdat->timing.v_front_porch + pdat->timing.v_back_porch + pdat->timing.v_sync_len);
-	write32((virtual_addr_t)&tcon->tcon0_ctrl, ((u64_t)0x1 << 31) | (u64_t)0x1 << 23 | (val & 0x1f) << 4);
-	// Set the clock
-	val = F; // 5< DCLKDIV <96
-	write32((virtual_addr_t)&tcon->tcon0_dclk, ((u64_t)0xf << 28) | (val << 0));
-
-#if (defined LCD_TYPE_Vga_640_480_60HZ) || (defined LCD_TYPE_Vga_640_480_75HZ) || (defined LCD_TYPE_Vga_1024_768)
-	// Set width and height
-	write32((virtual_addr_t)&tcon->tcon0_timing_active, ((pdat->width - 1) << 16) | ((pdat->height - 1) << 0));
-	// Set HT+HBP
-	write32((virtual_addr_t)&tcon->tcon0_timing_h, ((ht - 1) << 16) | ((hbp - 1) << 0));
-	// Set VT+VBp
-	write32((virtual_addr_t)&tcon->tcon0_timing_v, ((vt) << 16) | ((vbp - 1) << 0));
-
-	write32((virtual_addr_t)&tcon->tcon0_timing_sync, ((hspw - 1) << 16) | ((vspw - 1) << 0));
-#endif
-
-#if (defined LCD_TYPE_RGB43_480_272) || (defined LCD_TYPE_RGB43_800_480)
-	// Set width and height
-	write32((virtual_addr_t)&tcon->tcon0_timing_active, ((pdat->width - 1) << 16) | ((pdat->height - 1) << 0));
-	// Set HT+HBP
-	bp = pdat->timing.h_sync_len + pdat->timing.h_back_porch;
-	total = pdat->width + pdat->timing.h_front_porch + bp;
-	write32((virtual_addr_t)&tcon->tcon0_timing_h, ((total - 1) << 16) | ((bp - 1) << 0));
-	// Set VT+VBP
-	bp = pdat->timing.v_sync_len + pdat->timing.v_back_porch;
-	total = pdat->height + pdat->timing.v_front_porch + bp;
-	write32((virtual_addr_t)&tcon->tcon0_timing_v, ((total * 2) << 16) | ((bp - 1) << 0));
-	// Set clock width
-	write32((virtual_addr_t)&tcon->tcon0_timing_sync, ((pdat->timing.h_sync_len - 1) << 16) | ((pdat->timing.v_sync_len - 1) << 0));
-#endif
-
-	// Set mode
-	if (pdat->mode == 1) //rgb
-	{
-		write32((virtual_addr_t)&tcon->tcon0_hv_intf, 0);
-		write32((virtual_addr_t)&tcon->tcon0_cpu_intf, 0);
-		write32(TCON_Base_Address + 0x60, (u64_t)(4) << 29);
-	}
-	else //cpu
-	{
-		// Set to 8080 mode
-		write32(TCON_Base_Address + 0x40, read32(TCON_Base_Address + 0x40) | (1) << 24);
-		// Set input source
-		write32(TCON_Base_Address + 0x40, read32(TCON_Base_Address + 0x40) | (0) << 0); // [3-White data][2-DMA][0-DE]
-		// Set to 16-bit mode + automatic
-		write32(TCON_Base_Address + 0x60, (u64_t)(4) << 29 | (u64_t)(1) << 28);
-	}
-	//FRM
-	if (pdat->bits_per_pixel == 18 || pdat->bits_per_pixel == 16)
-	{
-		write32((virtual_addr_t)&tcon->tcon0_frm_seed[0], 0x11111111);
-		write32((virtual_addr_t)&tcon->tcon0_frm_seed[1], 0x11111111);
-		write32((virtual_addr_t)&tcon->tcon0_frm_seed[2], 0x11111111);
-		write32((virtual_addr_t)&tcon->tcon0_frm_seed[3], 0x11111111);
-		write32((virtual_addr_t)&tcon->tcon0_frm_seed[4], 0x11111111);
-		write32((virtual_addr_t)&tcon->tcon0_frm_seed[5], 0x11111111);
-		write32((virtual_addr_t)&tcon->tcon0_frm_table[0], 0x01010000);
-		write32((virtual_addr_t)&tcon->tcon0_frm_table[1], 0x15151111);
-		write32((virtual_addr_t)&tcon->tcon0_frm_table[2], 0x57575555);
-		write32((virtual_addr_t)&tcon->tcon0_frm_table[3], 0x7f7f7777);
-		write32((virtual_addr_t)&tcon->tcon0_frm_ctrl, (pdat->bits_per_pixel == 18) ? (((u64_t)1 << 31) | (0 << 4)) : (((u64_t)1 << 31) | (5 << 4)));
-	}
-	// Polarity control
-	val = (1 << 28);
-	if (!pdat->timing.h_sync_active)
-		val |= (1 << 25);
-	if (!pdat->timing.v_sync_active)
-		val |= (1 << 24);
-	if (!pdat->timing.den_active)
-		val |= (1 << 27);
-	if (!pdat->timing.clk_active)
-		val |= (1 << 26);
-	write32((virtual_addr_t)&tcon->tcon0_io_polarity, val);
-	// Trigger control off
-	write32((virtual_addr_t)&tcon->tcon0_io_tristate, 0);
-	//
-	irq_register(IRQ_LEVEL_1, F1C100S_IRQ_LCD, TCON_ISR, 3);
-	// IRQ_Init(IRQ_LEVEL_1,IRQ_TCON,TCON_ISR ,3);
-	write32(TCON_Base_Address + 0x08, (pdat->height) << 16); //set line
-	S_BIT(TCON_Base_Address + 0x04, 29);										 //TCON0 line trigger interrupt enable
-
-	// sysSetLocalInterrupt(ENABLE_IRQ); // turn on IRQ interrupt
+	S_Bit(TCON->TCON_CTRL_REG, 31);
 }
 
-void Debe_Init(struct fb_f1c100s_pdata_t *pdat)
+void fb_tcon_disable()
 {
-	struct f1c100s_debe_reg_t *debe = (struct f1c100s_debe_reg_t *)pdat->virtdebe;
-	debe_init(pdat->width, pdat->height, pdat->vram[0]);
-	debe_enable();
-}
-
-void f1c100s_tcon_enable(struct fb_f1c100s_pdata_t *pdat)
-{
-	struct f1c100s_tcon_reg_t *tcon = (struct f1c100s_tcon_reg_t *)pdat->virttcon;
-	u32_t val;
-
-	val = read32((virtual_addr_t)&tcon->ctrl);
-	val |= ((u64_t)1 << 31);
-	write32((virtual_addr_t)&tcon->ctrl, val);
-}
-
-void f1c100s_tcon_disable(struct fb_f1c100s_pdata_t *pdat)
-{
-	struct f1c100s_tcon_reg_t *tcon = (struct f1c100s_tcon_reg_t *)pdat->virttcon;
-	u32_t val;
-
-	write32((virtual_addr_t)&tcon->ctrl, 0);
-	write32((virtual_addr_t)&tcon->int0, 0);
-
-	val = read32((virtual_addr_t)&tcon->tcon0_dclk);
-	val &= ~((u64_t)0xf << 28);
-	write32((virtual_addr_t)&tcon->tcon0_dclk, val);
-
-	write32((virtual_addr_t)&tcon->tcon0_io_tristate, 0xffffffff);
-	write32((virtual_addr_t)&tcon->tcon1_io_tristate, 0xffffffff);
-}
-
-// Global structure
-struct fb_f1c100s_pdata_t *lcd_pdat;
-struct fb_f1c100s_pdata_t f1;
-//
-void F1C100S_LCD_Init(int width, int height, unsigned int *buff1, unsigned int *buff2)
-{
-	int i;
-	lcd_pdat = &f1;
-	//	memset(&f1,0,sizeof(struct fb_f1c100s_pdata_t));
-	//
-	lcd_pdat->virtdebe = F1C100S_DEBE_BASE;
-	lcd_pdat->virttcon = F1C100S_TCON_BASE;
-	/*********************************TCON SET**************************/
-	// LCD mode 0-cpu 1-rgb
-	lcd_pdat->mode = 1;
-	// LCD width and height
-	lcd_pdat->width = width;
-	lcd_pdat->height = height;
-	// Pixel width
-	lcd_pdat->bits_per_pixel = 16;
-
-	// Timing
-	lcd_pdat->timing.h_front_porch = 40; //
-	lcd_pdat->timing.h_back_porch = 87;	 //
-	lcd_pdat->timing.h_sync_len = 1;		 //HSPW
-	lcd_pdat->timing.v_front_porch = 13; //
-	lcd_pdat->timing.v_back_porch = 31;	 //
-	lcd_pdat->timing.v_sync_len = 1;		 //VSPW
-	// Polarity setting 0 inverted
-	lcd_pdat->timing.h_sync_active = 0;
-	lcd_pdat->timing.v_sync_active = 0;
-	lcd_pdat->timing.den_active = 1; // Inverted
-	lcd_pdat->timing.clk_active = 0;
-	/*********************************DEBE SET**************************/
-	lcd_pdat->index = 0;					 // FB index
-	lcd_pdat->bytes_per_pixel = 4; // buff color bit width
-	lcd_pdat->vram[0] = buff1;
-	lcd_pdat->vram[1] = buff2;
-
-	/*********************************initialization**************************/
-	for (i = 0x0800; i < 0x1000; i += 4)
-		write32(F1C100S_DEBE_BASE + i, 0);
-	//
-	f1c100s_tcon_disable(lcd_pdat);
-	Debe_Init(lcd_pdat);
-
-	// Tcon_Init(lcd_pdat);
-	tcon_init(LCD_TYPE_RGB_480_272, 1, 16);//, lcd_pdat);
-
-#ifdef LCD_TYPE_TV_PAL_720_576
-	TVE_Init();
-	YUV_OUT_Enable(0);
-#endif
-
-	f1c100s_tcon_enable(lcd_pdat);
+	TCON->TCON_CTRL_REG = 0;
+	TCON->TCON_INT_REG0 = 0;
+	C_Value(TCON->TCON_CLK_CTRL_REG, 28, 0xf);
+	TCON->TCON0_IO_CTRL_REG1 = 0xffffffff;
+	TCON->TCON1_IO_CTRL_REG1 = 0xffffffff;
 }
 
 // LCD IO initialization
-void LCD_IO_Init(void)
+void fb_io_init(void)
 {
 	int i = 0;
 	for (i = 1; i <= 11; i++)
@@ -370,181 +73,43 @@ void LCD_IO_Init(void)
 	}
 }
 
-/*
-LCD initialization
-*/
-
-void tcon_init(lcd_type_t lcd_type, int mode, int bits_per_pixel)
+void fb_tcon_init(uint8_t f)
 {
-	int ht;
-	int hbp;
-	int hfp;
-	int vt;
-	int vbp;
-	int vfp;
-	int vspw;
-	int hspw;
-	u8 F;
-	if (lcd_type == LCD_TYPE_RGB_480_272)
-	{
-		fb_width = 480;
-		fb_height = 272;
-		ht = 608; //1 + 87 + 480 + 40;
-		hbp = 87 + 1;
-		hfp = 40;
-		vt = 317; //1 + 31 + 272 + 13;
-		vbp = 31 + 1;
-		vfp = 13;
-		vspw = 1;
-		hspw = 1;
-
-		// Set the video clock to 390MHZ
-		u8 N = 65, M = 4;
-		F = 25; //(24MHz*N)/M/F=15.6MHZ
-		C_BIT(CCU_Base_Address + 0x010, 31);
-		write32(CCU_Base_Address + 0x010, ((N - 1) << 8) | ((M - 1) << 0) | (3 << 24));
-		S_BIT(CCU_Base_Address + 0x010, 31);
-		delay_ms(1);
-	}
-	else if (lcd_type == LCD_TYPE_RGB_800_480)
-	{
-		fb_width = 800;
-		fb_height = 480;
-		ht = 928; //1 + 87 + 800 + 40;
-		hbp = 87 + 1;
-		hfp = 40;
-		vt = 525; //1 + 31 + 480 + 13;
-		vbp = 31 + 1;
-		vfp = 13;
-		vspw = 1;
-		hspw = 1;
-
-		// Set the video clock to 390MHZ
-		u8 N = 65, M = 4;
-		F = 9; //(24MHz*N)/M/F=43.33MHZ
-		C_BIT(CCU_Base_Address + 0x010, 31);
-		write32(CCU_Base_Address + 0x010, ((N - 1) << 8) | ((M - 1) << 0) | (3 << 24));
-		S_BIT(CCU_Base_Address + 0x010, 31);
-		delay_ms(1);
-	}
-	else if (lcd_type == LCD_TYPE_VGA_1024_768)
-	{
-		fb_width = 1024;
-		fb_height = 768;
-		ht = 1344;
-		hbp = 296;
-		hfp = 24;
-		vt = 806;
-		vbp = 35;
-		vfp = 3;
-		vspw = 6;
-		hspw = 136;
-
-		u8 N = 65, M = 4;
-		F = 6; //(24MHz*N)/M/F=65MHZ
-		C_BIT(CCU_Base_Address + 0x010, 31);
-		write32(CCU_Base_Address + 0x010, ((N - 1) << 8) | ((M - 1) << 0) | (3 << 24));
-		S_BIT(CCU_Base_Address + 0x010, 31);
-		delay_ms(1);
-	}
-	else if (lcd_type == LCD_TYPE_VGA_640_480_60HZ)
-	{
-		fb_width = 640;
-		fb_height = 480;
-		ht = 800;
-		hbp = 48 + 96;
-		hfp = 16;
-		vt = 525;
-		vbp = 33 + 2;
-		vfp = 10;
-		vspw = 2;
-		hspw = 96;
-
-		u8 N = 23, M = 2;
-		F = 11; //LCD=276000000/11=25090909
-		C_BIT(CCU_Base_Address + 0x010, 31);
-		write32(CCU_Base_Address + 0x010, ((N - 1) << 8) | ((M - 1) << 0) | (3 << 24));
-		S_BIT(CCU_Base_Address + 0x010, 31);
-		delay_ms(1);
-	}
-	else if (lcd_type == LCD_TYPE_VGA_640_480_75HZ)
-	{
-		fb_width = 640;
-		fb_height = 480;
-		ht = 840;
-		hbp = 120 + 64;
-		hfp = 16;
-		vt = 500;
-		vbp = 16 + 3;
-		vfp = 1;
-		vspw = 3;
-		hspw = 64;
-
-		u8 N = 63, M = 8;
-		F = 6;
-		C_BIT(CCU_Base_Address + 0x010, 31);
-		write32(CCU_Base_Address + 0x010, ((N - 1) << 8) | ((M - 1) << 0) | (3 << 24));
-		S_BIT(CCU_Base_Address + 0x010, 31);
-		delay_ms(1);
-	}
-	else if (lcd_type == LCD_TYPE_TV_PAL_720_576)
-	{
-		return 1;
-	}
-	else
-	{
-		return 1;
-	}
-
-	// // Enable LCD clock
-	// write32(CCU_BUS_CLK_GATING_REG1, read32(CCU_BUS_CLK_GATING_REG1) | (1) << 4);
-	// // Enable TCON clock
-	// write32(CCU_TCON_CLK_REG, read32(CCU_TCON_CLK_REG) | (u64_t)(1) << 31);
-	// // Enable LCD reset
-	// write32(CCU_BUS_SOFT_RST_REG1, read32(CCU_BUS_SOFT_RST_REG1) | ((1) << 4));
-	// ccu_set_enable(&CCU->TCON_CLK_REG, true);
+	uint32_t val, bp, total;
+	struct fb_f1c100s_pdata_t *pdat = &f1;
+	// Enable TCON clock
 	S_Bit(CCU->TCON_CLK_REG, 31);
 	ccu_reset(RESET_LCD, true);
 	delay_ms(1);
 
-	// struct f1c100s_tcon_reg_t *tcon = ((struct f1c100s_tcon_reg_t *)pdat->virttcon);
-	// u32_t val;
 	//-----------------------------------------TCON related settings-------------------------------------------------
 	// Set to TCON0
 	C_Bit(TCON->TCON_CTRL_REG, 0);
-	// val = read32((virtual_addr_t)&tcon->ctrl);
-	// val &= ~(0x1 << 0);
-	// write32((virtual_addr_t)&tcon->ctrl, val);
+
 	// Enable TCON 31
 	// Swap RED and BLUE data at FIFO1
-	// val = (pdat->timing.v_front_porch + pdat->timing.v_back_porch + pdat->timing.v_sync_len);
-	// write32((virtual_addr_t)&tcon->tcon0_ctrl, ((u64_t)0x1 << 31) | (u64_t)0x1 << 23 | (val & 0x1f) << 4);
-	TCON->TCON0_CTRL_REG = ((u64_t)0x1 << 31) | (u64_t)0x1 << 23 | ((vbp + vfp) & 0x1f) << 4;
+	val = (pdat->timing.v_front_porch + pdat->timing.v_back_porch + pdat->timing.v_sync_len);
+	TCON->TCON0_CTRL_REG = ((u64_t)0x1 << 31) | (u64_t)0x1 << 23 | (val & 0x1f) << 4;
 	// Set the clock
-	// val = F; // 5< DCLKDIV <96
-	// write32((virtual_addr_t)&tcon->tcon0_dclk, ((u64_t)0xf << 28) | (val << 0));
-	TCON->TCON_CLK_CTRL_REG = ((u64_t)0xf << 28) | (F << 0);
+	TCON->TCON_CLK_CTRL_REG = ((u64_t)0xf << 28) | (f << 0);
 
 	// Set width and height
-	// write32((virtual_addr_t)&tcon->tcon0_timing_active, ((pdat->width - 1) << 16) | ((pdat->height - 1) << 0));
-	TCON->TCON0_BASIC_TIMING_REG0 = ((fb_width - 1) << 16) | ((fb_height - 1) << 0);
+	TCON->TCON0_BASIC_TIMING_REG0 = ((pdat->width - 1) << 16) | ((pdat->height - 1) << 0);
 
 	// Set HT+HBP
-	// write32((virtual_addr_t)&tcon->tcon0_timing_h, ((ht - 1) << 16) | ((hbp - 1) << 0));
-	TCON->TCON0_BASIC_TIMING_REG1 = ((ht - 1) << 16) | ((hbp - 1) << 0);
+	bp = pdat->timing.h_sync_len + pdat->timing.h_back_porch;
+	total = pdat->width + pdat->timing.h_front_porch + bp;
+	TCON->TCON0_BASIC_TIMING_REG1 = ((total - 1) << 16) | ((bp - 1) << 0);
 	// Set VT+VBp
-	// write32((virtual_addr_t)&tcon->tcon0_timing_v, ((vt * 2) << 16) | ((vbp - 1) << 0));
-	TCON->TCON0_BASIC_TIMING_REG2 = ((vt * 2) << 16) | ((vbp - 1) << 0);
-
-	// write32((virtual_addr_t)&tcon->tcon0_timing_sync, ((hspw - 1) << 16) | ((vspw - 1) << 0));
-	TCON->TCON0_BASIC_TIMING_REG3 = ((hspw - 1) << 16) | ((vspw - 1) << 0);
+	bp = pdat->timing.v_sync_len + pdat->timing.v_back_porch;
+	total = pdat->height + pdat->timing.v_front_porch + bp;
+	TCON->TCON0_BASIC_TIMING_REG2 = ((total * 2) << 16) | ((bp - 1) << 0);
+	// Set clock width
+	TCON->TCON0_BASIC_TIMING_REG3 = ((pdat->timing.h_sync_len - 1) << 16) | ((pdat->timing.v_sync_len - 1) << 0);
 
 	// Set mode
-	if (mode == 1) //rgb
+	if (pdat->mode == 1) //rgb
 	{
-		// write32((virtual_addr_t)&tcon->tcon0_hv_intf, 0);
-		// write32((virtual_addr_t)&tcon->tcon0_cpu_intf, 0);
-		// write32(TCON_Base_Address + 0x60, (u64_t)(4) << 29);
 		TCON->TCON0_HV_TIMING_REG = 0;
 		TCON->TCON0_CPU_IF_REG = (u64_t)(4) << 29;
 	}
@@ -552,17 +117,13 @@ void tcon_init(lcd_type_t lcd_type, int mode, int bits_per_pixel)
 	{
 		// Set to 8080 mode
 		S_Bit(TCON->TCON0_CTRL_REG, 24);
-		// write32(TCON_Base_Address + 0x40, read32(TCON_Base_Address + 0x40) | (1) << 24);
 		// Set input source
 		C_Value(TCON->TCON0_CTRL_REG, 0, 0x3);
-		// S_Value(TCON->TCON0_CTRL_REG, 0, 0);
-		// write32(TCON_Base_Address + 0x40, read32(TCON_Base_Address + 0x40) | (0) << 0); // [3-White data][2-DMA][0-DE]
 		// Set to 16-bit mode + automatic
-		// write32(TCON_Base_Address + 0x60, (u64_t)(4) << 29 | (u64_t)(1) << 28);
 		TCON->TCON0_CPU_IF_REG = ((u64_t)(4) << 29) | ((u64_t)(1) << 28);
 	}
 	//FRM
-	if (bits_per_pixel == 18 || bits_per_pixel == 16)
+	if (pdat->bits_per_pixel == 18 || pdat->bits_per_pixel == 16)
 	{
 		TCON->TCON_FRM_SEED0_R_REG = 0x11111111;
 		TCON->TCON_FRM_SEED0_G_REG = 0x11111111;
@@ -574,64 +135,221 @@ void tcon_init(lcd_type_t lcd_type, int mode, int bits_per_pixel)
 		TCON->TCON_FRM_TBL_REG1 = 0x15151111;
 		TCON->TCON_FRM_TBL_REG2 = 0x57575555;
 		TCON->TCON_FRM_TBL_REG3 = 0x7f7f7777;
-		TCON->TCON_FRM_CTRL_REG = (bits_per_pixel == 18) ? (0 << 4) : (5 << 4);
+		TCON->TCON_FRM_CTRL_REG = (pdat->bits_per_pixel == 18) ? (0 << 4) : (5 << 4);
 		S_Bit(TCON->TCON_FRM_CTRL_REG, 31);
-		// write32((virtual_addr_t)&tcon->tcon0_frm_seed[0], 0x11111111);
-		// write32((virtual_addr_t)&tcon->tcon0_frm_seed[1], 0x11111111);
-		// write32((virtual_addr_t)&tcon->tcon0_frm_seed[2], 0x11111111);
-		// write32((virtual_addr_t)&tcon->tcon0_frm_seed[3], 0x11111111);
-		// write32((virtual_addr_t)&tcon->tcon0_frm_seed[4], 0x11111111);
-		// write32((virtual_addr_t)&tcon->tcon0_frm_seed[5], 0x11111111);
-		// write32((virtual_addr_t)&tcon->tcon0_frm_table[0], 0x01010000);
-		// write32((virtual_addr_t)&tcon->tcon0_frm_table[1], 0x15151111);
-		// write32((virtual_addr_t)&tcon->tcon0_frm_table[2], 0x57575555);
-		// write32((virtual_addr_t)&tcon->tcon0_frm_table[3], 0x7f7f7777);
-		// write32((virtual_addr_t)&tcon->tcon0_frm_ctrl, (pdat->bits_per_pixel == 18) ? (((u64_t)1 << 31) | (0 << 4)) : (((u64_t)1 << 31) | (5 << 4)));
 	}
 	// Polarity control
-	// val = (1 << 28);
-	// if (!pdat->timing.h_sync_active)
-	// 	val |= (1 << 25);
-	// if (!pdat->timing.v_sync_active)
-	// 	val |= (1 << 24);
-	// if (!pdat->timing.den_active)
-	// 	val |= (1 << 27);
-	// if (!pdat->timing.clk_active)
-	// 	val |= (1 << 26);
-	// write32((virtual_addr_t)&tcon->tcon0_io_polarity, val);
-	TCON->TCON0_IO_CTRL_REG0 = (1 << 28) | (1 << 24) | (1 << 25) | (1 << 26);// | (1 << 27);
+	TCON->TCON0_IO_CTRL_REG0 = (1 << 28) | (1 << 24) | (1 << 25) | (1 << 26); // | (1 << 27);
 	// Trigger control off
-	// write32((virtual_addr_t)&tcon->tcon0_io_tristate, 0);
 	TCON->TCON0_IO_CTRL_REG1 = 0;
 	//
 	irq_register(IRQ_LEVEL_1, F1C100S_IRQ_LCD, TCON_ISR, 3);
-	// IRQ_Init(IRQ_LEVEL_1,IRQ_TCON,TCON_ISR ,3);
-	// write32(TCON_Base_Address + 0x08, (pdat->height) << 16); //set line
-	TCON->TCON_INT_REG1 = fb_height << 16;
-	S_BIT(TCON_Base_Address + 0x04, 29); //TCON0 line trigger interrupt enable
+	//set line
+	TCON->TCON_INT_REG1 = pdat->height << 16;
+	// S_BIT(TCON_Base_Address + 0x04, 29); //TCON0 line trigger interrupt enable
+	S_Bit(TCON->TCON_INT_REG0, 29);
 }
 
-void fb_init_type(lcd_type_t lcd_type)
+void fb_init(lcd_type_t lcd_type, void *buffer)
 {
-}
+	u8 F;
+	struct fb_f1c100s_pdata_t *lcd_pdat = &f1;
+	if (lcd_type == LCD_TYPE_RGB_480_272)
+	{
+		// LCD mode 0-cpu 1-rgb
+		lcd_pdat->mode = 1;
+		// LCD width and height
+		lcd_pdat->width = 480;
+		lcd_pdat->height = 272;
+		// Pixel width
+		lcd_pdat->bits_per_pixel = 16;
 
-void fb_init(int width, int height)
-{
-	fb_width = width;
-	fb_height = height;
-	fb_buffer = (pixel_format *)malloc(width * height * sizeof(pixel_format));
-	memset(fb_buffer, 0xFF, width * height * sizeof(pixel_format));
-	LCD_IO_Init();																				 // IO initialization
-	F1C100S_LCD_Init(width, height, fb_buffer, fb_buffer); // TCON DEBE initialization
-}
+		// Timing
+		lcd_pdat->timing.h_front_porch = 40; //
+		lcd_pdat->timing.h_back_porch = 87;	 //
+		lcd_pdat->timing.h_sync_len = 1;		 //HSPW
+		lcd_pdat->timing.v_front_porch = 13; //
+		lcd_pdat->timing.v_back_porch = 31;	 //
+		lcd_pdat->timing.v_sync_len = 1;		 //VSPW
+		// Polarity setting 0 inverted
+		lcd_pdat->timing.h_sync_active = 0;
+		lcd_pdat->timing.v_sync_active = 0;
+		lcd_pdat->timing.den_active = 1; // Inverted
+		lcd_pdat->timing.clk_active = 0;
+		/*********************************DEBE SET**************************/
+		lcd_pdat->index = 0;					 // FB index
+		lcd_pdat->bytes_per_pixel = 2; // buff color bit width
 
-void fb_init_buffer(pixel_format *buffer, int width, int height)
-{
-	fb_width = width;
-	fb_height = height;
-	fb_buffer = buffer;
-	LCD_IO_Init();																				 // IO initialization
-	F1C100S_LCD_Init(width, height, fb_buffer, fb_buffer); // TCON DEBE initialization
+		// Set the video clock to 390MHZ
+		u8 N = 65, M = 4;
+		F = 25; //(24MHz*N)/M/F=15.6MHZ
+		C_Bit(TCON->TCON_FRM_CTRL_REG, 31);
+		TCON->TCON_FRM_CTRL_REG = ((N - 1) << 8) | ((M - 1) << 0) | (3 << 24);
+		S_Bit(TCON->TCON_FRM_CTRL_REG, 31);
+		delay_ms(1);
+	}
+	else if (lcd_type == LCD_TYPE_RGB_800_480)
+	{
+		// LCD mode 0-cpu 1-rgb
+		lcd_pdat->mode = 1;
+		// LCD width and height
+		lcd_pdat->width = 800;
+		lcd_pdat->height = 480;
+		// Pixel width
+		lcd_pdat->bits_per_pixel = 16;
+
+		// Timing
+		lcd_pdat->timing.h_front_porch = 40; //
+		lcd_pdat->timing.h_back_porch = 87;	 //
+		lcd_pdat->timing.h_sync_len = 1;		 //HSPW
+		lcd_pdat->timing.v_front_porch = 13; //
+		lcd_pdat->timing.v_back_porch = 31;	 //
+		lcd_pdat->timing.v_sync_len = 1;		 //VSPW
+		// Polarity setting 0 inverted
+		lcd_pdat->timing.h_sync_active = 0;
+		lcd_pdat->timing.v_sync_active = 0;
+		lcd_pdat->timing.den_active = 1; // Inverted
+		lcd_pdat->timing.clk_active = 0;
+		/*********************************DEBE SET**************************/
+		lcd_pdat->index = 0;					 // FB index
+		lcd_pdat->bytes_per_pixel = 2; // buff color bit width
+
+		// Set the video clock to 390MHZ
+		u8 N = 65, M = 4;
+		F = 9; //(24MHz*N)/M/F=43.33MHZ
+		C_Bit(TCON->TCON_FRM_CTRL_REG, 31);
+		TCON->TCON_FRM_CTRL_REG = ((N - 1) << 8) | ((M - 1) << 0) | (3 << 24);
+		S_Bit(TCON->TCON_FRM_CTRL_REG, 31);
+		delay_ms(1);
+	}
+	else if (lcd_type == LCD_TYPE_VGA_1024_768)
+	{
+		// LCD mode 0-cpu 1-rgb
+		lcd_pdat->mode = 1;
+		// LCD width and height
+		lcd_pdat->width = 1024;
+		lcd_pdat->height = 768;
+		// Pixel width
+		lcd_pdat->bits_per_pixel = 16;
+
+		// Timing
+		lcd_pdat->timing.h_front_porch = 24; //
+		lcd_pdat->timing.h_back_porch = 160; //
+		lcd_pdat->timing.h_sync_len = 136;	 //HSPW
+		lcd_pdat->timing.v_front_porch = 3;	 //
+		lcd_pdat->timing.v_back_porch = 29;	 //
+		lcd_pdat->timing.v_sync_len = 6;		 //VSPW
+		// Polarity setting 0 inverted
+		lcd_pdat->timing.h_sync_active = 0;
+		lcd_pdat->timing.v_sync_active = 0;
+		lcd_pdat->timing.den_active = 1; // Inverted
+		lcd_pdat->timing.clk_active = 0;
+		/*********************************DEBE SET**************************/
+		lcd_pdat->index = 0;					 // FB index
+		lcd_pdat->bytes_per_pixel = 2; // buff color bit width
+
+		u8 N = 65, M = 4;
+		F = 6; //(24MHz*N)/M/F=65MHZ
+		C_Bit(TCON->TCON_FRM_CTRL_REG, 31);
+		TCON->TCON_FRM_CTRL_REG = ((N - 1) << 8) | ((M - 1) << 0) | (3 << 24);
+		S_Bit(TCON->TCON_FRM_CTRL_REG, 31);
+		delay_ms(1);
+	}
+	else if (lcd_type == LCD_TYPE_VGA_640_480_60HZ)
+	{
+		// LCD mode 0-cpu 1-rgb
+		lcd_pdat->mode = 1;
+		// LCD width and height
+		lcd_pdat->width = 640;
+		lcd_pdat->height = 480;
+		// Pixel width
+		lcd_pdat->bits_per_pixel = 16;
+
+		// Timing
+		lcd_pdat->timing.h_front_porch = 16; //
+		lcd_pdat->timing.h_back_porch = 48;	 //
+		lcd_pdat->timing.h_sync_len = 96;		 //HSPW
+		lcd_pdat->timing.v_front_porch = 10; //
+		lcd_pdat->timing.v_back_porch = 33;	 //
+		lcd_pdat->timing.v_sync_len = 2;		 //VSPW
+		// Polarity setting 0 inverted
+		lcd_pdat->timing.h_sync_active = 0;
+		lcd_pdat->timing.v_sync_active = 0;
+		lcd_pdat->timing.den_active = 1; // Inverted
+		lcd_pdat->timing.clk_active = 0;
+		/*********************************DEBE SET**************************/
+		lcd_pdat->index = 0;					 // FB index
+		lcd_pdat->bytes_per_pixel = 2; // buff color bit width
+
+		u8 N = 23, M = 2;
+		F = 11; //LCD=276000000/11=25090909
+		C_Bit(TCON->TCON_FRM_CTRL_REG, 31);
+		TCON->TCON_FRM_CTRL_REG = ((N - 1) << 8) | ((M - 1) << 0) | (3 << 24);
+		S_Bit(TCON->TCON_FRM_CTRL_REG, 31);
+		delay_ms(1);
+	}
+	else if (lcd_type == LCD_TYPE_VGA_640_480_75HZ)
+	{
+		// LCD mode 0-cpu 1-rgb
+		lcd_pdat->mode = 1;
+		// LCD width and height
+		lcd_pdat->width = 640;
+		lcd_pdat->height = 480;
+		// Pixel width
+		lcd_pdat->bits_per_pixel = 16;
+
+		// Timing
+		lcd_pdat->timing.h_front_porch = 16; //
+		lcd_pdat->timing.h_back_porch = 120; //
+		lcd_pdat->timing.h_sync_len = 64;		 //HSPW
+		lcd_pdat->timing.v_front_porch = 1;	 //
+		lcd_pdat->timing.v_back_porch = 16;	 //
+		lcd_pdat->timing.v_sync_len = 3;		 //VSPW
+		// Polarity setting 0 inverted
+		lcd_pdat->timing.h_sync_active = 0;
+		lcd_pdat->timing.v_sync_active = 0;
+		lcd_pdat->timing.den_active = 1; // Inverted
+		lcd_pdat->timing.clk_active = 0;
+		/*********************************DEBE SET**************************/
+		lcd_pdat->index = 0;					 // FB index
+		lcd_pdat->bytes_per_pixel = 2; // buff color bit width
+
+		u8 N = 63, M = 8;
+		F = 6;
+		C_Bit(TCON->TCON_FRM_CTRL_REG, 31);
+		TCON->TCON_FRM_CTRL_REG = ((N - 1) << 8) | ((M - 1) << 0) | (3 << 24);
+		S_Bit(TCON->TCON_FRM_CTRL_REG, 31);
+		delay_ms(1);
+	}
+	else if (lcd_type == LCD_TYPE_TV_PAL_720_576)
+	{
+		return 1;
+	}
+	else
+	{
+		return 1;
+	}
+
+	if (buffer)
+	{
+		lcd_pdat->vram[0] = (pixel_format *)buffer;
+	}
+	else
+	{
+		lcd_pdat->vram[0] = (pixel_format *)malloc(lcd_pdat->width * lcd_pdat->height * sizeof(pixel_format));
+	}
+	memset(lcd_pdat->vram[0], 0xFF, lcd_pdat->width * lcd_pdat->height * sizeof(pixel_format));
+	fb_buffer = lcd_pdat->vram[0];
+	fb_width = lcd_pdat->width;
+	fb_height = lcd_pdat->height;
+
+	fb_io_init();
+	fb_tcon_disable();
+	debe_disable();
+	debe_init(lcd_pdat->width, lcd_pdat->height, lcd_pdat->vram[0]);
+	debe_enable();
+	fb_tcon_init(F);
+	fb_tcon_enable();
 }
 
 void fb_clear(pixel_format data)

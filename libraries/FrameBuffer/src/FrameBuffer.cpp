@@ -6,17 +6,18 @@ FrameBuffer::FrameBuffer()
 }
 
 // ~FrameBuffer();
-int FrameBuffer::begin(int width, int height, int bright)
+int FrameBuffer::begin(lcd_type_t lcd_type, int bright)
 {
 	// fb_init(&framebuffer, width, height);
 	// fb_setbl(&framebuffer, bright);
-	fb_init(width, height);
+	// fb_init(width, height);
+	fb_init(lcd_type, NULL);
 	return 0;
 }
 
-int begin(pixel_format *data, int width = 480, int height = 272, int bright = 100)
+int begin(pixel_format *data, lcd_type_t lcd_type, int bright = 100)
 {
-	fb_init_buffer(data, width, height);
+	fb_init(lcd_type, data);
 	return 0;
 }
 
