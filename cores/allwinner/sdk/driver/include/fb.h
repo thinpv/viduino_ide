@@ -1,11 +1,11 @@
-#ifndef __SYS_LCD_H__
-#define __SYS_LCD_H__
+#ifndef __FB_H__
+#define __FB_H__
 
 // #include "sys_types.h"
 #include <types.h>
 
 //����LCD
-#define LCD_TYPE_RGB43_480_272
+// #define LCD_TYPE_RGB43_480_272
 //#define LCD_TYPE_RGB43_800_480
 //#define LCD_TYPE_Vga_1024_768
 //#define LCD_TYPE_Vga_640_480_60HZ
@@ -15,35 +15,35 @@
 typedef unsigned short pixel_format;
 
 //-------------------------------------------
-#ifdef LCD_TYPE_TV_PAL_720_576
-#define XSIZE_PHYS (unsigned int)720
-#define YSIZE_PHYS (unsigned int)576
-#endif
-//-------------------------------------------
-#ifdef LCD_TYPE_RGB43_480_272
-#define XSIZE_PHYS (unsigned int)480
-#define YSIZE_PHYS (unsigned int)272
-#endif
-//-------------------------------------------
-#ifdef LCD_TYPE_RGB43_800_480
-#define XSIZE_PHYS (unsigned int)800
-#define YSIZE_PHYS (unsigned int)480
-#endif
-//-------------------------------------------
-#ifdef LCD_TYPE_Vga_1024_768
-#define XSIZE_PHYS (unsigned int)1024
-#define YSIZE_PHYS (unsigned int)768
-#endif
-//-------------------------------------------
-#ifdef LCD_TYPE_Vga_640_480_75HZ
-#define XSIZE_PHYS (unsigned int)640
-#define YSIZE_PHYS (unsigned int)480
-#endif
-//-------------------------------------------
-#ifdef LCD_TYPE_Vga_640_480_60HZ
-#define XSIZE_PHYS (unsigned int)640
-#define YSIZE_PHYS (unsigned int)480
-#endif
+// #ifdef LCD_TYPE_TV_PAL_720_576
+// #define XSIZE_PHYS (unsigned int)720
+// #define YSIZE_PHYS (unsigned int)576
+// #endif
+// //-------------------------------------------
+// #ifdef LCD_TYPE_RGB43_480_272
+// #define XSIZE_PHYS (unsigned int)480
+// #define YSIZE_PHYS (unsigned int)272
+// #endif
+// //-------------------------------------------
+// #ifdef LCD_TYPE_RGB43_800_480
+// #define XSIZE_PHYS (unsigned int)800
+// #define YSIZE_PHYS (unsigned int)480
+// #endif
+// //-------------------------------------------
+// #ifdef LCD_TYPE_Vga_1024_768
+// #define XSIZE_PHYS (unsigned int)1024
+// #define YSIZE_PHYS (unsigned int)768
+// #endif
+// //-------------------------------------------
+// #ifdef LCD_TYPE_Vga_640_480_75HZ
+// #define XSIZE_PHYS (unsigned int)640
+// #define YSIZE_PHYS (unsigned int)480
+// #endif
+// //-------------------------------------------
+// #ifdef LCD_TYPE_Vga_640_480_60HZ
+// #define XSIZE_PHYS (unsigned int)640
+// #define YSIZE_PHYS (unsigned int)480
+// #endif
 //-------------------------------------------
 
 #ifdef __cplusplus
@@ -114,6 +114,16 @@ extern "C"
 		} timing;
 	};
 
+	typedef enum
+	{
+		LCD_TYPE_RGB_480_272 = 0,
+		LCD_TYPE_RGB_800_480,
+		LCD_TYPE_VGA_1024_768,
+		LCD_TYPE_VGA_640_480_60HZ,
+		LCD_TYPE_VGA_640_480_75HZ,
+		LCD_TYPE_TV_PAL_720_576
+	} lcd_type_t;
+
 	extern struct fb_f1c100s_pdata_t *lcd_pdat;
 
 	extern pixel_format *fb_buffer;
@@ -134,7 +144,7 @@ extern "C"
 	void fb_area_present_xy(int x, int y, int w, int h, pixel_format *data);
 	void fb_pixel_present(int x, int y, pixel_format data);
 	pixel_format *fb_get_buffer();
-	void fb_area_present_888(int x, int y, int w, int h, uint32_t *data);//untest
+	void fb_area_present_888(int x, int y, int w, int h, uint32_t *data); //untest
 
 	void swap_r_b(uint8_t enable);
 

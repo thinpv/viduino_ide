@@ -63,7 +63,6 @@ typedef struct
 	vuint32_t rsv5;
 	vuint32_t PLL_PERIPH_CTRL_REG; //PLL_PERIPH Control Register
 	vuint32_t rsv6[9];
-
 	vuint32_t CPU_CLK_SRC_REG;		 //CPU Clock Source Register
 	vuint32_t AHB_APB_HCLKC_CFG_REG; //AHB/APB/HCLKC Configuration Register
 	vuint32_t rsv7[2];
@@ -168,10 +167,10 @@ typedef struct
 	vuint32_t SPI_MTC_REG; //Transmit Counter Register
 	vuint32_t SPI_BCC_REG; //Burst Control Counter Register
 	vuint32_t rsv4[113];
-	vuint8_t SPI_TXD_REG; //TX Data Register
-	vuint8_t rsv5[3];
+	vuint8_t  SPI_TXD_REG; //TX Data Register
+	vuint8_t  rsv5[3];
 	vuint32_t rsv6[63];
-	vuint8_t SPI_RXD_REG; //RX Data Register
+	vuint8_t  SPI_RXD_REG; //RX Data Register
 } SPI_Type;
 
 typedef struct
@@ -418,11 +417,11 @@ typedef struct
 
 typedef struct
 {
-	vuint8_t res0[0x800];			   /* 0x000 */
+	vuint8_t  res0[0x800];			   /* 0x000 */
 	vuint32_t DEBE_MODE_CTRL_REG;	   /* 0x800 */
 	vuint32_t DEBE_COLOR_CTRL_REG;	   /* 0x804 */
 	vuint32_t disp_size;			   /* 0x808 */
-	vuint8_t res1[0x4];				   /* 0x80c */
+	vuint8_t  res1[0x4];				   /* 0x80c */
 	vuint32_t DEBE_LAY0_SIZE_REG;	   /* 0x810 */
 	vuint32_t DEBE_LAY1_SIZE_REG;	   /* 0x814 */
 	vuint32_t DEBE_LAY2_SIZE_REG;	   /* 0x818 */
@@ -431,7 +430,7 @@ typedef struct
 	vuint32_t DEBE_LAY1_CODNT_REG;	   /* 0x824 */
 	vuint32_t DEBE_LAY2_CODNT_REG;	   /* 0x828 */
 	vuint32_t DEBE_LAY3_CODNT_REG;	   /* 0x82c */
-	vuint8_t res2[0x10];			   /* 0x830 */
+	vuint8_t  res2[0x10];			   /* 0x830 */
 	vuint32_t DEBE_LAY0_LINEWIDTH_REG; /* 0x840 */
 	vuint32_t DEBE_LAY1_LINEWIDTH_REG; /* 0x844 */
 	vuint32_t DEBE_LAY2_LINEWIDTH_REG; /* 0x848 */
@@ -445,11 +444,11 @@ typedef struct
 	vuint32_t layer2_addr_high4b;	   /* 0x868 */
 	vuint32_t layer3_addr_high4b;	   /* 0x86c */
 	vuint32_t DEBE_REGBUFF_CTRL_REG;   /* 0x870 */
-	vuint8_t res3[0xc];				   /* 0x874 */
+	vuint8_t  res3[0xc];				   /* 0x874 */
 	vuint32_t DEBE_CK_MAX_REG;		   /* 0x880 */
 	vuint32_t DEBE_CK_MIN_REG;		   /* 0x884 */
 	vuint32_t DEBE_CK_CFG_REG;		   /* 0x888 */
-	vuint8_t res4[0x4];				   /* 0x88c */
+	vuint8_t  res4[0x4];				   /* 0x88c */
 	vuint32_t DEBE_LAY0_ATT_CTRL_REG0; /* 0x890 */
 	vuint32_t DEBE_LAY1_ATT_CTRL_REG0; /* 0x894 */
 	vuint32_t DEBE_LAY2_ATT_CTRL_REG0; /* 0x898 */
@@ -458,11 +457,58 @@ typedef struct
 	vuint32_t DEBE_LAY1_ATT_CTRL_REG1; /* 0x8a4 */
 	vuint32_t DEBE_LAY2_ATT_CTRL_REG1; /* 0x8a8 */
 	vuint32_t DEBE_LAY3_ATT_CTRL_REG1; /* 0x8ac */
-	vuint8_t res5[0x110];			   /* 0x8b0 */
+	vuint8_t  res5[0x110];			   /* 0x8b0 */
 	vuint32_t output_color_ctrl;	   /* 0x9c0 */
-	vuint8_t res6[0xc];				   /* 0x9c4 */
+	vuint8_t  res6[0xc];				   /* 0x9c4 */
 	vuint32_t output_color_coef[12];   /* 0x9d0 */
 } DEBE_Type;
+
+typedef struct
+{
+	vuint32_t TCON_CTRL_REG;					/* 0x00 */
+	vuint32_t TCON_INT_REG0;					/* 0x04 */
+	vuint32_t TCON_INT_REG1;					/* 0x08 */
+	vuint32_t res0[1];			/* 0x0c */
+	vuint32_t TCON_FRM_CTRL_REG;		/* 0x10 */
+	vuint32_t TCON_FRM_SEED0_R_REG;	/* 0x14 */
+	vuint32_t TCON_FRM_SEED0_G_REG;	/* 0x18 */
+	vuint32_t TCON_FRM_SEED0_B_REG;	/* 0x1c */
+	vuint32_t TCON_FRM_SEED1_R_REG;	/* 0x20 */
+	vuint32_t TCON_FRM_SEED1_G_REG;	/* 0x24 */
+	vuint32_t TCON_FRM_SEED1_B_REG;	/* 0x28 */
+	vuint32_t TCON_FRM_TBL_REG0;	/* 0x2c */
+	vuint32_t TCON_FRM_TBL_REG1;	/* 0x30 */
+	vuint32_t TCON_FRM_TBL_REG2;	/* 0x34 */
+	vuint32_t TCON_FRM_TBL_REG3;	/* 0x38 */
+	vuint32_t res1[1];				/* 0x3c */
+	vuint32_t TCON0_CTRL_REG;			/* 0x40 */
+	vuint32_t TCON_CLK_CTRL_REG;			/* 0x44 */
+	vuint32_t TCON0_BASIC_TIMING_REG0;	/* 0x48 */
+	vuint32_t TCON0_BASIC_TIMING_REG1;		/* 0x4c */
+	vuint32_t TCON0_BASIC_TIMING_REG2;		/* 0x50 */
+	vuint32_t TCON0_BASIC_TIMING_REG3;	/* 0x54 */
+	vuint32_t TCON0_HV_TIMING_REG;		/* 0x58 */
+	vuint32_t res2[1];			/* 0x5c */
+	vuint32_t TCON0_CPU_IF_REG;		/* 0x60 */
+	vuint32_t TCON0_CPU_WR_REG;		/* 0x64 */
+	vuint32_t TCON0_CPU_RD_REG;	/* 0x68 */
+	vuint32_t TCON0_CPU_RD_NX_REG;	/* 0x6c */
+	vuint32_t res3[6];			/* 0x70 */
+	vuint32_t TCON0_IO_CTRL_REG0;	/* 0x88 */
+	vuint32_t TCON0_IO_CTRL_REG1;	/* 0x8c */
+	vuint32_t TCON1_CTRL_REG;			/* 0x90 */
+	vuint32_t TCON1_BASIC_REG0;	/* 0x94 */
+	vuint32_t TCON1_BASIC_REG1;	/* 0x98 */
+	vuint32_t TCON1_BASIC_REG2;		/* 0x9c */
+	vuint32_t TCON1_BASIC_REG3;		/* 0xa0 */
+	vuint32_t TCON1_BASIC_REG4;		/* 0xa4 */
+	vuint32_t TCON1_BASIC_REG5;	/* 0xa8 */
+	vuint32_t res4[17];			/* 0xac */
+	vuint32_t TCON1_IO_CTRL_REG0;	/* 0xf0 */
+	vuint32_t TCON1_IO_CTRL_REG1;	/* 0xf4 */
+	vuint32_t res5[1];			/* 0xf8 */
+	vuint32_t TCON_DEBUG_INFO_REG;	/* 0xfc */
+} TCON_Type;
 
 #define CCU ((CCU_Type *)(CCU_BASE + 0x0))
 
@@ -509,6 +555,8 @@ typedef struct
 #define KEYADC ((KEYADC_Type *)KEYADC_BASE)
 
 #define DEBE ((DEBE_Type *)DEBE_BASE)
+
+#define TCON ((TCON_Type *)TCON_BASE)
 
 #include <gpio.h>
 #include <uart.h>
