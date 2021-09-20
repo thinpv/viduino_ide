@@ -186,6 +186,27 @@ int boot_main(int argc, char **argv)
 #else
 	timer0_set();
 
+#ifdef TEST_I2C_C
+	// gpio_set_cfg(GPIOD, 0, GPIO_FUNC_011);
+	// gpio_set_pull(GPIOD, 0, GPIO_PULL_UP);
+	// gpio_set_cfg(GPIOD, 12, GPIO_FUNC_011);
+	// gpio_set_pull(GPIOD, 12, GPIO_PULL_UP);
+	gpio_set_cfg(GPIOE, 11, GPIO_FUNC_011);
+	gpio_set_pull(GPIOE, 11, GPIO_PULL_UP);
+	gpio_set_cfg(GPIOE, 12, GPIO_FUNC_011);
+	gpio_set_pull(GPIOE, 12, GPIO_PULL_UP);
+	i2c_init(I2C0, 400000);
+	uint8_t data;
+	printf("i2c start scan\r\n");
+	for (int i = 0; i < 127; i++)
+	{
+		if (i2c_read(I2C0, i, &data, 1, 1) == 1)
+		{
+			printf("found i2c addr %d\r\n", i);
+		}
+	}
+#endif
+
 #ifdef TEST_PNG_C
 	fb_init(480, 272);
 	swap_r_b(0);
@@ -198,44 +219,61 @@ int boot_main(int argc, char **argv)
 	UINT br;
 	if (f_mount(&sdfs, "1:", 1) == FR_OK)
 	{
-		if (f_opendir(&dp1, "1:/png") != FR_NO_PATH)
+		if (f_opendir(&dp1, "1:/z7") != FR_NO_PATH)
 		{
-			rs = f_open(&fp1, "1:/png/fb.png", FA_OPEN_ALWAYS | FA_READ);
+			rs = f_open(&fp1, "1:/z7/test.lzma", FA_OPEN_ALWAYS | FA_READ);
 			if (rs == FR_OK)
 			{
-				uint8_t *data = malloc(fp1.obj.objsize);
-				rs = f_read(&fp1, data, fp1.obj.objsize, &br);
+				fileInSize = fp1.obj.objsize;
+				printf("file size: %d\r\n", fileInSize);
+				bufferFileIn = malloc(fileInSize);
+				rs = f_read(&fp1, bufferFileIn, fileInSize, &br);
 				if (rs == FR_OK)
 				{
-					printf("f_read ok, size: %d\r\n", fp1.obj.objsize);
-					uint8_t *buffer;
-					uint32_t size;
-					uint32_t w, h;
-					// Png_Decode(data, fp1.obj.objsize);
-					if (Png_Decode(data, fp1.obj.objsize, 0, &buffer, &size, &w, &h) == 0)
-					{
-						printf("Png_Decode ok w: %d, h: %d\r\n", w, h);
-						Defe_Config_argb8888_to_argb8888(w, h, 480, 272, 0);
-						Defe_conversion_buff(buffer, 0);
-						Defe_Start();
-						S_Bit(DEBE->DEBE_LAY0_ATT_CTRL_REG0, 1);
-						// fb_area_present(0, 0, w, h, buffer);
-						printf("Png_Decode ok2\r\n");
-						delay(5000);
-						free(buffer);
-						printf("Png_Decode ok3\r\n");
-					}
+					printf("start decode\r\n");
+					my_decode();
+					// main_7z("1:/z7/test.7z");
 				}
-				else
-				{
-					printf("f_read error %d\r\n", rs);
-				}
-			}
-			else
-			{
-				printf("f_open error %d\r\n", rs);
 			}
 		}
+		// if (f_opendir(&dp1, "1:/png") != FR_NO_PATH)
+		// {
+		// 	rs = f_open(&fp1, "1:/png/fb.png", FA_OPEN_ALWAYS | FA_READ);
+		// 	if (rs == FR_OK)
+		// 	{
+		// 		uint8_t *data = malloc(fp1.obj.objsize);
+		// 		rs = f_read(&fp1, data, fp1.obj.objsize, &br);
+		// 		if (rs == FR_OK)
+		// 		{
+		// 			printf("f_read ok, size: %d\r\n", fp1.obj.objsize);
+		// 			uint8_t *buffer;
+		// 			uint32_t size;
+		// 			uint32_t w, h;
+		// 			// Png_Decode(data, fp1.obj.objsize);
+		// 			if (Png_Decode(data, fp1.obj.objsize, 0, &buffer, &size, &w, &h) == 0)
+		// 			{
+		// 				printf("Png_Decode ok w: %d, h: %d\r\n", w, h);
+		// 				Defe_Config_argb8888_to_argb8888(w, h, 480, 272, 0);
+		// 				Defe_conversion_buff(buffer, 0);
+		// 				Defe_Start();
+		// 				S_Bit(DEBE->DEBE_LAY0_ATT_CTRL_REG0, 1);
+		// 				// fb_area_present(0, 0, w, h, buffer);
+		// 				printf("Png_Decode ok2\r\n");
+		// 				delay(5000);
+		// 				free(buffer);
+		// 				printf("Png_Decode ok3\r\n");
+		// 			}
+		// 		}
+		// 		else
+		// 		{
+		// 			printf("f_read error %d\r\n", rs);
+		// 		}
+		// 	}
+		// 	else
+		// 	{
+		// 		printf("f_open error %d\r\n", rs);
+		// 	}
+		// }
 		else
 		{
 			printf("Path not exists...\r\n");
@@ -246,8 +284,8 @@ int boot_main(int argc, char **argv)
 		printf("f_mount error\r\n");
 	}
 
-	printf("Test_png\r\n");
-	Test_png();
+	// printf("Test_png\r\n");
+	// Test_png();
 	delay(2000);
 #endif
 #ifdef TEST_FATFS_C
@@ -324,33 +362,10 @@ int boot_main(int argc, char **argv)
 	Defe_Start();
 	S_Bit(DEBE->DEBE_LAY0_ATT_CTRL_REG0, 1);
 	nes_load(_aczdcr, sizeof(_aczdcr));
-#ifdef TEST_I2C_C
-	gpio_set_cfg(GPIOD, 0, GPIO_FUNC_011);
-	gpio_set_pull(GPIOD, 0, GPIO_PULL_UP);
-	gpio_set_cfg(GPIOD, 12, GPIO_FUNC_011);
-	gpio_set_pull(GPIOD, 12, GPIO_PULL_UP);
-	i2c_init(I2C0, 400000);
-	uint8_t data;
-	printf("i2c start scan\r\n");
-	while (1)
-	{
-		for (int i = 0; i < 127; i++)
-		{
-			nes_loop();
-			if (i2c_read(I2C0, i, &data, 1, 1) == 1)
-			{
-				printf("found i2c addr %d\r\n", i);
-			}
-		}
-		nes_loop();
-		// delay(1000);
-	}
-#else
 	for (;;)
 	{
 		nes_loop();
 	}
-#endif
 
 #elif defined TEST_JPEG_C
 	int res = 0;
@@ -374,25 +389,6 @@ int boot_main(int argc, char **argv)
 	Defe_Start();
 	S_Bit(DEBE->DEBE_LAY0_ATT_CTRL_REG0, 1);
 	// LCD_Draw_Picture(0, 0, argb_w == 0 ? jpeg_w : argb_w, argb_h == 0 ? jpeg_h : argb_h, out_argb);
-#elif defined TEST_I2C_C
-	gpio_set_cfg(GPIOD, 0, GPIO_FUNC_011);
-	gpio_set_pull(GPIOD, 0, GPIO_PULL_UP);
-	gpio_set_cfg(GPIOD, 12, GPIO_FUNC_011);
-	gpio_set_pull(GPIOD, 12, GPIO_PULL_UP);
-	i2c_init(I2C0, 400000);
-	uint8_t data;
-	printf("i2c start scan\r\n");
-	while (1)
-	{
-		for (int i = 0; i < 127; i++)
-		{
-			if (i2c_read(I2C0, i, &data, 1, 1) == 1)
-			{
-				printf("found i2c addr %d\r\n", i);
-			}
-		}
-		delay(100);
-	}
 #else
 	maincpp();
 #endif
@@ -422,5 +418,3 @@ void __aeabi_dcmpun()
 {
 }
 void __aeabi_fcmpun() {}
-void __dso_handle() {}
-void _fini() {}
