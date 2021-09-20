@@ -64,7 +64,7 @@ class TwoWire : public Stream
     inline size_t write(int n) { return write((uint8_t)n); }
     using Print::write;
 
-    void scan(int start=0x08, int end=0x78);
+    void scan(Print &print, int start=0x08, int end=0x78);
 };
 
 extern TwoWire Wire;

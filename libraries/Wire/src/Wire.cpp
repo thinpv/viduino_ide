@@ -375,20 +375,21 @@ void TwoWire::onRequest(void (*function)(void))
 
 // Preinstantiate Objects //////////////////////////////////////////////////////
 
-void TwoWire::scan(int start, int end)
+void TwoWire::scan(Print &print, int start, int end)
 {
 	uint8_t temp;
+	print.println("I2C start scan");
 	for (int addr = start; addr < end; ++addr)
 	{
 		beginTransmission(addr);
 		int ret = endTransmission(true);
 		if (ret == 0)
 		{
-			Serial.print("SCAN Find device: 0x");
-			Serial.println(addr, HEX);
+			print.print("Find I2C device addr: 0x");
+			print.println(addr, HEX);
 		}
 	}
-	Serial.println("SCAN done");
+	print.println("I2C scan done");
 }
 
 TwoWire Wire(&I2C_Desc[0]);

@@ -61,7 +61,7 @@ extern "C"
 // #include "HardwareTimer.h"
 // #include "wiring_pulse.h"
 #include "Uart.h"
-#include "Wire.h"
+// #include "Wire.h"
 
 #ifdef USE_FREERTOS
 #include "FreeRTOS.h"
