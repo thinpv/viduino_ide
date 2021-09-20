@@ -121,7 +121,6 @@ void loop()
 #include <defe.h>
 #include <fb.h>
 #include <io.h>
-#include <reg-debe.h>
 #include <stdlib.h>
 
 // FrameBuffer framebuffer;

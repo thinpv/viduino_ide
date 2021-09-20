@@ -1,6 +1,5 @@
 #include "fb.h"
-#include "reg-debe.h"
-#include "reg-tcon.h"
+// #include "reg-debe.h"
 #include <stdlib.h>
 
 #include <irq.h>
@@ -417,9 +416,9 @@ pixel_format *fb_get_buffer()
 void swap_r_b(uint8_t enable)
 {
 	if (enable)
-		S_BIT(F1C100S_TCON_BASE + 0x40, 23);
+		S_Bit(TCON->TCON0_CTRL_REG, 23);
 	else
-		C_BIT(F1C100S_TCON_BASE + 0x40, 23);
+		C_Bit(TCON->TCON0_CTRL_REG, 23);
 }
 
 static uint16_t convert_888_to_565(uint32_t data_888)

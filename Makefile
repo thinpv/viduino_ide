@@ -52,7 +52,7 @@ SRCDIRS			+= .
 INCDIRS			+= $(BOOT)/include $(BOOT)/include/f1c100s
 SRCDIRS			+= $(BOOT)
 
-INCDIRS			+= $(LIB) $(LIB)/include
+INCDIRS			+= $(LIB)/include
 SRCDIRS			+= $(LIB)
 
 INCDIRS			+= $(DRIVER)/include

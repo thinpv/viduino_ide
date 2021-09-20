@@ -1,12 +1,7 @@
 #include "nes_ppu.h"
 #include "string.h"
-// #include "main.h"
 #include "sys-print.h"
-// #include "sys_lcd.h"
-// #include "sys_defe.h"
 #include "nes_main.h"
-// #include "sys_cache.h"
-#include <reg-debe.h>
 #include <fb.h>
 #include <io.h>
 

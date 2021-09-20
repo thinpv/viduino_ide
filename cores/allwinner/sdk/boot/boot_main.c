@@ -168,7 +168,7 @@ int boot_main(int argc, char **argv)
 	sys_print_init();
 
 	do_init_mem_pool();
-	do_init_dma_pool();
+	// do_init_dma_pool();
 
 	// sys_mmu_init();
 
