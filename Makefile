@@ -15,6 +15,7 @@ CP = cp
 MKDIR = mkdir
 SED = sed
 PYTHON = python
+VIDUINO = viduino-0.0.9.tar
 
 COMPILE			= /home/thinpv/.arduino15/packages/arduino/tools/arm-none-eabi-gcc/7-2017q4/bin/arm-none-eabi-
 CC					= $(COMPILE)gcc
@@ -48,15 +49,19 @@ LDFLAGS			+=	-Wl,-gc-sections
 LIBS 				:= -lgcc -lm -lc -lnosys
 
 SRCDIRS			+= .
+SDKSRCDIRS	= 
 
-INCDIRS			+= $(BOOT)/include $(BOOT)/include/f1c100s
+INCDIRS			+= $(BOOT) $(BOOT)/f1c100s
 SRCDIRS			+= $(BOOT)
+SDKSRCDIRS	+= $(BOOT)
 
-INCDIRS			+= $(LIB)/include
+INCDIRS			+= $(LIB)
 SRCDIRS			+= $(LIB)
+SDKSRCDIRS	+= $(LIB)
 
-INCDIRS			+= $(DRIVER)/include
+INCDIRS			+= $(DRIVER)
 SRCDIRS			+= $(DRIVER)
+SDKSRCDIRS	+= $(DRIVER)
 
 INCDIRS			+= $(API)
 SRCDIRS			+= $(API)
@@ -117,11 +122,20 @@ SFILES	:=	$(foreach dir, $(SRCDIRS), $(wildcard $(dir)/*.S))
 CFILES	:=	$(foreach dir, $(SRCDIRS), $(wildcard $(dir)/*.c))
 CPFILES	:=	$(foreach dir, $(SRCDIRS), $(wildcard $(dir)/*.cpp))
 
+SDKSFILES	:=	$(foreach dir, $(SDKSRCDIRS), $(wildcard $(dir)/*.S))
+SDKCFILES	:=	$(foreach dir, $(SDKSRCDIRS), $(wildcard $(dir)/*.c))
+SDKCPFILES	:=	$(foreach dir, $(SDKSRCDIRS), $(wildcard $(dir)/*.cpp))
+
 INCLUDE	:=	$(patsubst %, -I %, $(INCDIRS))
 LIBFILE	:=	$(patsubst %, %, $(LIBFILES))
 SOBJS		:=	$(patsubst %, $(BUILD)/%, $(SFILES:.S=.o))
 COBJS		:=	$(patsubst %, $(BUILD)/%, $(CFILES:.c=.o))
 CPOBJS		:=	$(patsubst %, $(BUILD)/%, $(CPFILES:.cpp=.o))
+
+SDKSOBJS		:=	$(patsubst %, $(BUILD)/%, $(SDKSFILES:.S=.o))
+SDKCOBJS		:=	$(patsubst %, $(BUILD)/%, $(SDKCFILES:.c=.o))
+SDKCPOBJS		:=	$(patsubst %, $(BUILD)/%, $(SDKCPFILES:.cpp=.o))
+SDKOBJS = $(SDKSOBJS) $(SDKCOBJS) $(SDKCPOBJS)
 
 OBJ = $(SOBJS) $(COBJS) $(CPOBJS)
 
@@ -158,3 +172,15 @@ write:
 
 clean:
 	rm -rf $(BUILD)
+
+viduino: $(SDKOBJS)
+	mkdir viduino
+	cp -r cores libraries tools variants boards.txt platform.txt programmers.txt viduino
+	$(AR) viduino/cores/allwinner/sdk/libsdk.a $(SDKOBJS)
+	rm viduino/$(BOOT)/*.c viduino/$(BOOT)/*.S
+	rm viduino/$(DRIVER)/*.c
+	rm viduino/$(LIB)/*.c
+	tar -cf $(VIDUINO) viduino 
+	# rm -r viduino
+	sha256sum $(VIDUINO) | tr '[a-z]' '[A-Z]'
+	ls -ls $(VIDUINO)

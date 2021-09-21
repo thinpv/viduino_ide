@@ -1,5 +1,4 @@
 #include "fb.h"
-// #include "reg-debe.h"
 #include <stdlib.h>
 
 #include <irq.h>
