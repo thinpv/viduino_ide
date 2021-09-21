@@ -52,15 +52,15 @@ SRCDIRS			+= .
 SDKSRCDIRS	= 
 
 INCDIRS			+= $(BOOT) $(BOOT)/f1c100s
-SRCDIRS			+= $(BOOT)
+# SRCDIRS			+= $(BOOT)
 SDKSRCDIRS	+= $(BOOT)
 
 INCDIRS			+= $(LIB)
-SRCDIRS			+= $(LIB)
+# SRCDIRS			+= $(LIB)
 SDKSRCDIRS	+= $(LIB)
 
 INCDIRS			+= $(DRIVER)
-SRCDIRS			+= $(DRIVER)
+# SRCDIRS			+= $(DRIVER)
 SDKSRCDIRS	+= $(DRIVER)
 
 INCDIRS			+= $(API)
@@ -68,6 +68,9 @@ SRCDIRS			+= $(API)
 
 INCDIRS			+= $(CORES)
 SRCDIRS			+= $(CORES)
+
+INCDIRS			+= libraries/Wire/src
+SRCDIRS			+= libraries/Wire/src
 
 INCDIRS			+= libraries/fatfs/src
 SRCDIRS			+= libraries/fatfs/src
@@ -131,20 +134,21 @@ LIBFILE	:=	$(patsubst %, %, $(LIBFILES))
 SOBJS		:=	$(patsubst %, $(BUILD)/%, $(SFILES:.S=.o))
 COBJS		:=	$(patsubst %, $(BUILD)/%, $(CFILES:.c=.o))
 CPOBJS		:=	$(patsubst %, $(BUILD)/%, $(CPFILES:.cpp=.o))
+OBJS = $(SOBJS) $(COBJS) $(CPOBJS)
 
 SDKSOBJS		:=	$(patsubst %, $(BUILD)/%, $(SDKSFILES:.S=.o))
 SDKCOBJS		:=	$(patsubst %, $(BUILD)/%, $(SDKCFILES:.c=.o))
 SDKCPOBJS		:=	$(patsubst %, $(BUILD)/%, $(SDKCPFILES:.cpp=.o))
 SDKOBJS = $(SDKSOBJS) $(SDKCOBJS) $(SDKCPOBJS)
 
-OBJ = $(SOBJS) $(COBJS) $(CPOBJS)
+ALLOBJ = $(OBJS) $(SDKOBJS)
 
-OBJ_DIRS = $(sort $(dir $(OBJ)))
+ALLOBJ_DIRS = $(sort $(dir $(ALLOBJ)))
 
 all: $(BUILD)/firmware.bin
 
-$(OBJ): | $(OBJ_DIRS)
-$(OBJ_DIRS):
+$(ALLOBJ): | $(ALLOBJ_DIRS)
+$(ALLOBJ_DIRS):
 	$(MKDIR) -p $@
 
 $(BUILD)/%.o: %.S
@@ -162,9 +166,10 @@ $(BUILD)/%.o: %.cpp
 $(BUILD)/firmware.bin: $(BUILD)/firmware.elf
 	$(OBJCOPY) -v -O binary $^ $@
 
-$(BUILD)/firmware.elf: $(OBJ)
+$(BUILD)/firmware.elf: $(ALLOBJ)
+	$(AR) $(BUILD)/libsdk.a $(SDKOBJS)
 	$(ECHO) "LINK $@"
-	$(CXX) $(LDFLAGS) -Wl,--cref,-Map=$@.map -o $@ $^ $(LIBFILE) $(LIBS)
+	$(CXX) $(LDFLAGS) -Wl,--cref,-Map=$@.map -o $@ $(BUILD)/libsdk.a $(OBJS) $(BUILD)/libsdk.a $(LIBFILE) $(LIBS)
 	$(SIZE) $@
 
 write:
@@ -181,6 +186,6 @@ viduino: $(SDKOBJS)
 	rm viduino/$(DRIVER)/*.c
 	rm viduino/$(LIB)/*.c
 	tar -cf $(VIDUINO) viduino 
-	# rm -r viduino
+	rm -r viduino
 	sha256sum $(VIDUINO) | tr '[a-z]' '[A-Z]'
 	ls -ls $(VIDUINO)
