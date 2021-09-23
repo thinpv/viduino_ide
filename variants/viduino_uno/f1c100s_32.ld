@@ -1,6 +1,12 @@
 OUTPUT_FORMAT("elf32-littlearm", "elf32-bigarm", "elf32-littlearm")
 OUTPUT_ARCH(arm)
-ENTRY(__vector)
+ENTRY(_vector)
+
+STACK_UND_SIZE = 0x10000;
+STACK_ABT_SIZE = 0x10000;
+STACK_IRQ_SIZE = 0x10000;
+STACK_FIQ_SIZE = 0x10000;
+STACK_SRV_SIZE = 0x40000;
 
 MEMORY
 {
@@ -11,43 +17,23 @@ MEMORY
 
 SECTIONS
 {
-  .text :
-  {
-    PROVIDE(__image_start = .);
-	  PROVIDE(__text_start = .);
+	.text :
+	{
+		PROVIDE(__image_start = .);
+		PROVIDE(__text_start = .);
     PROVIDE(__vectors_start = .);
     *(.vectors);
     . = ALIGN(4);
     PROVIDE(__vectors_end = .);
 		*(.text*)
-    . = ALIGN(4);
 		*(.init.text)
-    . = ALIGN(4);
 		*(.exit.text)
-    . = ALIGN(4);
 		*(.glue*)
-    . = ALIGN(4);
 		*(.note.gnu.build-id)
-    . = ALIGN(4);
-    etext = .;
-    PROVIDE(__text_end = .);
-  } > ram
-
-	.ARM.exidx ALIGN(8) :
-	{
-		PROVIDE (__exidx_start = .);
-		*(.ARM.exidx*)
-		PROVIDE (__exidx_end = .);
+		PROVIDE(__text_end = .);
 	} > ram
-
-	.ARM.extab ALIGN(8) :
-	{
-		PROVIDE (__extab_start = .);
-		*(.ARM.extab*)
-		PROVIDE (__extab_end = .);
-	} > ram
-
-  .preinit_array     :
+	
+	.preinit_array     :
 	{
 		PROVIDE_HIDDEN (__preinit_array_start = .);
 		KEEP (*(.preinit_array*))
@@ -68,6 +54,20 @@ SECTIONS
 		KEEP (*(SORT(.fini_array.*)))
 		KEEP (*(.fini_array*))
 		PROVIDE_HIDDEN (__fini_array_end = .);
+	} > ram
+
+	.ARM.exidx ALIGN(8) :
+	{
+		PROVIDE (__exidx_start = .);
+		*(.ARM.exidx*)
+		PROVIDE (__exidx_end = .);
+	} > ram
+
+	.ARM.extab ALIGN(8) :
+	{
+		PROVIDE (__extab_start = .);
+		*(.ARM.extab*)
+		PROVIDE (__extab_end = .);
 	} > ram
 
 	.initcall ALIGN(8) :
@@ -142,16 +142,48 @@ SECTIONS
 		PROVIDE(__bss_end = .);
 	} > ram
 
-	.dma ALIGN(8) (NOLOAD) :
+	.stack ALIGN(8) (NOLOAD) :
 	{
-		PROVIDE(__dma_start = ORIGIN(dma));
-		PROVIDE(__dma_end = ORIGIN(dma) + LENGTH(dma));
-	} > dma
+		PROVIDE(__stack_start = .);
+		PROVIDE(__stack_und_start = .);
+		. += STACK_UND_SIZE;
+		PROVIDE(__stack_und_end = .);
+		. = ALIGN(8);
+		PROVIDE(__stack_abt_start = .);
+		. += STACK_ABT_SIZE;
+		PROVIDE(__stack_abt_end = .);
+		. = ALIGN(8);
+		PROVIDE(__stack_irq_start = .);
+		. += STACK_IRQ_SIZE;
+		PROVIDE(__stack_irq_end = .);
+		. = ALIGN(8);
+		PROVIDE(__stack_fiq_start = .);
+		. += STACK_FIQ_SIZE;
+		PROVIDE(__stack_fiq_end = .);
+		. = ALIGN(8);
+		PROVIDE(__stack_srv_start = .);
+		. += STACK_SRV_SIZE;
+		PROVIDE(__stack_srv_end = .);
+		. = ALIGN(8);
+		PROVIDE(__stack_end = .);
+	} > ram
 
 	.heap ALIGN(8) (NOLOAD) :
 	{
 		PROVIDE(__heap_start = ORIGIN(heap));
 		PROVIDE(__heap_end = ORIGIN(heap) + LENGTH(heap));
 	} > heap
-}
 
+	.stab 0 : { *(.stab) }
+	.stabstr 0 : { *(.stabstr) }
+	.stab.excl 0 : { *(.stab.excl) }
+	.stab.exclstr 0 : { *(.stab.exclstr) }
+	.stab.index 0 : { *(.stab.index) }
+	.stab.indexstr 0 : { *(.stab.indexstr) }
+	.comment 0 : { *(.comment) }
+	.debug_abbrev 0 : { *(.debug_abbrev) }
+	.debug_info 0 : { *(.debug_info) }
+	.debug_line 0 : { *(.debug_line) }
+	.debug_pubnames 0 : { *(.debug_pubnames) }
+	.debug_aranges 0 : { *(.debug_aranges) }
+}
