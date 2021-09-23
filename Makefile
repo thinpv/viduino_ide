@@ -4,7 +4,7 @@
 
 .PHONY:clean
 .PHONY:write
-.PHONY:mktool
+.PHONY:viduino
 .PHONY:dump
 .PHONY:test
 
@@ -14,7 +14,7 @@ ECHO = @echo
 CP = cp
 MKDIR = mkdir
 SED = sed
-PYTHON = python
+PYTHON = python3
 VIDUINO = viduino-0.0.9.tar
 
 COMPILE			= /home/thinpv/.arduino15/packages/arduino/tools/arm-none-eabi-gcc/7-2017q4/bin/arm-none-eabi-
@@ -44,7 +44,7 @@ MCFLAGS			:= -march=armv5te -mtune=arm926ej-s -mfloat-abi=soft -marm -mno-thumb-
 ASFLAGS			+=	-ffunction-sections -fdata-sections -ffreestanding -std=gnu11 $(DEFINES)
 CFLAGS			+=	-ffunction-sections -fdata-sections -ffreestanding -std=gnu11 $(DEFINES)
 CPFLAGS			+=	-ffunction-sections -fdata-sections -ffreestanding -std=gnu++11 $(DEFINES) -fno-rtti -fno-use-cxa-atexit
-LDFLAGS			+=	-Wl,-gc-sections
+LDFLAGS			+=	-Wl,-gc-sections -ffunction-sections -fdata-sections
 
 LIBS 				:= -lgcc -lm -lc -lnosys
 
@@ -149,34 +149,35 @@ all: $(BUILD)/firmware.bin
 
 $(ALLOBJ): | $(ALLOBJ_DIRS)
 $(ALLOBJ_DIRS):
-	$(MKDIR) -p $@
+	@$(MKDIR) -p $@
 
 $(BUILD)/%.o: %.S
 	$(ECHO) "AS $<"
-	$(AS) $(MCFLAGS) $(ASFLAGS) -c $< -o $@
+	@$(AS) $(MCFLAGS) $(ASFLAGS) -c $< -o $@
 	
 $(BUILD)/%.o: %.c
 	$(ECHO) "CC $<"
-	$(CC) $(INCLUDE) $(MCFLAGS) $(CFLAGS) -MD -c $< -o $@
+	@$(CC) $(INCLUDE) $(MCFLAGS) $(CFLAGS) -MD -c $< -o $@
 
 $(BUILD)/%.o: %.cpp
 	$(ECHO) "CXX $<"
-	$(CXX) $(INCLUDE) $(MCFLAGS) $(CPFLAGS) -MD -c $< -o $@
-
-$(BUILD)/firmware.bin: $(BUILD)/firmware.elf
-	$(OBJCOPY) -v -O binary $^ $@
+	@$(CXX) $(INCLUDE) $(MCFLAGS) $(CPFLAGS) -MD -c $< -o $@
 
 $(BUILD)/firmware.elf: $(ALLOBJ)
-	$(AR) $(BUILD)/libsdk.a $(SDKOBJS)
+	@$(AR) $(BUILD)/libsdk.a $(SDKOBJS)
 	$(ECHO) "LINK $@"
-	$(CXX) $(LDFLAGS) -Wl,--cref,-Map=$@.map -o $@ $(BUILD)/libsdk.a $(OBJS) $(BUILD)/libsdk.a $(LIBFILE) $(LIBS)
-	$(SIZE) $@
+	@$(CXX) $(LDFLAGS) -Wl,--cref,-Map=$@.map -o $@ $(BUILD)/libsdk.a $(OBJS) $(BUILD)/libsdk.a $(LIBFILE) $(LIBS)
+	@$(SIZE) $@
+
+$(BUILD)/firmware.bin: $(BUILD)/firmware.elf
+	@$(OBJCOPY) -v -O binary $^ $@
+	$(PYTHON) tools/lzmatool.py $(BUILD)/firmware.bin $(BUILD)/firmware.bin.lzma
 
 write:
-	python3 tools/upload.py --port /dev/ttyUSB0 --baud 921600 write_flash 0x80000 build/firmware.bin
+	$(PYTHON) tools/upload.py --port /dev/ttyUSB0 --baud 921600 write_flash 0x80000 $(BUILD)/firmware.bin.lzma
 
-clean:
-	rm -rf $(BUILD)
+write2:
+	$(PYTHON) tools/upload.py --port /dev/ttyUSB0 --baud 921600 write_flash 0x80000 $(BUILD)/firmware.bin
 
 viduino: $(SDKOBJS)
 	mkdir viduino
@@ -189,3 +190,6 @@ viduino: $(SDKOBJS)
 	rm -r viduino
 	sha256sum $(VIDUINO) | tr '[a-z]' '[A-Z]'
 	ls -ls $(VIDUINO)
+
+clean:
+	rm -rf $(BUILD)

@@ -26,7 +26,7 @@ extern "C" {
 
 int analogRead(pin_size_t pinNumber)
 {
-
+	return 0;
 }
 
 void analogReference(uint8_t mode)
