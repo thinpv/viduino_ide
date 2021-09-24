@@ -15,7 +15,7 @@ CP = cp
 MKDIR = mkdir
 SED = sed
 PYTHON = python3
-VIDUINO = viduino-0.0.10.tar
+VIDUINO = viduino-0.0.11.tar
 
 COMPILE			= /home/thinpv/.arduino15/packages/arduino/tools/arm-none-eabi-gcc/7-2017q4/bin/arm-none-eabi-
 CC					= $(COMPILE)gcc
@@ -66,7 +66,7 @@ SDKSRCDIRS	+= $(DRIVER)
 INCDIRS			+= $(API)
 SRCDIRS			+= $(API)
 
-INCDIRS			+= $(CORES)
+INCDIRS			+= $(CORES) variants/viduino_uno
 SRCDIRS			+= $(CORES)
 
 INCDIRS			+= libraries/Wire/src

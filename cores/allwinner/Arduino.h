@@ -19,7 +19,7 @@
 
 #include <ArduinoAPI.h>
 
-#include "Pins_arduino.h"
+#include "pins_arduino.h"
 
 // #include "wiring_constants.h"
 
