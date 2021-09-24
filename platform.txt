@@ -77,7 +77,7 @@ recipe.cpp.o.pattern="{compiler.path}{compiler.cpp.cmd}" {compiler.cpp.flags} -D
 recipe.ar.pattern="{compiler.path}{compiler.ar.cmd}" {compiler.ar.flags} {compiler.ar.extra_flags} "{archive_file_path}" "{object_file}"
 
 ## Link gc-sections, archives, and objects
-recipe.c.combine.pattern="{compiler.path}{compiler.cpp.cmd}" {compiler.ld.flags} {build.extra_flags} -Wl,--cref,-Map={build.path}/{build.project_name}.elf.map -o "{build.path}/{build.project_name}.elf" {object_files} {compiler.sdk.path}/libsdk.a "{archive_file_path}" {compiler.sdk.path}/libsdk.a -lgcc -lm -lc -lnosys
+recipe.c.combine.pattern="{compiler.path}{compiler.cpp.cmd}" {compiler.ld.flags} {build.extra_flags} -Wl,--cref,-Map={build.path}/{build.project_name}.elf.map -o "{build.path}/{build.project_name}.elf" {object_files} "{archive_file_path}" -lgcc -lm -lc -lnosys
 
 ## Create binary
 recipe.objcopy.eep.1.pattern="{compiler.path}{compiler.objcopy.cmd}" {compiler.objcopy.eep.flags} -v --output-format=binary "{build.path}/{build.project_name}.elf" "{build.path}/{build.project_name}.bin"
@@ -113,4 +113,4 @@ tools.flashtool.upload.params.quiet=
 # First, potentially perform an erase or nothing
 # Next, do the binary upload
 # Combined in one rule because Arduino doesn't suport upload.1.pattern/upload.3.pattern
-tools.flashtool.upload.pattern="{cmd}" "{runtime.platform.path}/tools/upload.py" --port "{serial.port}" --baud "{upload.speed}" write_flash 0x80000 "{build.path}/{build.project_name}.lzma"
+tools.flashtool.upload.pattern="{cmd}" "{runtime.platform.path}/tools/upload.py" --port "{serial.port}" --baud "{upload.speed}" write_flash 0x80000 "{build.path}/{build.project_name}.{Compress}"

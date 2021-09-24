@@ -38,6 +38,13 @@ vuno32.menu.UploadSpeed.460800.upload.speed=460800
 vuno32.menu.UploadSpeed.512000.windows=512000
 vuno32.menu.UploadSpeed.512000.upload.speed=512000
 
+## Compress
+menu.Compress=Compress
+vuno32.menu.Compress.Yes=lzma
+vuno32.menu.Compress.Yes.Compress=lzma
+vuno32.menu.Compress.No=no
+vuno32.menu.Compress.No.Compress=bin
+
 ## Point to the file for ./variants/<variant>/pins_arduino.h
 vuno32.build.variant=viduino_uno
 
@@ -91,6 +98,13 @@ vuno64.menu.UploadSpeed.460800.macosx=460800
 vuno64.menu.UploadSpeed.460800.upload.speed=460800
 vuno64.menu.UploadSpeed.512000.windows=512000
 vuno64.menu.UploadSpeed.512000.upload.speed=512000
+
+## Compress
+menu.Compress=Compress
+vuno64.menu.Compress.Yes=lzma
+vuno64.menu.Compress.Yes.Compress=lzma
+vuno64.menu.Compress.No=no
+vuno64.menu.Compress.No.Compress=bin
 
 ## Point to the file for ./variants/<variant>/pins_arduino.h
 vuno64.build.variant=viduino_uno
