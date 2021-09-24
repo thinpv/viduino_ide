@@ -11,6 +11,10 @@ import os
 import tempfile
 
 sys.argv.pop(0)  # Remove executable name
+
+file_dir = os.path.dirname(__file__)
+sys.path.append(file_dir)
+
 toolspath = os.path.dirname(os.path.realpath(__file__)).replace(
     '\\', '/')  # CWD in UNIX format
 try:
