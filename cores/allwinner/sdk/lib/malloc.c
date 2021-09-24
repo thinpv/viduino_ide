@@ -788,19 +788,19 @@ void * malloc(size_t size)
 {
 	return tlsf_malloc(__heap_pool, size);
 }
-EXPORT_SYMBOL(malloc);
+// EXPORT_SYMBOL(malloc);
 
 void * memalign(size_t align, size_t size)
 {
 	return tlsf_memalign(__heap_pool, align, size);
 }
-EXPORT_SYMBOL(memalign);
+// EXPORT_SYMBOL(memalign);
 
 void * realloc(void * ptr, size_t size)
 {
 	return tlsf_realloc(__heap_pool, ptr, size);
 }
-EXPORT_SYMBOL(realloc);
+// EXPORT_SYMBOL(realloc);
 
 void * calloc(size_t nmemb, size_t size)
 {
@@ -811,13 +811,13 @@ void * calloc(size_t nmemb, size_t size)
 
 	return ptr;
 }
-EXPORT_SYMBOL(calloc);
+// EXPORT_SYMBOL(calloc);
 
 void free(void * ptr)
 {
 	tlsf_free(__heap_pool, ptr);
 }
-EXPORT_SYMBOL(free);
+// EXPORT_SYMBOL(free);
 
 void do_init_mem_pool(void)
 {

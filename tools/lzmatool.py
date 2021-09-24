@@ -12,4 +12,4 @@ with open(inName, "rb") as inFile:
 
 inSize = os.path.getsize(inName)
 outSize = os.path.getsize(outName)
-print("Compressed", inSize, "bytes into", outSize, "bytes ==>", "%.2f" % (outSize/inSize*100), "%")
+print("Compressed", inSize, "bytes into", outSize, "bytes ==> size reduced", "%.2f" % (inSize/outSize), "times")
