@@ -19,12 +19,6 @@
 
 #include <ArduinoAPI.h>
 
-#define __VIDUINO_UNO__
-
-#if defined(__VIDUINO_UNO__)
-#include <F1C100S.h>
-#endif
-
 #include "Pins_arduino.h"
 
 // #include "wiring_constants.h"
@@ -57,7 +51,7 @@ extern "C"
 // #include "WCharacter.h"
 //#include "WString.h"
 // #include "WMath.h"
-// #include "HardwareSerial.h"
+#include "HardwareSerial.h"
 // #include "HardwareTimer.h"
 // #include "wiring_pulse.h"
 #include "Uart.h"

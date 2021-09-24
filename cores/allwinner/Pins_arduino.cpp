@@ -18,9 +18,6 @@
 #include "Arduino.h"
 #include "Pins_arduino.h"
 
-#if defined(__VIDUINO_UNO__)
-
-
 GPIOPinDescription GPIO_Desc[]=
 {
 	{GPIOA,2 ,{0}}, //PA2 //0
@@ -134,9 +131,3 @@ I2CPinDescription I2C_Desc[]={
 		{GPIOD, 16, 4}}
 	},
 };
-#elif defined(__M451__)
-#elif defined(__NUC240__)
-#elif defined(__NANO100__)
-#elif defined(__NUC131__)
-#elif defined(__NANO1X2__)
-#endif

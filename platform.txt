@@ -20,8 +20,7 @@ compiler.sdk.path={compiler.cores.path}/sdk
 compiler.boot.path={compiler.sdk.path}/boot
 compiler.driver.path={compiler.sdk.path}/driver
 compiler.lib.path={compiler.sdk.path}/lib
-compiler.freertos.path={compiler.sdk.path}/freertos
-compiler.preproc.flags= "-I{compiler.cores.path}" "-I{compiler.cores.path}/api" "-I{compiler.boot.path}" "-I{compiler.boot.path}/f1c100s" "-I{compiler.driver.path}" "-I{compiler.lib.path}" "-I{compiler.lib.path}" "-I{compiler.freertos.path}" "-I{compiler.freertos.path}/portable/GCC/ARM926EJ-S"
+compiler.preproc.flags= "-I{compiler.cores.path}/api" "-I{compiler.boot.path}" "-I{compiler.boot.path}/f1c100s" "-I{compiler.driver.path}" "-I{compiler.lib.path}"
 
 compiler.both.flags= -g -ggdb -Wall -O3 -D__ARM32_ARCH__=5 -D__ARM926EJS__ -D__ARM32__ -DARM -Wno-unused-variable -Wno-multichar -ffunction-sections -fdata-sections -ffreestanding
 
@@ -77,7 +76,7 @@ recipe.cpp.o.pattern="{compiler.path}{compiler.cpp.cmd}" {compiler.cpp.flags} -D
 recipe.ar.pattern="{compiler.path}{compiler.ar.cmd}" {compiler.ar.flags} {compiler.ar.extra_flags} "{archive_file_path}" "{object_file}"
 
 ## Link gc-sections, archives, and objects
-recipe.c.combine.pattern="{compiler.path}{compiler.cpp.cmd}" {compiler.ld.flags} {build.extra_flags} -Wl,--cref,-Map={build.path}/{build.project_name}.elf.map -o "{build.path}/{build.project_name}.elf" {object_files} "{archive_file_path}" -lgcc -lm -lc -lnosys
+recipe.c.combine.pattern="{compiler.path}{compiler.cpp.cmd}" {compiler.ld.flags} {build.extra_flags} -Wl,--cref,-Map={build.path}/{build.project_name}.elf.map -o "{build.path}/{build.project_name}.elf" {object_files} {compiler.sdk.path}/libsdk.a "{archive_file_path}" {compiler.sdk.path}/libsdk.a -lgcc -lm -lc -lnosys
 
 ## Create binary
 recipe.objcopy.eep.1.pattern="{compiler.path}{compiler.objcopy.cmd}" {compiler.objcopy.eep.flags} -v --output-format=binary "{build.path}/{build.project_name}.elf" "{build.path}/{build.project_name}.bin"
@@ -88,7 +87,7 @@ recipe.objcopy.hex.pattern=
 #"{compiler.path}{compiler.elf2hex.cmd}" {compiler.elf2hex.flags} -O srec "{build.path}/{build.project_name}.elf" "{build.path}/{build.project_name}.hex"
 
 ## Compute size
-recipe.size.pattern={runtime.tools.python3.path}/python3 "{runtime.platform.path}/tools/getsizetool.py" "{build.path}/{build.project_name}.lzma"
+recipe.size.pattern={runtime.tools.python3.path}/python3 "{runtime.platform.path}/tools/getsizetool.py" "{build.path}/{build.project_name}.{Compress}"
 recipe.size.regex=\s*[0-9]+\s+[0-9]+\s+[0-9]+\s+([0-9]+).*
 
 ## Save hex
