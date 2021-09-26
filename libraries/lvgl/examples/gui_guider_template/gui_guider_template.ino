@@ -27,9 +27,7 @@ extern "C"
 
 #ifdef CAPACITOR_TOUCH
 Goodix touch = Goodix();
-char buffer[200];
 GTPoint gtPoint;
-bool isUpdate = false;
 #endif
 
 #ifdef RESISTIVE_TOUCH
