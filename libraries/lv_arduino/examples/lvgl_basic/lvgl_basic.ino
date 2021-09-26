@@ -1,5 +1,5 @@
 #include <lvgl.h>
-#include <../lv_conf.h>
+#include <lv_conf.h>
 #include <touchscreen.h>
 #include "FrameBuffer.h"
 
@@ -51,7 +51,7 @@ void setup()
     Serial.begin(115200);
     Serial.println("setup start");
 
-    framebuffer.begin(LV_HOR_RES_MAX, LV_VER_RES_MAX, 100);
+    framebuffer.begin();
 
     lv_init();
     lv_disp_buf_init(&disp_buf, buf, NULL, LV_HOR_RES_MAX * 10);

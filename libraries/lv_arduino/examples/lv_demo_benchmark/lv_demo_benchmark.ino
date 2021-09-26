@@ -1,7 +1,7 @@
 #include "Arduino.h"
 
 #include <lvgl.h>
-#include <../lv_conf.h>
+#include <lv_conf.h>
 #include "lv_demo_benchmark.h"
 #include <touchscreen.h>
 #include "FrameBuffer.h"
@@ -45,7 +45,7 @@ void setup()
 
   lv_init();
 
-  framebuffer.begin(LV_HOR_RES_MAX, LV_VER_RES_MAX, 100);
+  framebuffer.begin();
 
   lv_disp_buf_init(&disp_buf, buf, NULL, LV_HOR_RES_MAX * 10);
 
