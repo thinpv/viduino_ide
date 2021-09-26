@@ -3,14 +3,37 @@
 #include <lvgl.h>
 #include <lv_conf.h>
 #include "lv_demo_benchmark.h"
-#include <touchscreen.h>
 #include "FrameBuffer.h"
 
-static FrameBuffer framebuffer;
+#define CAPACITOR_TOUCH
+//#define RESISTIVE_TOUCH
+
+#ifdef CAPACITOR_TOUCH
+#define INT_PIN 6
+#define RST_PIN 13
+
+#include <Wire.h>
+#include "Goodix.h"
+#endif
+
+#ifdef RESISTIVE_TOUCH
+#include <touchscreen.h>
+#endif
+
+#ifdef CAPACITOR_TOUCH
+Goodix touch = Goodix();
+char buffer[200];
+GTPoint gtPoint;
+bool isUpdate = false;
+#endif
+
+#ifdef RESISTIVE_TOUCH
 static TouchScreen touchscreen;
+static int temp_touch;
+#endif
+static FrameBuffer framebuffer;
 static lv_disp_buf_t disp_buf;
 static lv_color_t buf[LV_HOR_RES_MAX * 10];
-static int temp_touch;
 
 /* Display flushing */
 void my_disp_flush(lv_disp_drv_t *disp, const lv_area_t *area, lv_color_t *color_p)
@@ -22,6 +45,24 @@ void my_disp_flush(lv_disp_drv_t *disp, const lv_area_t *area, lv_color_t *color
 /* Reading input device (simulated encoder here) */
 static bool read_encoder(lv_indev_drv_t *drv, lv_indev_data_t *data)
 {
+#ifdef CAPACITOR_TOUCH
+  int rs = touch.OnePiontScan(&gtPoint);
+  if (rs > 0)
+  {
+    data->point.x = gtPoint.x;
+    data->point.y = gtPoint.y;
+    data->state = LV_INDEV_STATE_PR;
+    Serial.print(data->point.x);
+    Serial.print(" - ");
+    Serial.println(data->point.y);
+  }
+  else
+  {
+    data->state = LV_INDEV_STATE_REL;
+  }
+#endif
+
+#ifdef RESISTIVE_TOUCH
   touchscreen.read();
   temp_touch = touchscreen.getStatus();
   data->point.x = touchscreen.getX();
@@ -30,12 +71,16 @@ static bool read_encoder(lv_indev_drv_t *drv, lv_indev_data_t *data)
     data->state = LV_INDEV_STATE_REL;
   else
     data->state = LV_INDEV_STATE_PR;
-  Serial.print(data->point.x);
-  Serial.print(" - ");
-  Serial.print(data->point.y);
-  Serial.print(" --> ");
-  Serial.println(temp_touch);
-  return false; /*No buffering now so no more data read*/
+  if (temp_touch > 1)
+  {
+    Serial.print(data->point.x);
+    Serial.print(" - ");
+    Serial.print(data->point.y);
+    Serial.print(" --> ");
+    Serial.println(temp_touch);
+  }
+#endif
+  return false;
 }
 
 void setup()
@@ -67,8 +112,26 @@ void setup()
 
   lv_demo_benchmark();
 
+#ifdef CAPACITOR_TOUCH
+  Wire.begin(400000);
+  if (touch.begin(INT_PIN, RST_PIN) != true)
+  {
+    Serial.println("Touch init failed");
+  }
+  Wire.beginTransmission(touch.i2cAddr);
+  int error = Wire.endTransmission();
+  if (error != 0)
+  {
+    Serial.print(": ERROR #");
+    Serial.println(error);
+  }
+  touch.fwResolution(LV_HOR_RES_MAX, LV_VER_RES_MAX);
+#endif
+
+#ifdef RESISTIVE_TOUCH
   touchscreen.begin();
   touchscreen.calibrate(LV_HOR_RES_MAX, LV_VER_RES_MAX);
+#endif
 
   Serial.println("setup done");
 }
