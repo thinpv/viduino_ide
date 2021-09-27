@@ -1,88 +1,101 @@
-#include <stdbool.h>
-#include <stddef.h>
-#include <stdlib.h>
-#include <io.h>
-#include <reg-ccu.h>
 #include <timer.h>
-#include <irq.h>
+#include <io.h>
 
-#ifdef USE_FREERTOS
-#include "FreeRTOS.h"
-#include "task.h"
-#endif
-
-#define TICK_PER_SECOND 1000
-#define TICK_PER_MILLISECOND (TICK_PER_SECOND / 1000)
-#define MICROSECOND_PER_TICK (1000000 / TICK_PER_SECOND)
-
-static volatile uint64_t ticker = 0;
-
-void timer0_interrupt_handle(int arg)
+void timer_irq_enbale(Timer_Type *timer)
 {
-	S_Bit(TIMER->TMR_IRQ_STA_REG, 0);
-	++ticker;
-}
-
-uint64_t timer_get_ticker()
-{
-#ifdef USE_FREERTOS
-	return xTaskGetTickCount();
-#else
-	return ticker;
-#endif
-}
-
-unsigned long millis(void)
-{
-#ifdef USE_FREERTOS
-	return xTaskGetTickCount();
-#else
-	return ticker / TICK_PER_MILLISECOND;
-#endif
-}
-
-unsigned long micros(void)
-{
-#ifdef USE_FREERTOS
-	return xTaskGetTickCount() * MICROSECOND_PER_TICK + (0xB71B00 - TIMER->TMR0_CUR_VALUE_REG) / 12;
-#else
-	return ticker;
-#endif
-}
-
-void delay(unsigned long ms)
-{
-#ifdef USE_FREERTOS
-	vTaskDelay(ms / portTICK_PERIOD_MS);
-#else
-	uint64_t time_to_delay = ticker + ms * TICK_PER_MILLISECOND;
-	while (ticker < time_to_delay)
+	switch ((uint32_t)timer)
 	{
+	case (uint32_t)TIMER0:
+		S_Bit(TIMER->TMR_IRQ_EN_REG, 0);
+		break;
+	case (uint32_t)TIMER1:
+		S_Bit(TIMER->TMR_IRQ_EN_REG, 1);
+		break;
+	case (uint32_t)TIMER2:
+		S_Bit(TIMER->TMR_IRQ_EN_REG, 2);
+		break;
+	default:
+		break;
 	}
-#endif
+	// if (timer == TIMER0)
+	// {
+	// 	S_Bit(TIMER->TMR_IRQ_EN_REG, 0);
+	// }
+	// else if (timer == TIMER1)
+	// {
+	// 	S_Bit(TIMER->TMR_IRQ_EN_REG, 1);
+	// }
+	// else if (timer == TIMER2)
+	// {
+	// 	S_Bit(TIMER->TMR_IRQ_EN_REG, 2);
+	// }
 }
 
-void delayMicroseconds(unsigned int usec)
+void timer_irq_clear(Timer_Type *timer)
 {
-	// uint64_t time_to_delay = micros() + usec;
-	// while (micros() < time_to_delay)
-	// 	;
-	volatile unsigned int cnt, i, s;
-	s = (unsigned int)((float)usec * 13.6351); //��cache
-											   //	s=us;
-	for (cnt = 0; cnt < s; cnt++)
+	switch ((uint32_t)timer)
 	{
-		for (i = 0; i < 1; i++)
-			;
+	case (uint32_t)TIMER0:
+		S_Bit(TIMER->TMR_IRQ_STA_REG, 0);
+		break;
+	case (uint32_t)TIMER1:
+		S_Bit(TIMER->TMR_IRQ_STA_REG, 1);
+		break;
+	case (uint32_t)TIMER2:
+		S_Bit(TIMER->TMR_IRQ_STA_REG, 2);
+		break;
+	default:
+		break;
 	}
+	// if (timer == TIMER0)
+	// {
+	// 	S_Bit(TIMER->TMR_IRQ_STA_REG, 0);
+	// }
+	// else if (timer == TIMER1)
+	// {
+	// 	S_Bit(TIMER->TMR_IRQ_STA_REG, 1);
+	// }
+	// else if (timer == TIMER2)
+	// {
+	// 	S_Bit(TIMER->TMR_IRQ_STA_REG, 2);
+	// }
 }
 
-void timer0_set()
+void timer_set_mode(Timer_Type *timer, uint8_t mode)
 {
-	TIMER->TMR0_INTV_VALUE_REG = 0xB71B00 / TICK_PER_SECOND;
-	TIMER->TMR0_CTRL_REG &= 0xffffff00;
-	TIMER->TMR0_CTRL_REG |= (1 << 4) | (1 << 2);
-	TIMER->TMR0_CTRL_REG |= 1 << 0;
-	TIMER->TMR_IRQ_EN_REG |= 1 << 0;
-	irq_register(IRQ_LEVEL_1, F1C100S_IRQ_TIMER0, timer0_interrupt_handle, 3);
+	if (mode == TIMER_CONTINUOUS_MODE)
+		C_Bit(timer->TIME_CTRL_REG, 7);
+	else if (mode == TIMER_SINGLE_MODE)
+		S_Bit(timer->TIME_CTRL_REG, 7);
+}
+
+void timer_set_prescale(Timer_Type *timer, uint8_t mode)
+{
+	C_Value(timer->TIME_CTRL_REG, 4, 0x7);
+	S_Value(timer->TIME_CTRL_REG, 4, mode);
+}
+
+void timer_reload(Timer_Type *timer)
+{
+	S_Bit(timer->TIME_CTRL_REG, 1);
+}
+
+void timer_enable(Timer_Type *timer)
+{
+	S_Bit(timer->TIME_CTRL_REG, 0);
+}
+
+void timer_disable(Timer_Type *timer)
+{
+	C_Bit(timer->TIME_CTRL_REG, 0);
+}
+
+void timer_set_interval(Timer_Type *timer, uint32_t interval)
+{
+	timer->TIME_INTV_VALUE_REG = interval;
+}
+
+uint32_t timer_get_current_value(Timer_Type *timer)
+{
+	return timer->TIME_CUR_VALUE_REG;
 }

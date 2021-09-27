@@ -204,21 +204,21 @@ typedef struct
 
 typedef struct
 {
+	vuint32_t TIME_CTRL_REG;			 //0x10
+	vuint32_t TIME_INTV_VALUE_REG; //0x14
+	vuint32_t TIME_CUR_VALUE_REG;	 //0x18
+	vuint32_t rsv[1];						 //
+} Timer_Type;
+
+typedef struct
+{
 	vuint32_t TMR_IRQ_EN_REG;			 //0x00
 	vuint32_t TMR_IRQ_STA_REG;		 //0x04
 	vuint32_t rsv1[2];						 //
-	vuint32_t TMR0_CTRL_REG;			 //0x10
-	vuint32_t TMR0_INTV_VALUE_REG; //0x14
-	vuint32_t TMR0_CUR_VALUE_REG;	 //0x18
-	vuint32_t rsv2[1];						 //
-	vuint32_t TMR1_CTRL_REG;			 //0x20
-	vuint32_t TMR1_INTV_VALUE_REG; //0x24
-	vuint32_t TMR1_CUR_VALUE_REG;	 //0x28
-	vuint32_t rsv3[1];						 //
-	vuint32_t TMR2_CTRL_REG;			 //0x30
-	vuint32_t TMR2_INTV_VALUE_REG; //0x34
-	vuint32_t TMR2_CUR_VALUE_REG;	 //0x38
-	vuint32_t rsv4[17];						 //
+	Timer_Type TIME0;			 //0x10
+	Timer_Type TIME1;			 //0x20
+	Timer_Type TIME2;			 //0x30
+	vuint32_t rsv4[16];						 //
 	vuint32_t AVS_CNT_CTL_REG;		 //0x80
 	vuint32_t AVS_CNT0_REG;				 //0x84
 	vuint32_t AVS_CNT1_REG;				 //0x88
@@ -230,7 +230,7 @@ typedef struct
 	vuint32_t WDOG_CTRL_REG;			 //0xB0
 	vuint32_t WDOG_CFG_REG;				 //0xB4
 	vuint32_t WDOG_MODE_REG;			 //0xB8
-} Timer_Type;
+} TimerStruct_Type;
 
 typedef struct
 {
@@ -562,7 +562,10 @@ typedef struct
 #define UART1 ((UART_Type *)(UART_BASE + 0x400))
 #define UART2 ((UART_Type *)(UART_BASE + 0x800))
 
-#define TIMER ((Timer_Type *)TIMER_BASE)
+#define TIMER ((TimerStruct_Type *)TIMER_BASE)
+#define TIMER0 ((Timer_Type *)TIMER_BASE + 0x10)
+#define TIMER1 ((Timer_Type *)TIMER_BASE + 0x20)
+#define TIMER2 ((Timer_Type *)TIMER_BASE + 0x30)
 
 #define INTC ((INTC_Type *)INTC_BASE)
 

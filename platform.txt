@@ -33,7 +33,7 @@ compiler.S.flags= -x assembler-with-cpp -std=gnu11 {compiler.mc.flags} {compiler
 
 compiler.c.flags=-std=gnu11 {compiler.mc.flags} {compiler.debug.flags} {compiler.both.flags} {compiler.preproc.flags} -Wno-implicit-int
 
-compiler.cpp.flags=-std=gnu++11 {compiler.mc.flags} {compiler.debug.flags} {compiler.both.flags} {compiler.preproc.flags} -fno-rtti
+compiler.cpp.flags=-std=gnu++11 {compiler.mc.flags} {compiler.debug.flags} {compiler.both.flags} {compiler.preproc.flags} -fno-rtti -fno-threadsafe-statics -fno-exceptions
 
 compiler.ld.flags= -T {build.ldscript} -nostdlib -Wl,-gc-sections -ffunction-sections -fdata-sections
 

@@ -39,11 +39,11 @@ ASFLAGS			:= -g -ggdb -Wall -O3
 CFLAGS			:= -g -ggdb -Wall -O3
 CPFLAGS			:= -g -ggdb -Wall -O3
 LDFLAGS			:= -T variants/viduino_uno/f1c100s_32.ld -nostdlib
-MCFLAGS			:= -march=armv5te -mtune=arm926ej-s -mfloat-abi=soft -marm -mno-thumb-interwork
+MCFLAGS			:= -march=armv5te -mtune=arm926ej-s -mfloat-abi=soft -marm -specs=nosys.specs -mno-thumb-interwork
 
 ASFLAGS			+=	-ffunction-sections -fdata-sections -ffreestanding -std=gnu11 $(DEFINES)
 CFLAGS			+=	-ffunction-sections -fdata-sections -ffreestanding -std=gnu11 $(DEFINES)
-CPFLAGS			+=	-ffunction-sections -fdata-sections -ffreestanding -std=gnu++11 $(DEFINES) -fno-rtti -fno-use-cxa-atexit
+CPFLAGS			+=	-ffunction-sections -fdata-sections -ffreestanding -std=gnu++11 $(DEFINES) -fno-rtti -fno-use-cxa-atexit -fno-threadsafe-statics -fno-exceptions
 LDFLAGS			+=	-Wl,-gc-sections -ffunction-sections -fdata-sections
 
 LIBS 				:= -lgcc -lm -lc -lnosys
@@ -80,6 +80,9 @@ SRCDIRS			+= libraries/FrameBuffer/src
 
 INCDIRS			+= libraries/NS2009/src
 SRCDIRS			+= libraries/NS2009/src
+
+INCDIRS			+= libraries/Timer
+SRCDIRS			+= libraries/Timer
 
 INCDIRS			+= libraries/lv_arduino/src \
 	libraries/lv_arduino/src/src \

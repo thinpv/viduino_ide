@@ -78,7 +78,7 @@ int spi_transfer(SPI_Type *spi, void *txbuf, void *rxbuf, int len)
 	{
 		n = (count <= 64) ? count : 64;
 		spi->SPI_MBC_REG = n;
-		spi_write_txbuf(SPI0, tx, n);
+		spi_write_txbuf(spi, tx, n);
 		spi->SPI_TCR_REG |= (1 << 31);
 
 		while ((spi->SPI_FSR_REG & 0xff) < n)
