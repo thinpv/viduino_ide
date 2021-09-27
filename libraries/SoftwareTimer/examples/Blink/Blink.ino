@@ -5,7 +5,7 @@
 
 #include "SoftwareTimer.h"
 
-int led_pin = 13;  //Set our led pin
+int led_pin = LED_BUILTIN;  //Set our led pin
 bool led_is_on = false;  //Holds if the led is on
 
 //Timer object
