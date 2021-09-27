@@ -1,6 +1,7 @@
 #include "sys-delay.h"
 #include <F1C100S.h>
 #include <timer.h>
+// #include "soft-pwm.h"
 
 #ifdef USE_FREERTOS
 #include "FreeRTOS.h"
@@ -48,6 +49,7 @@ void timer0_interrupt_handle(int arg)
 {
 	timer_irq_clear(TIMER0);
 	++ticker;
+	// softpwm_update();
 }
 
 uint64_t timer_get_ticker()

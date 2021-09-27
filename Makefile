@@ -81,8 +81,8 @@ SRCDIRS			+= libraries/FrameBuffer/src
 INCDIRS			+= libraries/NS2009/src
 SRCDIRS			+= libraries/NS2009/src
 
-INCDIRS			+= libraries/Timer
-SRCDIRS			+= libraries/Timer
+INCDIRS			+= libraries/SoftwareTimer
+SRCDIRS			+= libraries/SoftwareTimer
 
 INCDIRS			+= libraries/lv_arduino/src \
 	libraries/lv_arduino/src/src \

@@ -43,7 +43,7 @@ compiler.objcopy.eep.flags=
 
 compiler.elf2hex.flags=-R .rel.dyn
 
-compiler.define=-DARDUINO=
+compiler.define=-DARDUINO=100
 
 compiler.c.extra_flags=-DF_CPU={build.f_cpu} -D{build.board} -D{arch_for_c_cpp} -DARCH={arch_for_c_cpp}
 compiler.c.elf.extra_flags=

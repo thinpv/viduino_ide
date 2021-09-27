@@ -19,37 +19,40 @@
 #include "wiring_analog.h"
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
 #include <pwm.h>
+#include <soft-pwm.h>
 
-int analogRead(pin_size_t pinNumber)
-{
-	return 0;
-}
-
-void analogReference(uint8_t mode)
-{
-
-}
-
-void analogWrite(pin_size_t pinNumber, int value)
-{
-	GPIOPinDescription* gpio = &GPIO_Desc[pinNumber];
-	pwm_t led_pwm_bl =
+	int analogRead(pin_size_t pinNumber)
 	{
-		.virt = 0x01c21000,
-		.duty = value,
-		.period = 1000000,
-		.channel = 1,
-		.polarity = true,
-		.pwm_port = gpio->port,
-		.pwm_pin = gpio->pin,
-		.pwm_pin_cfg = 3,
-	};
-    pwm_init(&led_pwm_bl);
-}
+		return 0;
+	}
+
+	void analogReference(uint8_t mode)
+	{
+	}
+
+	void analogWrite(pin_size_t pinNumber, int value)
+	{
+		GPIOPinDescription *gpio = &GPIO_Desc[pinNumber];
+		gpio_set_dir(gpio->port, gpio->pin, GPIO_DIRECTION_OUTPUT);
+		softpwm_add(gpio->port, gpio->pin, value/25);
+		// pwm_t led_pwm_bl =
+		// 		{
+		// 				.virt = 0x01c21000,
+		// 				.duty = value,
+		// 				.period = 1000000,
+		// 				.channel = 1,
+		// 				.polarity = true,
+		// 				.pwm_port = gpio->port,
+		// 				.pwm_pin = gpio->pin,
+		// 				.pwm_pin_cfg = 3,
+		// 		};
+		// pwm_init(&led_pwm_bl);
+	}
 
 #ifdef __cplusplus
 }
