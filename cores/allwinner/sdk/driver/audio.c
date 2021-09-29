@@ -129,7 +129,7 @@ void audio_init(void)
 {
 	printf("AUDIO Init...\r\n");
 	ccu_reset(RESET_AUDIO_CODEC, true);
-	delay_ms(1);
+	sys_delay_ms(1);
 
 	//PLL enable
 	S_Bit(CCU->PLL_AUDIO_CTRL_REG, 31);
@@ -173,10 +173,10 @@ void audio_init(void)
 	/*Audio amplifier switch control, need to initialize first, 
 	then turn on the external amplifier, 
 	otherwise there will be noise during initialization*/
-	//	delay_ms(500);
+	//	sys_delay_ms(500);
 	//	GPIO_Congif(GPIOE,GPIO_Pin_9,GPIO_Mode_OUT,GPIO_PuPd_NOPULL);
 	//	GPIO_RESET(GPIOE,GPIO_Pin_9);
-	//	delay_ms(500);
+	//	sys_delay_ms(500);
 
 	//Open the empty interrupt when using DMA
 	S_Bit(AUDIO->AC_DAC_FIFOC_REG, 4);

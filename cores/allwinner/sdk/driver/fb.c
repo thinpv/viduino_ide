@@ -32,7 +32,7 @@ void Wait_tcon_te(void)
 	LCD_TE = 0;
 	while (1)
 	{
-		delay_ms(1); // Delay can do other tasks
+		sys_delay_ms(1); // Delay can do other tasks
 		tcon_timeout++;
 		if ((LCD_TE == 1) || (tcon_timeout > 30))
 			break;
@@ -78,7 +78,7 @@ void fb_tcon_init(uint8_t f)
 	// Enable TCON clock
 	S_Bit(CCU->TCON_CLK_REG, 31);
 	ccu_reset(RESET_LCD, true);
-	delay_ms(1);
+	sys_delay_ms(1);
 
 	//-----------------------------------------TCON related settings-------------------------------------------------
 	// Set to TCON0
@@ -184,7 +184,7 @@ void fb_init(lcd_type_t lcd_type, void *buffer)
 		C_Bit(TCON->TCON_FRM_CTRL_REG, 31);
 		TCON->TCON_FRM_CTRL_REG = ((N - 1) << 8) | ((M - 1) << 0) | (3 << 24);
 		S_Bit(TCON->TCON_FRM_CTRL_REG, 31);
-		delay_ms(1);
+		sys_delay_ms(1);
 	}
 	else if (lcd_type == LCD_TYPE_RGB_800_480)
 	{
@@ -218,7 +218,7 @@ void fb_init(lcd_type_t lcd_type, void *buffer)
 		C_Bit(TCON->TCON_FRM_CTRL_REG, 31);
 		TCON->TCON_FRM_CTRL_REG = ((N - 1) << 8) | ((M - 1) << 0) | (3 << 24);
 		S_Bit(TCON->TCON_FRM_CTRL_REG, 31);
-		delay_ms(1);
+		sys_delay_ms(1);
 	}
 	else if (lcd_type == LCD_TYPE_VGA_1024_768)
 	{
@@ -251,7 +251,7 @@ void fb_init(lcd_type_t lcd_type, void *buffer)
 		C_Bit(TCON->TCON_FRM_CTRL_REG, 31);
 		TCON->TCON_FRM_CTRL_REG = ((N - 1) << 8) | ((M - 1) << 0) | (3 << 24);
 		S_Bit(TCON->TCON_FRM_CTRL_REG, 31);
-		delay_ms(1);
+		sys_delay_ms(1);
 	}
 	else if (lcd_type == LCD_TYPE_VGA_640_480_60HZ)
 	{
@@ -284,7 +284,7 @@ void fb_init(lcd_type_t lcd_type, void *buffer)
 		C_Bit(TCON->TCON_FRM_CTRL_REG, 31);
 		TCON->TCON_FRM_CTRL_REG = ((N - 1) << 8) | ((M - 1) << 0) | (3 << 24);
 		S_Bit(TCON->TCON_FRM_CTRL_REG, 31);
-		delay_ms(1);
+		sys_delay_ms(1);
 	}
 	else if (lcd_type == LCD_TYPE_VGA_640_480_75HZ)
 	{
@@ -317,7 +317,7 @@ void fb_init(lcd_type_t lcd_type, void *buffer)
 		C_Bit(TCON->TCON_FRM_CTRL_REG, 31);
 		TCON->TCON_FRM_CTRL_REG = ((N - 1) << 8) | ((M - 1) << 0) | (3 << 24);
 		S_Bit(TCON->TCON_FRM_CTRL_REG, 31);
-		delay_ms(1);
+		sys_delay_ms(1);
 	}
 	else if (lcd_type == LCD_TYPE_TV_PAL_720_576)
 	{

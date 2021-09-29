@@ -144,7 +144,7 @@ static void sunxi_hcd_h_tx_flush_fifo(void)
 
 		csr = USBC_Readw(USBC_REG_TXCSR(USBC0_BASE));
 
-		delay_ms(1);
+		sys_delay_ms(1);
 	}
 
 	return;
@@ -234,7 +234,7 @@ void sunxi_hcd_irq_work(struct sunxi_hcd *sunxi_hcd)
 		USBC_ForceVbusValid(USBC_VBUS_TYPE_LOW);
 		USBC_SelectBus(USBC_IO_TYPE_PIO, 0, 0);
 		/* delay */
-		delay_ms(100);
+		sys_delay_ms(100);
 
 		/* power on */
 		reg_val = USBC_Readb(USBC_REG_DEVCTL(USBC0_BASE));
@@ -258,7 +258,7 @@ void sunxi_hcd_irq_work(struct sunxi_hcd *sunxi_hcd)
 		USBC_ForceVbusValid(USBC_VBUS_TYPE_LOW);
 		USBC_SelectBus(USBC_IO_TYPE_PIO, 0, 0);
 		/* delay */
-		delay_ms(100);
+		sys_delay_ms(100);
 
 		/* power on */
 		reg_val = USBC_Readb(USBC_REG_DEVCTL(USBC0_BASE));
@@ -809,14 +809,14 @@ void host_process(void)
 	u8 devctl = 0;
 	u8 power = 0;
 
-	delay_ms(1000);
+	sys_delay_ms(1000);
 	devctl = USBC_Readb(USBC_REG_DEVCTL(USBC0_BASE));
 	power = USBC_Readb(USBC_REG_PCTL(USBC0_BASE));
 
 	printf("devctl : %02x;power : %02x\r\n", devctl, power);
 	USBC_Writeb(0xe8, USBC_REG_PCTL(USBC0_BASE));
 
-	delay_ms(30);
+	sys_delay_ms(30);
 	power = USBC_Readb(USBC_REG_PCTL(USBC0_BASE));
 
 	sun4i_usb_phy_set_squelch_detect(0);
@@ -1237,7 +1237,7 @@ void test_usb(void)
 	USB_HOST_PRINTF("\r\nusb_host_init\r\n");
 	host_IO_init();
 	host_init_controller();
-	delay_ms(1000);
+	sys_delay_ms(1000);
 
 	while (1)
 	{
@@ -1245,6 +1245,6 @@ void test_usb(void)
 		{
 			processs_flg = 0;
 		}
-		delay_ms(1);
+		sys_delay_ms(1);
 	}
 }

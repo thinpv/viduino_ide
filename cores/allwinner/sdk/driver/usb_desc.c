@@ -101,7 +101,7 @@ USB_DeviceRequest usb_setup_request;
 */
 static void set_address(unsigned char addr)
 {
-	// delay_ms(1);
+	// sys_delay_ms(1);
 	usb_device_set_address(addr);
 	usb_device_read_data_status_ep0(1);
 
