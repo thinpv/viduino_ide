@@ -5,7 +5,7 @@
 #if 0
 
 #include <lvgl.h>
-#include <../lv_conf.h>
+#include <lv_conf.h>
 #include <touchscreen.h>
 #include "FrameBuffer.h"
 

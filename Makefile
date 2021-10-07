@@ -84,26 +84,26 @@ SRCDIRS			+= libraries/NS2009/src
 INCDIRS			+= libraries/SoftwareTimer
 SRCDIRS			+= libraries/SoftwareTimer
 
-INCDIRS			+= libraries/lv_arduino/src \
-	libraries/lv_arduino/src/src \
-	libraries/lv_arduino/src/src/lv_core \
-	libraries/lv_arduino/src/src/lv_draw \
-	libraries/lv_arduino/src/src/lv_font \
-	libraries/lv_arduino/src/src/lv_gpu \
-	libraries/lv_arduino/src/src/lv_hal \
-	libraries/lv_arduino/src/src/lv_misc \
-	libraries/lv_arduino/src/src/lv_themes \
-	libraries/lv_arduino/src/src/lv_widgets \
-	libraries/lv_arduino/examples/lv_demo_music
-SRCDIRS			+= libraries/lv_arduino/src/src/lv_core \
-	libraries/lv_arduino/src/src/lv_draw \
-	libraries/lv_arduino/src/src/lv_font \
-	libraries/lv_arduino/src/src/lv_gpu \
-	libraries/lv_arduino/src/src/lv_hal \
-	libraries/lv_arduino/src/src/lv_misc \
-	libraries/lv_arduino/src/src/lv_themes \
-	libraries/lv_arduino/src/src/lv_widgets \
-	libraries/lv_arduino/examples/lv_demo_music
+INCDIRS			+= libraries/lvgl/src \
+	libraries/lvgl/src/lvgl/src \
+	libraries/lvgl/src/lvgl/src/lv_core \
+	libraries/lvgl/src/lvgl/src/lv_draw \
+	libraries/lvgl/src/lvgl/src/lv_font \
+	libraries/lvgl/src/lvgl/src/lv_gpu \
+	libraries/lvgl/src/lvgl/src/lv_hal \
+	libraries/lvgl/src/lvgl/src/lv_misc \
+	libraries/lvgl/src/lvgl/src/lv_themes \
+	libraries/lvgl/src/lvgl/src/lv_widgets \
+	libraries/lvgl/examples/lv_demo_music
+SRCDIRS			+= libraries/lvgl/src/lvgl/src/lv_core \
+	libraries/lvgl/src/lvgl/src/lv_draw \
+	libraries/lvgl/src/lvgl/src/lv_font \
+	libraries/lvgl/src/lvgl/src/lv_gpu \
+	libraries/lvgl/src/lvgl/src/lv_hal \
+	libraries/lvgl/src/lvgl/src/lv_misc \
+	libraries/lvgl/src/lvgl/src/lv_themes \
+	libraries/lvgl/src/lvgl/src/lv_widgets \
+	libraries/lvgl/examples/lv_demo_music
 
 # INCDIRS			+= libraries/png/libz
 # SRCDIRS			+= libraries/png/libz

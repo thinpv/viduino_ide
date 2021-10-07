@@ -390,6 +390,8 @@ int boot_main(int argc, char **argv)
 	S_Bit(DEBE->DEBE_LAY0_ATT_CTRL_REG0, 1);
 	// LCD_Draw_Picture(0, 0, argb_w == 0 ? jpeg_w : argb_w, argb_h == 0 ? jpeg_h : argb_h, out_argb);
 #else
+	TVE_Init();
+	debe_yuv_out_enable(0);
 	maincpp();
 #endif
 #endif

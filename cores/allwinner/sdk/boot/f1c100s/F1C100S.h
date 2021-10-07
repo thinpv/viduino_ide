@@ -26,28 +26,32 @@ typedef unsigned short u16;
 typedef unsigned int u32;
 typedef unsigned long long u64;
 
-#define CCU_BASE 0x01C20000
-#define INTC_BASE 0x01C20400
-#define TIMER_BASE 0x01C20C00
-#define PWM_BASE 0x01C21000
-#define DMA_BASE 0x01C02000
-#define PIO_BASE 0x01C20800
+#define DMA_BASE 		0x01C02000
+#define SPI_BASE 		0x01C05000
+#define TVE_BASE 		0x01C0A000
+#define TVD_BASE 		0x01C0B000
+#define TCON_BASE 	0x01C0C000
+#define VE_BASE 		0x01C0E000
+#define SDC_BASE 		0x01C0F000
+#define OTG_BASE 		0x01C13000
+#define CCU_BASE 		0x01C20000
+#define INTC_BASE 	0x01C20400
+#define PIO_BASE 		0x01C20800
+#define TIMER_BASE 	0x01C20C00
+#define PWM_BASE 		0x01C21000
+#define OWA_BASE 		0x01C21400
+#define RSB_BASE 		0x01C21800
+#define DA_BASE 		0x01C22000
+#define CIR_BASE 		0x01C22C00
 #define KEYADC_BASE 0x01C23400
-#define TP_BASE 0x01C24800
 #define AUDIOC_BASE 0x01C23C00
-#define TCON_BASE 0x01C0C000
-#define DEFE_BASE 0x01E00000
-#define DEBE_BASE 0x01E60000
-#define DI_BASE 0x01E70000
-#define CSI_BASE 0x01CB0000
-#define SDC_BASE 0x01C0F000
-#define TWI_BASE 0x01C27000
-#define SPI_BASE 0x01C05000
-#define UART_BASE 0x01C25000
-#define RSB_BASE 0x08003400
-#define CIR_BASE 0x01C22C00
-#define DA_BASE 0x01C22000
-#define OWA_BASE 0x01C21400
+#define TP_BASE 		0x01C24800
+#define UART_BASE 	0x01C25000
+#define TWI_BASE 		0x01C27000
+#define CSI_BASE 		0x01CB0000
+#define DEFE_BASE 	0x01E00000
+#define DEBE_BASE 	0x01E60000
+#define DI_BASE 		0x01E70000
 
 typedef struct
 {
@@ -207,29 +211,29 @@ typedef struct
 	vuint32_t TIME_CTRL_REG;			 //0x10
 	vuint32_t TIME_INTV_VALUE_REG; //0x14
 	vuint32_t TIME_CUR_VALUE_REG;	 //0x18
-	vuint32_t rsv[1];						 //
+	vuint32_t rsv[1];							 //
 } Timer_Type;
 
 typedef struct
 {
-	vuint32_t TMR_IRQ_EN_REG;			 //0x00
-	vuint32_t TMR_IRQ_STA_REG;		 //0x04
-	vuint32_t rsv1[2];						 //
-	Timer_Type TIME0;			 //0x10
-	Timer_Type TIME1;			 //0x20
-	Timer_Type TIME2;			 //0x30
-	vuint32_t rsv4[16];						 //
-	vuint32_t AVS_CNT_CTL_REG;		 //0x80
-	vuint32_t AVS_CNT0_REG;				 //0x84
-	vuint32_t AVS_CNT1_REG;				 //0x88
-	vuint32_t AVS_CNT_DIV_REG;		 //0x8C
-	vuint32_t rsv5[4];						 //
-	vuint32_t WDOG_IRQ_EN_REG;		 //0xA0
-	vuint32_t WDOG_IRQ_STA_REG;		 //0xA4
-	vuint32_t rsv6[2];						 //
-	vuint32_t WDOG_CTRL_REG;			 //0xB0
-	vuint32_t WDOG_CFG_REG;				 //0xB4
-	vuint32_t WDOG_MODE_REG;			 //0xB8
+	vuint32_t TMR_IRQ_EN_REG;		//0x00
+	vuint32_t TMR_IRQ_STA_REG;	//0x04
+	vuint32_t rsv1[2];					//
+	Timer_Type TIME0;						//0x10
+	Timer_Type TIME1;						//0x20
+	Timer_Type TIME2;						//0x30
+	vuint32_t rsv4[16];					//
+	vuint32_t AVS_CNT_CTL_REG;	//0x80
+	vuint32_t AVS_CNT0_REG;			//0x84
+	vuint32_t AVS_CNT1_REG;			//0x88
+	vuint32_t AVS_CNT_DIV_REG;	//0x8C
+	vuint32_t rsv5[4];					//
+	vuint32_t WDOG_IRQ_EN_REG;	//0xA0
+	vuint32_t WDOG_IRQ_STA_REG; //0xA4
+	vuint32_t rsv6[2];					//
+	vuint32_t WDOG_CTRL_REG;		//0xB0
+	vuint32_t WDOG_CFG_REG;			//0xB4
+	vuint32_t WDOG_MODE_REG;		//0xB8
 } TimerStruct_Type;
 
 typedef struct
@@ -537,6 +541,51 @@ typedef struct
 	vuint32_t TCON_DEBUG_INFO_REG;		 /* 0xfc */
 } TCON_Type;
 
+typedef struct
+{
+	vuint32_t TVE_000; /* 0x000 */
+	vuint32_t TVE_004; /* 0x004 */
+	vuint32_t TVE_008; /* 0x008 */
+	vuint32_t TVE_00C; /* 0x00c */
+	vuint32_t TVE_010; /* 0x010 */
+	vuint32_t TVE_014; /* 0x014 */
+	vuint32_t TVE_018; /* 0x018 */
+	vuint32_t TVE_01C; /* 0x01c */
+	vuint32_t TVE_020; /* 0x020 */
+	vuint32_t TVE_024; /* 0x024 */
+	vuint32_t TVE_030; /* 0X030 */
+	vuint32_t TVE_034; /* 0x034 */
+	vuint32_t TVE_038; /* 0x038 */
+	vuint32_t TVE_03C; /* 0x03c */
+	vuint32_t TVE_040; /* 0x040 */
+	vuint32_t TVE_044; /* 0x044 */
+	vuint32_t TVE_048; /* 0x048 */
+	vuint32_t TVE_04C; /* 0x04c */
+	vuint32_t TVE_0F8; /* 0x0f8 */
+	vuint32_t TVE_0FC; /* 0x0fc */
+	vuint32_t TVE_100; /* 0x100 */
+	vuint32_t TVE_104; /* 0x104 */
+	vuint32_t TVE_108; /* 0x108 */
+	vuint32_t TVE_10C; /* 0x10c */
+	vuint32_t TVE_110; /* 0x110 */
+	vuint32_t TVE_114; /* 0x114 */
+	vuint32_t TVE_118; /* 0x118 */
+	vuint32_t TVE_11C; /* 0x11c */
+	vuint32_t TVE_120; /* 0x120 */
+	vuint32_t TVE_124; /* 0x124 */
+	vuint32_t TVE_128; /* 0x128 */
+	vuint32_t TVE_12C; /* 0x12c */
+	vuint32_t TVE_130; /* 0x130 */
+	vuint32_t TVE_134; /* 0x134 */
+	vuint32_t TVE_138; /* 0x138 */
+	vuint32_t TVE_13C; /* 0x13C */
+	vuint32_t TVE_300; /* 0x300 */
+	vuint32_t TVE_304; /* 0x304 */
+	vuint32_t TVE_308; /* 0x308 */
+	vuint32_t TVE_380; /* 0x380 */
+	vuint32_t TVE_3A0; /* 0x3a0 */
+} TVE_Type;
+
 #define CCU ((CCU_Type *)(CCU_BASE + 0x0))
 
 #define GPIOA ((GPIO_Type *)(PIO_BASE + 0 * 0x24))
@@ -587,6 +636,8 @@ typedef struct
 #define DEBE ((DEBE_Type *)DEBE_BASE)
 
 #define TCON ((TCON_Type *)TCON_BASE)
+
+#define TVE ((TVE_Type *)TVE_BASE)
 
 #include <gpio.h>
 #include <uart.h>
