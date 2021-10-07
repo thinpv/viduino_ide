@@ -55,73 +55,73 @@ typedef unsigned long long u64;
 
 typedef struct
 {
-	vuint32_t PLL_CPU_CTRL_REG;		 /* 0x000 */
-	vuint32_t rsv1;								 /* 0x004 */
-	vuint32_t PLL_AUDIO_CTRL_REG;	 /* 0x008 */
-	vuint32_t rsv2;								 /* 0x00c */
-	vuint32_t PLL_VIDEO_CTRL_REG;	 /* 0x010 */
-	vuint32_t rsv3;								 /* 0x014 */
-	vuint32_t PLL_VE_CTRL_REG;		 /* 0x018 */
-	vuint32_t rsv4;								 /* 0x01c */
-	vuint32_t PLL_DDR_CTRL_REG;		 /* 0x020 */
-	vuint32_t rsv5;								 /* 0x024 */
-	vuint32_t PLL_PERIPH_CTRL_REG; /* 0X030 */
-	vuint32_t rsv6[9];
-	vuint32_t CPU_CLK_SRC_REG;			 //CPU Clock Source Register
-	vuint32_t AHB_APB_HCLKC_CFG_REG; //AHB/APB/HCLKC Configuration Register
-	vuint32_t rsv7[2];
-	vuint32_t BUS_CLK_GATING_REG0; //Bus Clock Gating Register 0
-	vuint32_t BUS_CLK_GATING_REG1; //Bus Clock Gating Register 1
-	vuint32_t BUS_CLK_GATING_REG2; //Bus Clock Gating Register 2
-	vuint32_t rsv8[7];
-	vuint32_t SDMMC0_CLK_REG; //SDMMC0 Clock Register
-	vuint32_t SDMMC1_CLK_REG; //SDMMC1 Clock Register
-	vuint32_t rsv9[8];
-	vuint32_t DAUDIO_CLK_REG; //DAUDIO Clock Register
-	vuint32_t OWA_CLK_REG;		//OWA Clock Register
-	vuint32_t CIR_CLK_REG;		//CIR Clock Register
-	vuint32_t rsv10[4];
-	vuint32_t USBPHY_CLK_REG; //USBPHY Clock Register
-	vuint32_t rsv11[12];
-	vuint32_t DRAM_GATING_REG; //DRAM GATING Register
-	vuint32_t BE_CLK_REG;			 //BE Clock Register
-	vuint32_t rsv12;
-	vuint32_t FE_CLK_REG; //FE Clock Register
-	vuint32_t rsv13[2];
-	vuint32_t TCON_CLK_REG; //TCON Clock Register
-	vuint32_t DI_CLK_REG;		//De-interlacer Clock Register
-	vuint32_t TVE_CLK_REG;	//TVE Clock Register
-	vuint32_t TVD_CLK_REG;	//TVD Clock Register
-	vuint32_t rsv14[3];
-	vuint32_t CSI_CLK_REG; //CSI Clock Register
-	vuint32_t rsv15;
-	vuint32_t VE_CLK_REG;					 //VE Clock Register
-	vuint32_t AUDIO_CODEC_CLK_REG; //Audio Codec Clock Register
-	vuint32_t AVS_CLK_REG;				 //AVS Clock Register
-	vuint32_t rsv16[46];
-	vuint32_t PLL_STABLE_TIME_REG0; //PLL Stable Time Register 0
-	vuint32_t PLL_STABLE_TIME_REG1; //PLL Stable Time Register 1
-	vuint32_t rsv17[6];
-	vuint32_t PLL_CPU_BIAS_REG;		 //PLL_CPU Bias Register
-	vuint32_t PLL_AUDIO_BIAS_REG;	 //PLL_AUDIO Bias Register
-	vuint32_t PLL_VIDEO_BIAS_REG;	 //PLL_VIDEO Bias Register
-	vuint32_t PLL_VE_BIAS_REG;		 //PLL_VE Bias Register
-	vuint32_t PLL_DDR_BIAS_REG;		 //PLL_DDR Bias Register
-	vuint32_t PLL_PERIPH_BIAS_REG; //PLL_PERIPH Bias Register
-	vuint32_t rsv18[6];
-	vuint32_t PLL_CPU_TUN_REG; //PLL_CPU Tuning Register
-	vuint32_t rsv19[3];
-	vuint32_t PLL_DDR_TUN_REG; //PLL_DDR Tuning Register
-	vuint32_t rsv20[8];
-	vuint32_t PLL_AUDIO_PAT_CTRL_REG; //PLL_AUDIO Pattern Control Register
-	vuint32_t PLL_VIDEO_PAT_CTRL_REG; //PLL_VIDEO Pattern Control Register
-	vuint32_t rsv21;
-	vuint32_t PLL_DDR_PAT_CTRL_REG; //PLL_DDR Pattern Control Register
-	vuint32_t rsv22[11];
-	vuint32_t BUS_SOFT_RST_REG0; //Bus Software Reset Register 0
-	vuint32_t BUS_SOFT_RST_REG1; //Bus Software Reset Register 1
-	vuint32_t rsv23[2];
-	vuint32_t BUS_SOFT_RST_REG2; //Bus Software Reset Register 2
+	vuint32_t PLL_CPU_CTRL_REG;				/* 0x000 */
+	vuint32_t rsv1;										/* 0x004 */
+	vuint32_t PLL_AUDIO_CTRL_REG;			/* 0x008 */
+	vuint32_t rsv2;										/* 0x00c */
+	vuint32_t PLL_VIDEO_CTRL_REG;			/* 0x010 */
+	vuint32_t rsv3;										/* 0x014 */
+	vuint32_t PLL_VE_CTRL_REG;				/* 0x018 */
+	vuint32_t rsv4;										/* 0x01c */
+	vuint32_t PLL_DDR_CTRL_REG;				/* 0x020 */
+	vuint32_t rsv5;										/* 0x024 */
+	vuint32_t PLL_PERIPH_CTRL_REG;		/* 0X028 */
+	vuint32_t rsv6[9];								/* 0X02C */
+	vuint32_t CPU_CLK_SRC_REG;				/* 0x050 */
+	vuint32_t AHB_APB_HCLKC_CFG_REG;	/* 0x054 */
+	vuint32_t rsv7[2];								/* 0x058 */
+	vuint32_t BUS_CLK_GATING_REG0;		/* 0x060 */
+	vuint32_t BUS_CLK_GATING_REG1;		/* 0x064 */
+	vuint32_t BUS_CLK_GATING_REG2;		/* 0x068 */
+	vuint32_t rsv8[7];								/* 0x06C */
+	vuint32_t SDMMC0_CLK_REG;					/* 0x088 */
+	vuint32_t SDMMC1_CLK_REG;					/* 0x08C */
+	vuint32_t rsv9[8];								/* 0x090 */
+	vuint32_t DAUDIO_CLK_REG;					/* 0x0B0 */
+	vuint32_t OWA_CLK_REG;						/* 0x0B4 */
+	vuint32_t CIR_CLK_REG;						/* 0x0B8 */
+	vuint32_t rsv10[4];								/* 0x0BC */
+	vuint32_t USBPHY_CLK_REG;					/* 0x0CC */
+	vuint32_t rsv11[12];							/* 0x0D0 */
+	vuint32_t DRAM_GATING_REG;				/* 0x100 */
+	vuint32_t BE_CLK_REG;							/* 0x104 */
+	vuint32_t rsv12;									/* 0x108 */
+	vuint32_t FE_CLK_REG;							/* 0x10C */
+	vuint32_t rsv13[2];								/* 0x110 */
+	vuint32_t TCON_CLK_REG;						/* 0x118 */
+	vuint32_t DI_CLK_REG;							/* 0x11C */
+	vuint32_t TVE_CLK_REG;						/* 0x120 */
+	vuint32_t TVD_CLK_REG;						/* 0x124 */
+	vuint32_t rsv14[3];								/* 0x128 */
+	vuint32_t CSI_CLK_REG;						/* 0x134 */
+	vuint32_t rsv15;									/* 0x138 */
+	vuint32_t VE_CLK_REG;							/* 0x13C */
+	vuint32_t AUDIO_CODEC_CLK_REG;		/* 0x140 */
+	vuint32_t AVS_CLK_REG;						/* 0x144 */
+	vuint32_t rsv16[46];							/* 0x148 */
+	vuint32_t PLL_STABLE_TIME_REG0;		/* 0x200 */
+	vuint32_t PLL_STABLE_TIME_REG1;		/* 0x204 */
+	vuint32_t rsv17[6];								/* 0x208 */
+	vuint32_t PLL_CPU_BIAS_REG;				/* 0x220 */
+	vuint32_t PLL_AUDIO_BIAS_REG;			/* 0x224 */
+	vuint32_t PLL_VIDEO_BIAS_REG;			/* 0x228 */
+	vuint32_t PLL_VE_BIAS_REG;				/* 0x22C */
+	vuint32_t PLL_DDR_BIAS_REG;				/* 0x230 */
+	vuint32_t PLL_PERIPH_BIAS_REG;		/* 0x234 */
+	vuint32_t rsv18[6];								/* 0x238 */
+	vuint32_t PLL_CPU_TUN_REG;				/* 0x250 */
+	vuint32_t rsv19[3];								/* 0x254 */
+	vuint32_t PLL_DDR_TUN_REG;				/* 0x260 */
+	vuint32_t rsv20[8];								/* 0x264 */
+	vuint32_t PLL_AUDIO_PAT_CTRL_REG; /* 0x284 */
+	vuint32_t PLL_VIDEO_PAT_CTRL_REG; /* 0x288 */
+	vuint32_t rsv21;									/* 0x28C */
+	vuint32_t PLL_DDR_PAT_CTRL_REG;		/* 0x290 */
+	vuint32_t rsv22[11];							/* 0x294 */
+	vuint32_t BUS_SOFT_RST_REG0;			/* 0x2C0 */
+	vuint32_t BUS_SOFT_RST_REG1;			/* 0x2C4 */
+	vuint32_t rsv23[2];								/* 0x2C8 */
+	vuint32_t BUS_SOFT_RST_REG2;			/* 0x2D0 */
 } CCU_Type;
 
 typedef struct

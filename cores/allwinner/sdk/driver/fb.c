@@ -12,7 +12,6 @@ pixel_format *fb_buffer;
 int fb_width;
 int fb_height;
 
-
 /*---------------------------------------------------
 TCON interrupt
 ----------------------------------------------------*/
@@ -321,7 +320,71 @@ void fb_init(lcd_type_t lcd_type, void *buffer)
 	}
 	else if (lcd_type == LCD_TYPE_TV_PAL_720_576)
 	{
-		return 1;
+		// LCD mode 0-cpu 1-rgb
+		lcd_pdat->mode = 1;
+		// LCD width and height
+		lcd_pdat->width = 720;
+		lcd_pdat->height = 576;
+		// Pixel width
+		lcd_pdat->bits_per_pixel = 16;
+
+		// Timing
+		lcd_pdat->timing.h_front_porch = 40; //
+		lcd_pdat->timing.h_back_porch = 87;	 //
+		lcd_pdat->timing.h_sync_len = 1;		 //HSPW
+		lcd_pdat->timing.v_front_porch = 13; //
+		lcd_pdat->timing.v_back_porch = 31;	 //
+		lcd_pdat->timing.v_sync_len = 1;		 //VSPW
+		// Polarity setting 0 inverted
+		lcd_pdat->timing.h_sync_active = 0;
+		lcd_pdat->timing.v_sync_active = 0;
+		lcd_pdat->timing.den_active = 1; // Inverted
+		lcd_pdat->timing.clk_active = 0;
+		/*********************************DEBE SET**************************/
+		lcd_pdat->index = 0;					 // FB index
+		lcd_pdat->bytes_per_pixel = 2; // buff color bit width
+
+		// Set the video clock to 390MHZ
+		u8 N = 65, M = 4;
+		F = 25; //(24MHz*N)/M/F=15.6MHZ
+		C_Bit(TCON->TCON_FRM_CTRL_REG, 31);
+		TCON->TCON_FRM_CTRL_REG = ((N - 1) << 8) | ((M - 1) << 0) | (3 << 24);
+		S_Bit(TCON->TCON_FRM_CTRL_REG, 31);
+		sys_delay_ms(1);
+	}
+	else if (lcd_type == LCD_TYPE_TV_NTSC_720_480)
+	{
+		// LCD mode 0-cpu 1-rgb
+		lcd_pdat->mode = 1;
+		// LCD width and height
+		lcd_pdat->width = 720;
+		lcd_pdat->height = 480;
+		// Pixel width
+		lcd_pdat->bits_per_pixel = 16;
+
+		// Timing
+		lcd_pdat->timing.h_front_porch = 40; //
+		lcd_pdat->timing.h_back_porch = 87;	 //
+		lcd_pdat->timing.h_sync_len = 1;		 //HSPW
+		lcd_pdat->timing.v_front_porch = 13; //
+		lcd_pdat->timing.v_back_porch = 31;	 //
+		lcd_pdat->timing.v_sync_len = 1;		 //VSPW
+		// Polarity setting 0 inverted
+		lcd_pdat->timing.h_sync_active = 0;
+		lcd_pdat->timing.v_sync_active = 0;
+		lcd_pdat->timing.den_active = 1; // Inverted
+		lcd_pdat->timing.clk_active = 0;
+		/*********************************DEBE SET**************************/
+		lcd_pdat->index = 0;					 // FB index
+		lcd_pdat->bytes_per_pixel = 2; // buff color bit width
+
+		// Set the video clock to 390MHZ
+		u8 N = 65, M = 4;
+		F = 25; //(24MHz*N)/M/F=15.6MHZ
+		C_Bit(TCON->TCON_FRM_CTRL_REG, 31);
+		TCON->TCON_FRM_CTRL_REG = ((N - 1) << 8) | ((M - 1) << 0) | (3 << 24);
+		S_Bit(TCON->TCON_FRM_CTRL_REG, 31);
+		sys_delay_ms(1);
 	}
 	else
 	{
@@ -347,6 +410,11 @@ void fb_init(lcd_type_t lcd_type, void *buffer)
 	debe_init(lcd_pdat->width, lcd_pdat->height, lcd_pdat->vram[0]);
 	debe_enable();
 	fb_tcon_init(F);
+	if (lcd_type == LCD_TYPE_TV_PAL_720_576 && LCD_TYPE_TV_NTSC_720_480 == lcd_type)
+	{
+		TVE_Init();
+		debe_yuv_out_enable(0);
+	}
 	fb_tcon_enable();
 }
 

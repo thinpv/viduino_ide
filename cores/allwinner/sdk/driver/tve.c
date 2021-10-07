@@ -497,6 +497,7 @@ int TCON1_Init(__u8 mode)
 	// write32(TCON_Base_Address + 0x090, read32(TCON_Base_Address + 0x090) | ((u64_t)0x1 << 31));
 	S_Bit(TCON->TCON1_CTRL_REG, 31);
 	// write32(TCON_Base_Address + 0x090, read32(TCON_Base_Address + 0x090) | 0); //0=DE 2=BLUE[1V电压] TCON0与TCON1同一源时将关闭LCD输出
+	C_Value(TCON->TCON1_CTRL_REG, 0, 0x3);
 	TCON->TCON1_CTRL_REG |= 0; //0=DE 2=BLUE[1V电压] TCON0与TCON1同一源时将关闭LCD输出
 	// write32(TCON_Base_Address + 0x090, read32(TCON_Base_Address + 0x090) | ((start_delay & 0x1f) << 4));
 	TCON->TCON1_CTRL_REG |= ((start_delay & 0x1f) << 4);
@@ -537,6 +538,7 @@ int TVE_Config(__u8 mode)
 	TVE_dac_enable(0);
 	//	tve_low_enhance(0,0);
 	//TVE_SET_BIT(TVE_004,0x1<<8);//输出条色
+	S_Bit(TVE->TVE_004, 8); //tao soc man hinh de test
 	TVE_open(0);
 
 	// printf("TVE-%08x\r\n", TVE_RUINT32(TVE_004)); //
@@ -564,7 +566,7 @@ void TVE_Init(void)
 //测试 ——————————————————————————————————————————————————————————————————————————————
 extern unsigned short *BT1;
 
-extern unsigned int LCDbuff1[480 * 272 * 2];
+extern unsigned int LCDbuff1[720 * 480 * 2];
 unsigned int *BT2;
 
 void TVE_Demo(void)

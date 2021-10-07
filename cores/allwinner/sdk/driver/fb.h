@@ -68,7 +68,8 @@ extern "C"
 		LCD_TYPE_VGA_1024_768,
 		LCD_TYPE_VGA_640_480_60HZ,
 		LCD_TYPE_VGA_640_480_75HZ,
-		LCD_TYPE_TV_PAL_720_576
+		LCD_TYPE_TV_PAL_720_576,
+		LCD_TYPE_TV_NTSC_720_480
 	} lcd_type_t;
 
 	// extern struct fb_f1c100s_pdata_t *lcd_pdat;
