@@ -9,8 +9,7 @@ extern "C"
 #include <stdint.h>
 #include <types.h>
 #include <F1C100S.h>
-
-#define LCD_TYPE_TV_NTSC_720_480
+#include "fb.h"
 
 #define __u8 unsigned char
 #define __u16 unsigned short

@@ -163,7 +163,7 @@ __u8 TVE_query_interface(__u8 index)
 	__u8 sts = 0;
 	__u32 readval;
 
-	readval = TVE->TVE_038;//TVE_RUINT32(TVE_038);
+	readval = TVE->TVE_038; //TVE_RUINT32(TVE_038);
 	sts = readval & (3 << (index * 8));
 	sts >>= (index * 8);
 
@@ -175,7 +175,7 @@ __u8 TVE_query_int(void)
 	__u8 sts = 0;
 	__u32 readval;
 
-	readval = TVE->TVE_034;//TVE_RUINT32(TVE_034);
+	readval = TVE->TVE_034; //TVE_RUINT32(TVE_034);
 	sts = readval & 0x0f;
 
 	return sts;
@@ -345,7 +345,7 @@ __u8 TVE_dac_set_de_bounce(__u8 index, __u32 times)
 {
 	__u32 readval;
 
-	readval = TVE->TVE_03C;//TVE_RUINT32(TVE_03C);
+	readval = TVE->TVE_03C; //TVE_RUINT32(TVE_03C);
 
 	if (index == 0)
 	{
@@ -367,7 +367,7 @@ __u8 TVE_dac_get_de_bounce(__u8 index)
 	__u8 sts = 0;
 	__u32 readval;
 
-	readval = TVE->TVE_03C;//TVE_RUINT32(TVE_03C);
+	readval = TVE->TVE_03C; //TVE_RUINT32(TVE_03C);
 
 	if (index == 0)
 	{
@@ -387,7 +387,7 @@ TCON1时钟初始化
 */
 void TVE_Clock_Open(void)
 {
-// #define TVE_CLK_REG (u32)(0x01C20000 + 0x120)
+	// #define TVE_CLK_REG (u32)(0x01C20000 + 0x120)
 	//设置video时钟到270MHZ
 	// C_BIT(CCU_Base_Address + 0x010, 31);
 	C_Bit(CCU->PLL_VIDEO_CTRL_REG, 31);
@@ -511,7 +511,7 @@ int TCON1_Init(__u8 mode)
 	TCON->TCON1_BASIC_REG1 = (scl_x - 1) << 16 | (scl_y - 1) << 0;
 	// write32(TCON_Base_Address + 0x09c, (out_x - 1) << 16 | (out_y - 1) << 0); //输出宽高
 	TCON->TCON1_BASIC_REG2 = (out_x - 1) << 16 | (out_y - 1) << 0; //输出宽高
-	
+
 	// write32(TCON_Base_Address + 0x0a0, ((ht - 1) << 16) | ((hbp - 1) << 0));
 	TCON->TCON1_BASIC_REG3 = ((ht - 1) << 16) | ((hbp - 1) << 0);
 	// write32(TCON_Base_Address + 0x0a4, ((vt) << 16) | ((vbp - 1) << 0));
@@ -538,7 +538,7 @@ int TVE_Config(__u8 mode)
 	TVE_dac_enable(0);
 	//	tve_low_enhance(0,0);
 	//TVE_SET_BIT(TVE_004,0x1<<8);//输出条色
-	S_Bit(TVE->TVE_004, 8); //tao soc man hinh de test
+	// S_Bit(TVE->TVE_004, 8); //tao soc man hinh de test
 	TVE_open(0);
 
 	// printf("TVE-%08x\r\n", TVE_RUINT32(TVE_004)); //
@@ -548,19 +548,20 @@ int TVE_Config(__u8 mode)
 /*——————————————————————————————————————————————————————————————————————————————
 TV初始化
 */
-void TVE_Init(void)
+void TVE_Init(lcd_type_t lcd_type)
 {
 	printf("TVE_Init\r\n");
 	TVE_Clock_Open();
-#ifdef LCD_TYPE_TV_PAL_720_576
-	TCON1_Init(DISP_TV_MOD_PAL);
-	TVE_Config(DISP_TV_MOD_PAL);
-#endif
-#ifdef LCD_TYPE_TV_NTSC_720_480
-	TCON1_Init(DISP_TV_MOD_NTSC);
-	TVE_Config(DISP_TV_MOD_NTSC);
-#endif
-
+	if (LCD_TYPE_TV_PAL_720_576 == lcd_type)
+	{
+		TCON1_Init(DISP_TV_MOD_PAL);
+		TVE_Config(DISP_TV_MOD_PAL);
+	}
+	else if (LCD_TYPE_TV_NTSC_720_480 == lcd_type)
+	{
+		TCON1_Init(DISP_TV_MOD_NTSC);
+		TVE_Config(DISP_TV_MOD_NTSC);
+	}
 	printf("TVE_end\r\n");
 }
 //测试 ——————————————————————————————————————————————————————————————————————————————
