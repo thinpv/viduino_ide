@@ -15,7 +15,7 @@ int FrameBuffer::begin(lcd_type_t lcd_type, int bright)
 	return 0;
 }
 
-int begin(pixel_format *data, lcd_type_t lcd_type, int bright = 100)
+int begin(pixel_format *data, lcd_type_t lcd_type, int bright)
 {
 	fb_init(lcd_type, data);
 	return 0;

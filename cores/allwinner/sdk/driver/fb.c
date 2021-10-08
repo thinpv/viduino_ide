@@ -410,7 +410,7 @@ void fb_init(lcd_type_t lcd_type, void *buffer)
 	debe_init(lcd_pdat->width, lcd_pdat->height, lcd_pdat->vram[0]);
 	debe_enable();
 	fb_tcon_init(F);
-	if (lcd_type == LCD_TYPE_TV_PAL_720_576 && LCD_TYPE_TV_NTSC_720_480 == lcd_type)
+	if (LCD_TYPE_TV_PAL_720_576 == lcd_type || LCD_TYPE_TV_NTSC_720_480 == lcd_type)
 	{
 		TVE_Init();
 		debe_yuv_out_enable(0);
