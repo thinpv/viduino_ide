@@ -68,7 +68,7 @@ void debe_yuv_out_enable(char mode)
 {
 	for (int i = 0; i < sizeof(csc_tab2[0]) / 4; i++)
 	{
-		write32((virtual_addr_t)(&DEBE->DEBE_COEF00_REG + i), csc_tab2[mode][i]);
+		write32((virtual_addr_t)(&DEBE->DEBE_COEF00_REG + i), csc_tab2[mode][i] << 16);
 	}
 	S_Bit(DEBE->DEBE_MODE_CTRL_REG, 5);
 	// int i;
