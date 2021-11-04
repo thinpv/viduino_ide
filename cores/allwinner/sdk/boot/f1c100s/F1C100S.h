@@ -633,6 +633,20 @@ typedef struct
 	vuint32_t TVE_3A0; /* 0x3a0 */
 } TVE_Type;
 
+typedef struct
+{
+	vuint32_t TP_CTRL_REG0;					/* 0x000 */
+	vuint32_t TP_CTRL_REG1;					/* 0x004 */
+	vuint32_t TP_CTRL_REG2;					/* 0x008 */
+	vuint32_t TP_CTRL_REG3;					/* 0x00c */
+	vuint32_t TP_INT_FIFO_CTRL_REG; /* 0x010 */
+	vuint32_t TP_INT_FIFO_STAT_REG; /* 0x014 */
+	vuint32_t res1;									/* 0x018 */
+	vuint32_t TP_COM_DATA_REG;			/* 0x01c */
+	vuint32_t res2;									/* 0x020 */
+	vuint32_t TP_DATA_REG;					/* 0x024 */
+} TP_Type;
+
 #define CCU ((CCU_Type *)(CCU_BASE + 0x0))
 
 #define GPIOA ((GPIO_Type *)(PIO_BASE + 0 * 0x24))
@@ -685,6 +699,8 @@ typedef struct
 #define TCON ((TCON_Type *)TCON_BASE)
 
 #define TVE ((TVE_Type *)TVE_BASE)
+
+#define TP ((TP_Type *)TP_BASE)
 
 #include <gpio.h>
 #include <uart.h>
