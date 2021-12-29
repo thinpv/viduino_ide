@@ -17,7 +17,7 @@ SED = sed
 PYTHON = python3
 VIDUINO = viduino-0.0.12.tar
 
-COMPILE			= /home/thinpv/.arduino15/packages/arduino/tools/arm-none-eabi-gcc/7-2017q4/bin/arm-none-eabi-
+COMPILE			= ~/gcc-arm-none-eabi-7-2017-q4-major/bin/arm-none-eabi-
 CC					= $(COMPILE)gcc
 CXX					= $(COMPILE)g++
 AS					= $(COMPILE)gcc -x assembler-with-cpp

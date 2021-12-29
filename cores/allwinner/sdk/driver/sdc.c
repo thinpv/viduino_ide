@@ -712,7 +712,7 @@ void sdc_get_sd_info(SDC_Type *sdc, mmc_cmd_st *cmd, disk_data_t *sd_info)
 	printf("SD_info->sectorSize=[%d]\r\n", sd_info->sectorSize);
 }
 
-int sdc_switch_to_high_speed(SDC_Type *sdc, struct mmc_cmd *cmd)
+int sdc_switch_to_high_speed(SDC_Type *sdc, mmc_cmd_st *cmd)
 {
 	mmc_data_st data;
 	int volatile status = FALSE;
@@ -761,7 +761,7 @@ int sdc_switch_to_high_speed(SDC_Type *sdc, struct mmc_cmd *cmd)
 		return FALSE;
 }
 
-int sdc_select_sdcard(SDC_Type *sdc, struct mmc_cmd *cmd, char CARD_WIDTH)
+int sdc_select_sdcard(SDC_Type *sdc, mmc_cmd_st *cmd, char CARD_WIDTH)
 {
 	mmc_data_st data;
 	int volatile status = FALSE, i;
