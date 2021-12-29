@@ -10,7 +10,7 @@
 #include <irq_gpio.h>
 #include <fb.h>
 #include <pwm.h>
-#include <usb.h>
+// #include <usb.h>
 #include <io.h>
 
 // #define TEST_PNG_C

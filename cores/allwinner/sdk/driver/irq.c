@@ -287,3 +287,30 @@ void arm32_do_fiq(struct arm_regs_t *regs)
 	irq_handle();
 	// vPreemptiveTick();
 }
+
+void f1c100s_intc_mask_irq(uint8_t nIRQ)
+{
+	if(nIRQ > 31) {
+  	INTC->INTC_MASK_REG1 |= (1 << (nIRQ % 32));
+	} else {
+		INTC->INTC_MASK_REG0 |= (1 << (nIRQ % 32));
+	}
+}
+
+void f1c100s_intc_unmask_irq(uint8_t nIRQ)
+{
+	if(nIRQ > 31) {
+  	INTC->INTC_MASK_REG1 &= ~(1 << (nIRQ % 32));
+	} else {
+		INTC->INTC_MASK_REG0 &= ~(1 << (nIRQ % 32));
+	}
+}
+
+void f1c100s_intc_clear_pend(uint8_t nIRQ)
+{
+	if(nIRQ > 31) {
+  	INTC->INTC_PEND_REG1 = (1 << (nIRQ % 32));
+	} else {
+		INTC->INTC_PEND_REG0 = (1 << (nIRQ % 32));
+	}
+}

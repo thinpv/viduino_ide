@@ -84,26 +84,40 @@ SRCDIRS			+= libraries/NS2009/src
 INCDIRS			+= libraries/SoftwareTimer
 SRCDIRS			+= libraries/SoftwareTimer
 
-INCDIRS			+= libraries/lvgl/src \
-	libraries/lvgl/src/lvgl/src \
-	libraries/lvgl/src/lvgl/src/lv_core \
-	libraries/lvgl/src/lvgl/src/lv_draw \
-	libraries/lvgl/src/lvgl/src/lv_font \
-	libraries/lvgl/src/lvgl/src/lv_gpu \
-	libraries/lvgl/src/lvgl/src/lv_hal \
-	libraries/lvgl/src/lvgl/src/lv_misc \
-	libraries/lvgl/src/lvgl/src/lv_themes \
-	libraries/lvgl/src/lvgl/src/lv_widgets \
-	libraries/lvgl/examples/lv_demo_music
-SRCDIRS			+= libraries/lvgl/src/lvgl/src/lv_core \
-	libraries/lvgl/src/lvgl/src/lv_draw \
-	libraries/lvgl/src/lvgl/src/lv_font \
-	libraries/lvgl/src/lvgl/src/lv_gpu \
-	libraries/lvgl/src/lvgl/src/lv_hal \
-	libraries/lvgl/src/lvgl/src/lv_misc \
-	libraries/lvgl/src/lvgl/src/lv_themes \
-	libraries/lvgl/src/lvgl/src/lv_widgets \
-	libraries/lvgl/examples/lv_demo_music
+# INCDIRS			+= libraries/lvgl/src \
+# 	libraries/lvgl/src/lvgl/src \
+# 	libraries/lvgl/src/lvgl/src/lv_core \
+# 	libraries/lvgl/src/lvgl/src/lv_draw \
+# 	libraries/lvgl/src/lvgl/src/lv_font \
+# 	libraries/lvgl/src/lvgl/src/lv_gpu \
+# 	libraries/lvgl/src/lvgl/src/lv_hal \
+# 	libraries/lvgl/src/lvgl/src/lv_misc \
+# 	libraries/lvgl/src/lvgl/src/lv_themes \
+# 	libraries/lvgl/src/lvgl/src/lv_widgets \
+# 	libraries/lvgl/examples/lv_demo_music
+# SRCDIRS			+= libraries/lvgl/src/lvgl/src/lv_core \
+# 	libraries/lvgl/src/lvgl/src/lv_draw \
+# 	libraries/lvgl/src/lvgl/src/lv_font \
+# 	libraries/lvgl/src/lvgl/src/lv_gpu \
+# 	libraries/lvgl/src/lvgl/src/lv_hal \
+# 	libraries/lvgl/src/lvgl/src/lv_misc \
+# 	libraries/lvgl/src/lvgl/src/lv_themes \
+# 	libraries/lvgl/src/lvgl/src/lv_widgets \
+# 	libraries/lvgl/examples/lv_demo_music
+
+INCDIRS			+= libraries/tinyusb/src \
+	libraries/tinyusb/src/common \
+	libraries/tinyusb/src/device \
+	libraries/tinyusb/src/class \
+	libraries/tinyusb/src/portable/sunxi \
+	libraries/tinyusb/examples/device/cdc_dual_ports/src
+
+SRCDIRS			+= libraries/tinyusb/src \
+	libraries/tinyusb/src/common \
+	libraries/tinyusb/src/device \
+	libraries/tinyusb/src/class/cdc \
+	libraries/tinyusb/src/portable/sunxi \
+	libraries/tinyusb/examples/device/cdc_dual_ports/src
 
 # INCDIRS			+= libraries/png/libz
 # SRCDIRS			+= libraries/png/libz
