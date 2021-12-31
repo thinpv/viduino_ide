@@ -1,4 +1,6 @@
 #include "tusb.h"
+#include "class/hid/hid.h"
+#include "class/hid/hid_device.h"
 
 void setup() {
   // put your setup code here, to run once:
