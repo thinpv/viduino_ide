@@ -40,10 +40,10 @@ vuno32.menu.UploadSpeed.512000.upload.speed=512000
 
 ## Compress
 menu.Compress=Compress
-vuno32.menu.Compress.Yes=lzma
-vuno32.menu.Compress.Yes.Compress=lzma
 vuno32.menu.Compress.No=no
 vuno32.menu.Compress.No.Compress=bin
+vuno32.menu.Compress.Yes=lzma
+vuno32.menu.Compress.Yes.Compress=lzma
 
 ## Point to the file for ./variants/<variant>/pins_arduino.h
 vuno32.build.variant=viduino_uno
@@ -101,10 +101,10 @@ vuno64.menu.UploadSpeed.512000.upload.speed=512000
 
 ## Compress
 menu.Compress=Compress
-vuno64.menu.Compress.Yes=lzma
-vuno64.menu.Compress.Yes.Compress=lzma
 vuno64.menu.Compress.No=no
 vuno64.menu.Compress.No.Compress=bin
+vuno64.menu.Compress.Yes=lzma
+vuno64.menu.Compress.Yes.Compress=lzma
 
 ## Point to the file for ./variants/<variant>/pins_arduino.h
 vuno64.build.variant=viduino_uno

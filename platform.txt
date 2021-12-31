@@ -20,7 +20,7 @@ compiler.sdk.path={compiler.cores.path}/sdk
 compiler.boot.path={compiler.sdk.path}/boot
 compiler.driver.path={compiler.sdk.path}/driver
 compiler.lib.path={compiler.sdk.path}/lib
-compiler.preproc.flags= "-I{compiler.cores.path}/api" "-I{compiler.boot.path}" "-I{compiler.boot.path}/f1c100s" "-I{compiler.driver.path}" "-I{compiler.lib.path}"
+compiler.preproc.flags= "-I{compiler.cores.path}/api" "-I{compiler.boot.path}" "-I{compiler.boot.path}/f1c100s" "-I{compiler.driver.path}" "-I{compiler.lib.path}" "-I{build.path}/sketch" "-I{build.path}/sketch/inc"
 
 compiler.both.flags= -g -ggdb -Wall -O3 -D__ARM32_ARCH__=5 -D__ARM926EJS__ -D__ARM32__ -DARM -Wno-unused-variable -Wno-multichar -ffunction-sections -fdata-sections -ffreestanding
 
