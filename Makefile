@@ -16,7 +16,9 @@ MKDIR = mkdir
 SED = sed
 PYTHON = python3
 VIDUINO = viduino-0.0.14.tar
-OS	= NON_OS
+NON_OS	= NON_OS
+FREERTOS = FREERTOS_OS
+OS		= $(NON_OS)
 
 COMPILE			= /home/thinpv/.arduino15/packages/arduino/tools/arm-none-eabi-gcc/7-2017q4/bin/arm-none-eabi-
 CC					= $(COMPILE)gcc
@@ -43,8 +45,6 @@ ASFLAGS			+=	-ffunction-sections -fdata-sections -ffreestanding -std=gnu11 $(DEF
 CFLAGS			+=	-ffunction-sections -fdata-sections -ffreestanding -std=gnu11 $(DEFINES)
 CPFLAGS			+=	-ffunction-sections -fdata-sections -ffreestanding -std=gnu++11 $(DEFINES) -fno-rtti -fno-use-cxa-atexit -fno-threadsafe-statics -fno-exceptions
 LDFLAGS			+=	-Wl,-gc-sections -ffunction-sections -fdata-sections
-
-LIBS 				:= -lgcc -lm -lc -lnosys
 
 # ************************** SDK **************************
 SDK					= tools/sdk
@@ -192,7 +192,7 @@ $(BUILD)/firmware.elf: $(ALLOBJ)
 	@$(MKDIR) -p $(BUILD)/lib
 	@$(AR) $(BUILD)/lib/libsdk.a $(SDKOBJS)
 	$(ECHO) "LINK $@"
-	$(CXX) -Wl,--cref,-Map=$@.map $(BUILD)/lib/libsdk.a $(LDFLAGS) -Wl,--start-group $(OBJS) $(LIBFILE) $(LIBS) $(BUILD)/lib/libsdk.a -Wl,--end-group -Wl,-EL -o $@
+	@$(CXX) -Wl,--cref,-Map=$@.map $(LDFLAGS) -Wl,--start-group $(OBJS) $(LIBFILE) -Wl,--end-group -Wl,-EL -o $@ $(BUILD)/lib/libsdk.a -lgcc -lm -lc -lnosys
 	@$(SIZE) $@
 
 $(BUILD)/firmware.bin: $(BUILD)/firmware.elf

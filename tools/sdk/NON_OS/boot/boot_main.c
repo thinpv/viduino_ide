@@ -20,7 +20,9 @@
 // #define TEST_JPEG_C
 // #define TEST_I2C_C
 
-int maincpp(void);
+void init(){}
+extern void setup();
+extern void loop();
 
 #ifdef TEST_PNG_C
 #include "diskio.h"
@@ -390,7 +392,18 @@ int boot_main(int argc, char **argv)
 	S_Bit(DEBE->DEBE_LAY0_ATT_CTRL_REG0, 1);
 	// LCD_Draw_Picture(0, 0, argb_w == 0 ? jpeg_w : argb_w, argb_h == 0 ? jpeg_h : argb_h, out_argb);
 #else
-	maincpp();
+	// maincpp();
+	init();		
+	
+	// USBDevice.attach();
+			
+	setup();
+	
+	for (;;)
+	{
+		loop();		
+		// if(serialEventRun) serialEventRun();
+	}
 #endif
 #endif
 	while (1)
