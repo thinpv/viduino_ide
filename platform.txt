@@ -18,9 +18,10 @@ compiler.size.cmd=arm-none-eabi-size
 compiler.cores.path={runtime.platform.path}/cores/allwinner
 compiler.sdk.path={runtime.platform.path}/tools/sdk
 compiler.driver.path={compiler.sdk.path}/driver
-compiler.boot.path={compiler.sdk.path}/{OS}/boot
-compiler.lib.path={compiler.sdk.path}/{OS}/lib
-compiler.preproc.flags= "-I{compiler.cores.path}/api" "-I{compiler.driver.path}" "-I{compiler.boot.path}" "-I{compiler.boot.path}/f1c100s" "-I{compiler.lib.path}" "-I{build.path}/sketch" "-I{build.path}/sketch/inc"
+compiler.util.path={compiler.sdk.path}/util
+compiler.os.path={compiler.sdk.path}/{OS}
+compiler.boot.path={compiler.os.path}/boot
+compiler.preproc.flags= "-I{compiler.cores.path}/api" "-I{compiler.driver.path}" "-I{compiler.boot.path}" "-I{compiler.boot.path}/f1c100s" "-I{compiler.util.path}" "-I{build.path}/sketch" "-I{build.path}/sketch/inc"
 
 compiler.both.flags= -g -ggdb -Wall -O3 -D__ARM32_ARCH__=5 -D__ARM926EJS__ -D__ARM32__ -DARM -DOS={OS} -Wno-unused-variable -Wno-multichar -ffunction-sections -fdata-sections -ffreestanding
 
@@ -76,7 +77,7 @@ recipe.cpp.o.pattern="{compiler.path}{compiler.cpp.cmd}" {compiler.cpp.flags} -D
 recipe.ar.pattern="{compiler.path}{compiler.ar.cmd}" {compiler.ar.flags} {compiler.ar.extra_flags} "{archive_file_path}" "{object_file}"
 
 ## Link gc-sections, archives, and objects
-recipe.c.combine.pattern="{compiler.path}{compiler.cpp.cmd}" {compiler.ld.flags} {build.extra_flags} -Wl,--cref,-Map={build.path}/{build.project_name}.elf.map {object_files} "{archive_file_path}" -o "{build.path}/{build.project_name}.elf" "{compiler.sdk.path}/lib/libsdk.a" -lgcc -lm -lc -lnosys
+recipe.c.combine.pattern="{compiler.path}{compiler.cpp.cmd}" {compiler.ld.flags} {build.extra_flags} -Wl,--cref,-Map={build.path}/{build.project_name}.elf.map {object_files} "{archive_file_path}" -o "{build.path}/{build.project_name}.elf" "{compiler.os.path}/lib/libsdk.a" "{compiler.sdk.path}/lib/libdriver.a" "{compiler.os.path}/lib/libsdk.a" -lgcc -lm -lc -lnosys
 
 ## Create binary
 recipe.objcopy.eep.1.pattern="{compiler.path}{compiler.objcopy.cmd}" {compiler.objcopy.eep.flags} -v --output-format=binary "{build.path}/{build.project_name}.elf" "{build.path}/{build.project_name}.bin"

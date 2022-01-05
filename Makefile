@@ -16,9 +16,9 @@ MKDIR = mkdir
 SED = sed
 PYTHON = python3
 VIDUINO = viduino-0.0.14.tar
-NON_OS	= NON_OS
+NONOS	= NON_OS
 FREERTOS = FREERTOS_OS
-OS		= $(NON_OS)
+OS		= $(FREERTOS)
 
 COMPILE			= /home/thinpv/.arduino15/packages/arduino/tools/arm-none-eabi-gcc/7-2017q4/bin/arm-none-eabi-
 CC					= $(COMPILE)gcc
@@ -49,12 +49,17 @@ LDFLAGS			+=	-Wl,-gc-sections -ffunction-sections -fdata-sections
 # ************************** SDK **************************
 SDK					= tools/sdk
 DRV					= $(SDK)/driver
-BOOT				= $(SDK)/$(OS)/boot
-LIB					= $(SDK)/$(OS)/lib
+UTIL				= $(SDK)/util
+NONOS_BOOT				= $(SDK)/$(NONOS)/boot
+FREERTOS_BOOT		= $(SDK)/$(FREERTOS)/boot
 
 INCDIRS			+= $(DRV)
-INCDIRS			+= $(BOOT) $(BOOT)/f1c100s
-INCDIRS			+= $(LIB)
+INCDIRS			+= $(UTIL)
+ifeq ($(OS), $(NONOS))
+INCDIRS			+= $(NONOS_BOOT) $(NONOS_BOOT)/f1c100s
+else
+INCDIRS			+= $(FREERTOS_BOOT) $(FREERTOS_BOOT)/f1c100s
+endif
 
 # ************************** API **************************
 
@@ -66,7 +71,7 @@ SRCDIRS			+= $(CORES)
 
 SRCDIRS			+= .
 
-# ************************** LIBS **************************
+# ************************** LIBRARIES **************************
 
 INCDIRS			+= libraries/Wire/src
 SRCDIRS			+= libraries/Wire/src
@@ -143,24 +148,35 @@ DRVCFILES		:=	$(foreach dir, $(DRV), $(wildcard $(dir)/*.c))
 DRVCOBJS		:=	$(patsubst %, $(BUILD)/%, $(DRVCFILES:.c=.o))
 DRVOBJS = $(DRVCOBJS) 
 
-BOOTSFILES	:=	$(foreach dir, $(BOOT), $(wildcard $(dir)/*.S))
-BOOTCFILES	:=	$(foreach dir, $(BOOT), $(wildcard $(dir)/*.c))
-BOOTSOBJS		:=	$(patsubst %, $(BUILD)/%, $(BOOTSFILES:.S=.o))
-BOOTCOBJS		:=	$(patsubst %, $(BUILD)/%, $(BOOTCFILES:.c=.o))
-BOOTOBJS = $(BOOTSOBJS) $(BOOTCOBJS)
+UTILCFILES		:=	$(foreach dir, $(UTIL), $(wildcard $(dir)/*.c))
+UTILCOBJS		:=	$(patsubst %, $(BUILD)/%, $(UTILCFILES:.c=.o))
+UTILOBJS = $(UTILCOBJS) 
 
-LIBCFILES		:=	$(foreach dir, $(LIB), $(wildcard $(dir)/*.c))
-LIBCOBJS		:=	$(patsubst %, $(BUILD)/%, $(LIBCFILES:.c=.o))
-LIBOBJS = $(LIBCOBJS) 
+NONOS_BOOTSFILES	:=	$(foreach dir, $(NONOS_BOOT), $(wildcard $(dir)/*.S))
+NONOS_BOOTCFILES	:=	$(foreach dir, $(NONOS_BOOT), $(wildcard $(dir)/*.c))
+NONOS_BOOTSOBJS		:=	$(patsubst %, $(BUILD)/%, $(NONOS_BOOTSFILES:.S=.o))
+NONOS_BOOTCOBJS		:=	$(patsubst %, $(BUILD)/%, $(NONOS_BOOTCFILES:.c=.o))
+NONOS_BOOTOBJS = $(NONOS_BOOTSOBJS) $(NONOS_BOOTCOBJS)
 
-SDKOBJS = $(DRVOBJS) $(BOOTOBJS) $(LIBOBJS)
+FREERTOS_BOOTSFILES	:=	$(foreach dir, $(FREERTOS_BOOT), $(wildcard $(dir)/*.S))
+FREERTOS_BOOTCFILES	:=	$(foreach dir, $(FREERTOS_BOOT), $(wildcard $(dir)/*.c))
+FREERTOS_BOOTSOBJS		:=	$(patsubst %, $(BUILD)/%, $(FREERTOS_BOOTSFILES:.S=.o))
+FREERTOS_BOOTCOBJS		:=	$(patsubst %, $(BUILD)/%, $(FREERTOS_BOOTCFILES:.c=.o))
+FREERTOS_BOOTOBJS = $(FREERTOS_BOOTSOBJS) $(FREERTOS_BOOTCOBJS)
+
+ifeq ($(OS), $(NONOS))
+BOOTOBJS = $(NONOS_BOOTOBJS)
+else
+BOOTOBJS = $(FREERTOS_BOOTOBJS)
+endif
+
+SDKOBJS = $(DRVOBJS) $(UTILOBJS) $(BOOTOBJS)
 
 SFILES	:=	$(foreach dir, $(SRCDIRS), $(wildcard $(dir)/*.S))
 CFILES	:=	$(foreach dir, $(SRCDIRS), $(wildcard $(dir)/*.c))
 CPFILES	:=	$(foreach dir, $(SRCDIRS), $(wildcard $(dir)/*.cpp))
 
 INCLUDE	:=	$(patsubst %, -I %, $(INCDIRS))
-LIBFILE	:=	$(patsubst %, %, $(LIBFILES))
 SOBJS		:=	$(patsubst %, $(BUILD)/%, $(SFILES:.S=.o))
 COBJS		:=	$(patsubst %, $(BUILD)/%, $(CFILES:.c=.o))
 CPOBJS		:=	$(patsubst %, $(BUILD)/%, $(CPFILES:.cpp=.o))
@@ -190,9 +206,10 @@ $(BUILD)/%.o: %.cpp
 
 $(BUILD)/firmware.elf: $(ALLOBJ)
 	@$(MKDIR) -p $(BUILD)/lib
-	@$(AR) $(BUILD)/lib/libsdk.a $(SDKOBJS)
+	@$(AR) $(BUILD)/lib/libsdk.a $(BOOTOBJS)
+	@$(AR) $(BUILD)/lib/libdriver.a $(DRVOBJS) $(UTILOBJS)
 	$(ECHO) "LINK $@"
-	@$(CXX) -Wl,--cref,-Map=$@.map $(LDFLAGS) -Wl,--start-group $(OBJS) $(LIBFILE) -Wl,--end-group -Wl,-EL -o $@ $(BUILD)/lib/libsdk.a -lgcc -lm -lc -lnosys
+	@$(CXX) -Wl,--cref,-Map=$@.map $(LDFLAGS) -Wl,--start-group $(OBJS) -Wl,--end-group -Wl,-EL -o $@ $(BUILD)/lib/libsdk.a $(BUILD)/lib/libdriver.a $(BUILD)/lib/libsdk.a -lgcc -lm -lc -lnosys
 	@$(SIZE) $@
 
 $(BUILD)/firmware.bin: $(BUILD)/firmware.elf
@@ -206,12 +223,17 @@ write2:
 	$(PYTHON) tools/upload.py --port /dev/ttyUSB0 --baud 921600 write_flash 0x80000 $(BUILD)/firmware.bin
 
 viduino: $(SDKOBJS)
-	mkdir viduino
+	mkdir -p viduino
 	cp -r cores libraries tools variants boards.txt platform.txt programmers.txt viduino
-	$(AR) viduino/$(SDK)/lib/libsdk.a $(SDKOBJS)
-	rm viduino/$(BOOT)/*.c viduino/$(BOOT)/*.S
+	mkdir -p viduino/$(SDK)/$(NONOS)/lib
+	mkdir -p viduino/$(SDK)/$(FREERTOS)/lib
+	$(AR) viduino/$(SDK)/$(NONOS)/lib/libsdk.a $(NONOS_BOOTOBJS)
+	$(AR) viduino/$(SDK)/$(FREERTOS)/lib/libsdk.a $(FREERTOS_BOOTOBJS)
+	$(AR) viduino/$(SDK)/lib/libdriver.a $(DRVOBJS) $(UTILOBJS)
+	rm viduino/$(NONOS_BOOT)/*.c viduino/$(NONOS_BOOT)/*.S
+	rm viduino/$(FREERTOS_BOOT)/*.c viduino/$(FREERTOS_BOOT)/*.S
 	rm viduino/$(DRV)/*.c
-	rm viduino/$(LIB)/*.c
+	rm viduino/$(UTIL)/*.c
 	tar -cf $(VIDUINO) viduino 
 	rm -r viduino
 	sha256sum $(VIDUINO) | tr '[a-z]' '[A-Z]'
