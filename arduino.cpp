@@ -145,7 +145,7 @@ void setup()
 	Wire.begin();
 	Wire.scan(Serial);
 
-	pinMode(16, OUTPUT);
+	pinMode(LED_BUILTIN, OUTPUT);
 
 	// nofrendo_main(0, NULL);
 
@@ -181,7 +181,7 @@ void loop()
 #ifdef NES
 	nes_loop();
 #else
-	digitalWrite(16, 1-digitalRead(16));
+	digitalWrite(LED_BUILTIN, 1-digitalRead(LED_BUILTIN));
 	delay(1000);
 	printf("loop\r\n");
 #endif
