@@ -55,6 +55,8 @@
 .global _vector
 .arm
 .section .vectors, "ax"
+.extern	 vPreemptiveTick
+.extern  vPortYieldProcessor
 
 _vector:
 	ldr pc, _reset
@@ -152,7 +154,7 @@ undefined_instruction:
 
 	.align 5
 software_interrupt:
-	b .
+	b vPortYieldProcessor
 
 	.align 5
 prefetch_abort:
@@ -168,17 +170,11 @@ not_used:
 
 	.align 5
 irq:
-	sub lr, lr, #4
-	save_regs
-	bl arm32_do_irq
-	restore_regs
+	b vPreemptiveTick
 
 	.align 5
 fiq:
-	sub lr, lr, #4
-	save_regs
-	bl arm32_do_fiq
-	restore_regs
+	b vPreemptiveTick
 
 /*
  * The location of section

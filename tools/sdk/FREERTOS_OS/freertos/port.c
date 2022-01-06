@@ -228,16 +228,24 @@ extern void vPreemptiveTick( void );
 
 static void vTimerInterruptHandle(int arg)
 {
-	S_Bit(TIMER->TMR_IRQ_STA_REG, 0);
+	printf("vTimerInterruptHandle\r\n");
+	// S_Bit(TIMER->TMR_IRQ_STA_REG, 0);
+	timer_irq_clear(TIMER0);
 }
 
+#include <timer.h>
 static void prvSetupTimerInterrupt( void )
 {
-	TIMER->TMR0_INTV_VALUE_REG = 12000000 / 1000;
-	TIMER->TMR0_CTRL_REG &= 0xffffff00;
-	TIMER->TMR0_CTRL_REG |= (1 << 4) | (1 << 2);
-	TIMER->TMR0_CTRL_REG |= 1 << 0;
-	S_Bit(TIMER->TMR_IRQ_EN_REG, 0);
+	printf("prvSetupTimerInterrupt\r\n");
+	// TIMER->TMR0_INTV_VALUE_REG = 12000000 / 1000;
+	// TIMER->TMR0_CTRL_REG &= 0xffffff00;
+	// TIMER->TMR0_CTRL_REG |= (1 << 4) | (1 << 2);
+	// TIMER->TMR0_CTRL_REG |= 1 << 0;
+	// S_Bit(TIMER->TMR_IRQ_EN_REG, 0);
+	// irq_register(IRQ_LEVEL_1, F1C100S_IRQ_TIMER0, vTimerInterruptHandle, 3);
+	timer_set_prescale(TIMER0, TIMER_PRESCALE_2);
+	timer_set_interval(TIMER0, 12000000 / 1000);
+	timer_irq_enbale(TIMER0);
 	irq_register(IRQ_LEVEL_1, F1C100S_IRQ_TIMER0, vTimerInterruptHandle, 3);
 }
 

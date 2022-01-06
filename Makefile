@@ -35,6 +35,10 @@ CORES				= cores/allwinner
 
 DEFINES			+= -D__ARM32_ARCH__=5 -D__ARM926EJS__ -D__ARM32__ -Wno-unused-function
 
+ifeq ($(OS), $(FREERTOS))
+DEFINES			+= -DUSE_FREERTOS
+endif
+
 ASFLAGS			:= -g -ggdb -Wall -O3
 CFLAGS			:= -g -ggdb -Wall -O3
 CPFLAGS			:= -g -ggdb -Wall -O3
@@ -50,15 +54,15 @@ LDFLAGS			+=	-Wl,-gc-sections -ffunction-sections -fdata-sections
 SDK					= tools/sdk
 DRV					= $(SDK)/driver
 UTIL				= $(SDK)/util
-NONOS_BOOT				= $(SDK)/$(NONOS)/boot
-FREERTOS_BOOT		= $(SDK)/$(FREERTOS)/boot
+NONOS_BOOT			= $(SDK)/$(NONOS)/boot
+FREERTOS_BOOT		= $(SDK)/$(FREERTOS)/boot $(SDK)/$(FREERTOS)/freertos
 
 INCDIRS			+= $(DRV)
 INCDIRS			+= $(UTIL)
 ifeq ($(OS), $(NONOS))
-INCDIRS			+= $(NONOS_BOOT) $(NONOS_BOOT)/f1c100s
+INCDIRS			+= $(SDK)/$(NONOS)/boot $(SDK)/$(NONOS)/boot/f1c100s
 else
-INCDIRS			+= $(FREERTOS_BOOT) $(FREERTOS_BOOT)/f1c100s
+INCDIRS			+= $(SDK)/$(FREERTOS)/boot $(SDK)/$(FREERTOS)/boot/f1c100s $(SDK)/$(FREERTOS)/freertos/include
 endif
 
 # ************************** API **************************

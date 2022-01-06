@@ -20,7 +20,7 @@
 // #define TEST_JPEG_C
 // #define TEST_I2C_C
 
-void init(){}
+void init() {}
 extern void setup();
 extern void loop();
 
@@ -153,21 +153,33 @@ int pos[4][2] = {
 };
 #endif
 
-#ifdef USE_FREERTOS
 #include "FreeRTOS.h"
 #include "task.h"
 
 static void arduino(void *pvParameters)
 {
-	maincpp();
+	// maincpp();
+	init();
+
+	// USBDevice.attach();
+
+	printf("setup\r\n");
+	setup();
+
+	for (;;)
+	{
+		printf("loop\r\n");
+		loop();
+		// if(serialEventRun) serialEventRun();
+	}
 }
-#endif
 
 int boot_main(int argc, char **argv)
 {
 	// sys_clock_init();
 	// sys_dram_init();
 	sys_print_init();
+	printf("boot_main\r\n");
 
 	do_init_mem_pool();
 	// do_init_dma_pool();
@@ -177,7 +189,8 @@ int boot_main(int argc, char **argv)
 	sys_init();
 
 	irq_init();
-#ifdef USE_FREERTOS
+
+	printf("xTaskCreate\r\n");
 	xTaskCreate(arduino, "arduino", 1024, NULL, tskIDLE_PRIORITY + 2, NULL);
 	vTaskStartScheduler();
 	for (;;)
@@ -185,8 +198,6 @@ int boot_main(int argc, char **argv)
 		printf("loop\r\n");
 		vTaskDelay(1000 / portTICK_PERIOD_MS);
 	}
-#else
-	timer0_set();
 
 #ifdef TEST_I2C_C
 	// gpio_set_cfg(GPIOD, 0, GPIO_FUNC_011);
@@ -289,7 +300,7 @@ int boot_main(int argc, char **argv)
 	// printf("Test_png\r\n");
 	// Test_png();
 	delay(2000);
-#endif
+
 #ifdef TEST_FATFS_C
 	// sdc_init(SDC0);
 	FATFS sdfs;
@@ -343,7 +354,7 @@ int boot_main(int argc, char **argv)
 	{
 		printf("ERR:not file system Files!!!\r\n");
 		printf("Formatting...\r\n");
-		f_mkfs("1:", FM_FAT, 0, work, sizeof work); //need to format
+		f_mkfs("1:", FM_FAT, 0, work, sizeof work); // need to format
 		printf("Format successful\r\n");
 	}
 	f_setlabel("1:F1C100S-SD");
@@ -380,8 +391,8 @@ int boot_main(int argc, char **argv)
 	MACC_Init(MACC_MODULE_MPEG_DEC);
 	Defe_Init();
 	Time = millis();
-	res = Jpeg_decoder_2(jpeg[0], jpeg_len[0], &jpeg_w, &jpeg_h, //JPEG输入设置
-											 out_argb, argb_w, argb_h,							 //ARGB输出设置
+	res = Jpeg_decoder_2(jpeg[0], jpeg_len[0], &jpeg_w, &jpeg_h, // JPEG输入设置
+											 out_argb, argb_w, argb_h,							 // ARGB输出设置
 											 buff_y, buff_c, 500);
 	printf("jpeg_w: %d, jpeg_h: %d, time: %d\r\n", jpeg_w, jpeg_h, millis() - Time);
 	fb_init(480, 272);
@@ -393,15 +404,15 @@ int boot_main(int argc, char **argv)
 	// LCD_Draw_Picture(0, 0, argb_w == 0 ? jpeg_w : argb_w, argb_h == 0 ? jpeg_h : argb_h, out_argb);
 #else
 	// maincpp();
-	init();		
-	
+	init();
+
 	// USBDevice.attach();
-			
+
 	setup();
-	
+
 	for (;;)
 	{
-		loop();		
+		loop();
 		// if(serialEventRun) serialEventRun();
 	}
 #endif
@@ -422,7 +433,7 @@ void __fatal_error(const char *msg)
 #ifndef NDEBUG
 void __assert_func(const char *file, int line, const char *func, const char *expr)
 {
-	//printf("Assertion '%s' failed, at file %s:%d\n", expr, file, line);
+	// printf("Assertion '%s' failed, at file %s:%d\n", expr, file, line);
 	__fatal_error("Assertion failed");
 }
 #endif

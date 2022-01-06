@@ -3,10 +3,8 @@
 #include <timer.h>
 // #include "soft-pwm.h"
 
-#ifdef USE_FREERTOS
 #include "FreeRTOS.h"
 #include "task.h"
-#endif
 
 #define TICK_PER_SECOND 1000
 #define TICK_PER_MILLISECOND (TICK_PER_SECOND / 1000)
@@ -54,41 +52,22 @@ void timer0_interrupt_handle(int arg)
 
 uint64_t timer_get_ticker()
 {
-#ifdef USE_FREERTOS
 	return xTaskGetTickCount();
-#else
-	return ticker;
-#endif
 }
 
 unsigned long millis(void)
 {
-#ifdef USE_FREERTOS
 	return xTaskGetTickCount();
-#else
-	return ticker / TICK_PER_MILLISECOND;
-#endif
 }
 
 unsigned long micros(void)
 {
-#ifdef USE_FREERTOS
-	return xTaskGetTickCount() * MICROSECOND_PER_TICK + (0xB71B00 - TIMER->TMR0_CUR_VALUE_REG) / 12;
-#else
-	return ticker;
-#endif
+	return xTaskGetTickCount() * MICROSECOND_PER_TICK;// + (0xB71B00 - TIMER->TMR0_CUR_VALUE_REG) / 12;
 }
 
 void delay(unsigned long ms)
 {
-#ifdef USE_FREERTOS
 	vTaskDelay(ms / portTICK_PERIOD_MS);
-#else
-	uint64_t time_to_delay = ticker + ms * TICK_PER_MILLISECOND;
-	while (ticker < time_to_delay)
-	{
-	}
-#endif
 }
 
 void delayMicroseconds(unsigned int usec)
@@ -101,12 +80,4 @@ void delayMicroseconds(unsigned int usec)
 		for (i = 0; i < 1; i++)
 			;
 	}
-}
-
-void timer0_set()
-{
-	timer_set_prescale(TIMER0, TIMER_PRESCALE_2);
-	timer_set_interval(TIMER0, 12000000 / TICK_PER_SECOND);
-	timer_irq_enbale(TIMER0);
-	irq_register(IRQ_LEVEL_1, F1C100S_IRQ_TIMER0, timer0_interrupt_handle, 3);
 }

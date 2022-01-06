@@ -153,16 +153,6 @@ int pos[4][2] = {
 };
 #endif
 
-#ifdef USE_FREERTOS
-#include "FreeRTOS.h"
-#include "task.h"
-
-static void arduino(void *pvParameters)
-{
-	maincpp();
-}
-#endif
-
 int boot_main(int argc, char **argv)
 {
 	// sys_clock_init();
@@ -177,15 +167,6 @@ int boot_main(int argc, char **argv)
 	sys_init();
 
 	irq_init();
-#ifdef USE_FREERTOS
-	xTaskCreate(arduino, "arduino", 1024, NULL, tskIDLE_PRIORITY + 2, NULL);
-	vTaskStartScheduler();
-	for (;;)
-	{
-		printf("loop\r\n");
-		vTaskDelay(1000 / portTICK_PERIOD_MS);
-	}
-#else
 	timer0_set();
 
 #ifdef TEST_I2C_C
@@ -404,7 +385,6 @@ int boot_main(int argc, char **argv)
 		loop();		
 		// if(serialEventRun) serialEventRun();
 	}
-#endif
 #endif
 	while (1)
 	{

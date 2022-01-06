@@ -182,16 +182,13 @@ void loop()
 	nes_loop();
 #else
 	digitalWrite(LED_BUILTIN, 1-digitalRead(LED_BUILTIN));
-	delay(1000);
 	printf("loop\r\n");
+	delay(1000);
 #endif
 	// delay(10);
 	// uint32_t val = irq_gpio_status(GPIOF_INT);
 	// Serial.println("loop ");
 	// Serial.println(val);
-#ifdef USE_FREERTOS
-	vTaskDelay(1000 / portTICK_PERIOD_MS);
-#endif
 }
 
 #endif
