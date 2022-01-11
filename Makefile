@@ -15,7 +15,7 @@ CP = cp
 MKDIR = mkdir
 SED = sed
 PYTHON = python3
-VIDUINO = viduino-0.0.14.tar
+VIDUINO = viduino-0.0.15.tar
 NONOS	= NON_OS
 FREERTOS = FREERTOS_OS
 OS		= $(FREERTOS)
@@ -36,7 +36,7 @@ CORES				= cores/allwinner
 DEFINES			+= -D__ARM32_ARCH__=5 -D__ARM926EJS__ -D__ARM32__ -Wno-unused-function
 
 ifeq ($(OS), $(FREERTOS))
-DEFINES			+= -DUSE_FREERTOS
+DEFINES			+= -DFREERTOS_OS
 endif
 
 ASFLAGS			:= -g -ggdb -Wall -O3
@@ -174,7 +174,7 @@ else
 BOOTOBJS = $(FREERTOS_BOOTOBJS)
 endif
 
-SDKOBJS = $(DRVOBJS) $(UTILOBJS) $(BOOTOBJS)
+SDKOBJS = $(DRVOBJS) $(UTILOBJS) $(NONOS_BOOTOBJS) $(FREERTOS_BOOTOBJS)
 
 SFILES	:=	$(foreach dir, $(SRCDIRS), $(wildcard $(dir)/*.S))
 CFILES	:=	$(foreach dir, $(SRCDIRS), $(wildcard $(dir)/*.c))
@@ -229,13 +229,14 @@ write2:
 viduino: $(SDKOBJS)
 	mkdir -p viduino
 	cp -r cores libraries tools variants boards.txt platform.txt programmers.txt viduino
+	mkdir -p viduino/$(SDK)/lib
 	mkdir -p viduino/$(SDK)/$(NONOS)/lib
 	mkdir -p viduino/$(SDK)/$(FREERTOS)/lib
+	$(AR) viduino/$(SDK)/lib/libdriver.a $(DRVOBJS) $(UTILOBJS)
 	$(AR) viduino/$(SDK)/$(NONOS)/lib/libsdk.a $(NONOS_BOOTOBJS)
 	$(AR) viduino/$(SDK)/$(FREERTOS)/lib/libsdk.a $(FREERTOS_BOOTOBJS)
-	$(AR) viduino/$(SDK)/lib/libdriver.a $(DRVOBJS) $(UTILOBJS)
 	rm viduino/$(NONOS_BOOT)/*.c viduino/$(NONOS_BOOT)/*.S
-	rm viduino/$(FREERTOS_BOOT)/*.c viduino/$(FREERTOS_BOOT)/*.S
+	rm viduino/$(SDK)/$(FREERTOS)/boot/*.c viduino/$(SDK)/$(FREERTOS)/boot/*.S viduino/$(SDK)/$(FREERTOS)/freertos/*.c
 	rm viduino/$(DRV)/*.c
 	rm viduino/$(UTIL)/*.c
 	tar -cf $(VIDUINO) viduino 
