@@ -182,7 +182,7 @@ void loop()
 	nes_loop();
 #else
 	digitalWrite(LED_BUILTIN, 1-digitalRead(LED_BUILTIN));
-	printf("loop\r\n");
+	Serial.println("loop");
 	delay(1000);
 #endif
 	// delay(10);

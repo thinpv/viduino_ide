@@ -5,7 +5,7 @@
 #include <gpio.h>
 #include <uart.h>
 
-#define DEBUG_ENABLE
+// #define DEBUG_ENABLE
 
 void sys_print_init(void)
 {

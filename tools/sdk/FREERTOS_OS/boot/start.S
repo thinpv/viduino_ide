@@ -1,3 +1,22 @@
+USR_MODE		=	0x10
+FIQ_MODE		=	0x11
+IRQ_MODE		=	0x12
+SVC_MODE		=	0x13
+ABT_MODE		=	0x17
+UDF_MODE		=	0x1B
+SYS_MODE		=	0x1F
+       
+I_BIT				=	0x80        /* Disables IRQ when I bit is set               */
+F_BIT				=	0x40        /* Disables FIQ when F bit is set               */
+
+RAM_Limit				=	0x80000000+0x2000000            // For unexpanded hardware board
+
+USR_Stack				= RAM_Limit
+SVC_Stack				= (USR_Stack-1024*50)      /* SVC stack at top of memory */
+FIQ_Stack				= (SVC_Stack-1024*50)      /* followed by IRQ stack */
+IRQ_Stack				= (FIQ_Stack-1024*50)
+Abort_Stack			= (IRQ_Stack-1024*100)
+UND_Stack				= (Abort_Stack-1024*50)
 
 .global _vector
 .arm
@@ -20,7 +39,7 @@ _reset:
 _undefined_instruction:
 	.word undefined_instruction
 _software_interrupt:
-	.word software_interrupt
+	.word vPortYieldProcessor
 _prefetch_abort:
 	.word prefetch_abort
 _data_abort:
@@ -28,7 +47,7 @@ _data_abort:
 _not_used:
 	.word not_used
 _irq:
-	.word irq
+	.word vPreemptiveTick
 _fiq:
 	.word fiq
 
@@ -49,38 +68,29 @@ reset:
 	mrc p15, 0, r2, c1, c0, 0
 	ands r2, r2, #(1 << 13)
 	ldreq r1, =0x00000000
-	ldrne r1, =0xffff0000
+	ldrne r1, =0xffff0000	
 	ldmia r0!, {r2-r8, r10}
 	stmia r1!, {r2-r8, r10}
 	ldmia r0!, {r2-r8, r10}
 	stmia r1!, {r2-r8, r10}
 
-	/* Initialize stacks */
-	mrs r0, cpsr
-	bic r0, r0, #0x1f
-	orr r1, r0, #0x1b
-	msr cpsr_cxsf, r1
-	ldr sp, _stack_und_end
+	MSR    CPSR_c, #UDF_MODE | I_BIT | F_BIT
+	LDR    SP, =UND_Stack
 
-	bic r0, r0, #0x1f
-	orr r1, r0, #0x17
-	msr cpsr_cxsf, r1
-	ldr sp, _stack_abt_end
+	MSR    CPSR_c, #ABT_MODE | I_BIT | F_BIT
+	LDR    SP, =Abort_Stack
 
-	bic r0, r0, #0x1f
-	orr r1, r0, #0x12
-	msr cpsr_cxsf, r1
-	ldr sp, _stack_irq_end
+	MSR    CPSR_c, #IRQ_MODE | I_BIT | F_BIT
+	LDR    SP, =IRQ_Stack
 
-	bic r0, r0, #0x1f
-	orr r1, r0, #0x11
-	msr cpsr_cxsf, r1
-	ldr sp, _stack_fiq_end
+	MSR    CPSR_c, #FIQ_MODE | I_BIT | F_BIT
+	LDR    SP, =FIQ_Stack
 
-	bic r0, r0, #0x1f
-	orr r1, r0, #0x13
-	msr cpsr_cxsf, r1
-	ldr sp, _stack_srv_end
+	MSR    CPSR_c, #SYS_MODE | I_BIT | F_BIT
+	LDR    SP, =USR_Stack
+
+	MSR    CPSR_c, #SVC_MODE | I_BIT | F_BIT
+	LDR    SP, =SVC_Stack
 
 	/* Clear bss section */
 	ldr r0, _bss_start

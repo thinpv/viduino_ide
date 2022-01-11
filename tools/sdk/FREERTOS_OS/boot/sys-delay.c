@@ -55,7 +55,7 @@ unsigned long millis(void)
 
 unsigned long micros(void)
 {
-	return xTaskGetTickCount() * MICROSECOND_PER_TICK;// + (0xB71B00 - TIMER->TMR0_CUR_VALUE_REG) / 12;
+	return xTaskGetTickCount() * MICROSECOND_PER_TICK + (0xB71B00 - TIMER->TIME0.TIME_CUR_VALUE_REG) / 12;
 }
 
 void delay(unsigned long ms)

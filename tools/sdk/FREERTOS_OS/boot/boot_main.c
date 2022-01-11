@@ -14,6 +14,7 @@ extern void loop();
 
 static void arduinoThread(void *pvParameters)
 {
+	( void ) pvParameters;
 	// init();
 	setup();
 	for (;;)
@@ -25,24 +26,21 @@ static void arduinoThread(void *pvParameters)
 int boot_main(int argc, char **argv)
 {
 	sys_print_init();
-	printf("boot_main\r\n");
+	// printf("boot_main\r\n");
 	do_init_mem_pool();
 	sys_init();
 	irq_init();
 
-	printf("xTaskCreate\r\n");
-	xTaskCreate(arduinoThread, "arduinoThread", 1024, NULL, tskIDLE_PRIORITY + 2, NULL);
+	// printf("xTaskCreate\r\n");
+	xTaskCreate(arduinoThread, "arduino", 1024, NULL, tskIDLE_PRIORITY + 2, NULL);
+	xTaskCreate(arduinoThread, "arduino", 1024, NULL, tskIDLE_PRIORITY + 2, NULL);
 	vTaskStartScheduler();
-	for (;;)
-	{
-		printf("main loop\r\n");
-		vTaskDelay(1000 / portTICK_PERIOD_MS);
-	}
 	return 0;
 }
 
 void __fatal_error(const char *msg)
 {
+	printf(msg);
 	while (1)
 	{
 	}
@@ -52,7 +50,7 @@ void __fatal_error(const char *msg)
 void __assert_func(const char *file, int line, const char *func, const char *expr)
 {
 	// printf("Assertion '%s' failed, at file %s:%d\n", expr, file, line);
-	__fatal_error("Assertion failed");
+	__fatal_error("Assertion failed\r\n");
 }
 #endif
 
