@@ -77,20 +77,20 @@ SRCDIRS			+= .
 
 # ************************** LIBRARIES **************************
 
-INCDIRS			+= libraries/Wire/src
-SRCDIRS			+= libraries/Wire/src
+# INCDIRS			+= libraries/Wire/src
+# SRCDIRS			+= libraries/Wire/src
 
-INCDIRS			+= libraries/fatfs/src
-SRCDIRS			+= libraries/fatfs/src
+# INCDIRS			+= libraries/fatfs/src
+# SRCDIRS			+= libraries/fatfs/src
 
-INCDIRS			+= libraries/FrameBuffer/src
-SRCDIRS			+= libraries/FrameBuffer/src
+# INCDIRS			+= libraries/FrameBuffer/src
+# SRCDIRS			+= libraries/FrameBuffer/src
 
-INCDIRS			+= libraries/NS2009/src
-SRCDIRS			+= libraries/NS2009/src
+# INCDIRS			+= libraries/NS2009/src
+# SRCDIRS			+= libraries/NS2009/src
 
-INCDIRS			+= libraries/SoftwareTimer
-SRCDIRS			+= libraries/SoftwareTimer
+# INCDIRS			+= libraries/SoftwareTimer
+# SRCDIRS			+= libraries/SoftwareTimer
 
 # INCDIRS			+= libraries/lvgl/src \
 # 	libraries/lvgl/src/lvgl/src \

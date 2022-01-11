@@ -122,7 +122,7 @@ void loop()
 #include <fb.h>
 #include <io.h>
 #include <stdlib.h>
-#include "Wire.h"
+// #include "Wire.h"
 
 // FrameBuffer framebuffer;
 
@@ -142,8 +142,8 @@ void setup()
 {
 	Serial.begin(115200);
 	Serial.println("setup");
-	Wire.begin();
-	Wire.scan(Serial);
+	// Wire.begin();
+	// Wire.scan(Serial);
 
 	pinMode(LED_BUILTIN, OUTPUT);
 

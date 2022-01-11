@@ -43,13 +43,6 @@ void sys_delay_us(int us)
 	}
 }
 
-void timer0_interrupt_handle(int arg)
-{
-	timer_irq_clear(TIMER0);
-	++ticker;
-	// softpwm_update();
-}
-
 uint64_t timer_get_ticker()
 {
 	return xTaskGetTickCount();
