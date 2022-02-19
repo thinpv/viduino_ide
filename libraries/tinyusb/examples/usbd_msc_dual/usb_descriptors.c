@@ -82,16 +82,6 @@ enum
 #define EPNUM_MSC_OUT   0x01
 #define EPNUM_MSC_IN    0x81
 
-uint8_t const desc_fs_configuration[] =
-{
-  // Config number, interface count, string index, total length, attribute, power in mA
-  TUD_CONFIG_DESCRIPTOR(1, ITF_NUM_TOTAL, 0, CONFIG_TOTAL_LEN, 0x00, 100),
-
-  // Interface number, string index, EP Out & EP In address, EP size
-  TUD_MSC_DESCRIPTOR(ITF_NUM_MSC, 0, EPNUM_MSC_OUT, EPNUM_MSC_IN, 64),
-};
-
-#if TUD_OPT_HIGH_SPEED
 uint8_t const desc_hs_configuration[] =
 {
   // Config number, interface count, string index, total length, attribute, power in mA
@@ -100,7 +90,6 @@ uint8_t const desc_hs_configuration[] =
   // Interface number, string index, EP Out & EP In address, EP size
   TUD_MSC_DESCRIPTOR(ITF_NUM_MSC, 0, EPNUM_MSC_OUT, EPNUM_MSC_IN, 512),
 };
-#endif
 
 // Invoked when received GET CONFIGURATION DESCRIPTOR
 // Application return pointer to descriptor
@@ -109,12 +98,8 @@ uint8_t const * tud_descriptor_configuration_cb(uint8_t index)
 {
   (void) index; // for multiple configurations
 
-#if TUD_OPT_HIGH_SPEED
   // Although we are highspeed, host may be fullspeed.
-  return (tud_speed_get() == TUSB_SPEED_HIGH) ?  desc_hs_configuration : desc_fs_configuration;
-#else
-  return desc_fs_configuration;
-#endif
+  return desc_hs_configuration;//(tud_speed_get() == TUSB_SPEED_HIGH) ?  desc_hs_configuration : desc_fs_configuration;
 }
 
 //--------------------------------------------------------------------+
