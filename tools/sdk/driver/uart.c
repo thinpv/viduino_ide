@@ -7,9 +7,6 @@
 #include <timer.h>
 #include <ccu.h>
 
-#define FALSE 0
-#define TRUE 1
-
 bool_t uart_set(UART_Type *uart, uint32_t baud, uint32_t data, uint32_t parity, uint32_t stop)
 {
 	uint8_t dreg, preg, sreg;
@@ -155,12 +152,12 @@ bool_t uart_available(UART_Type *uart)
 ssize_t uart_read(UART_Type *uart, uint8_t *buf, size_t count, uint32_t delay)
 {
 	ssize_t i;
-	uint32_t delay_to = millis() + delay;
+	uint32_t u32delayno = delay * 10000;
 	for (i = 0; i < count; i++)
 	{
 		while ((uart->UART_USR_REG & (1 << 3)) == 0)
 		{
-			if (millis() >= delay_to)
+			if (--u32delayno == 0)
 				return i;
 		}
 		buf[i] = uart->UART_RBR_THR_DLL_REG & 0xFF;
@@ -171,12 +168,12 @@ ssize_t uart_read(UART_Type *uart, uint8_t *buf, size_t count, uint32_t delay)
 ssize_t uart_write(UART_Type *uart, const uint8_t *buf, size_t count, uint32_t delay)
 {
 	ssize_t i;
-	uint32_t delay_to = millis() + delay;
+	uint32_t u32delayno = delay * 10000;
 	for (i = 0; i < count; i++)
 	{
 		while (!(uart->UART_USR_REG & (1 << 1)))
 		{
-			if (millis() >= delay_to)
+			if (--u32delayno == 0)
 				return i;
 		}
 		uart->UART_RBR_THR_DLL_REG = buf[i];

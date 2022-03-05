@@ -283,7 +283,7 @@ static bool_t sdc_transfer_command(SDC_Type *sdc, mmc_cmd_st *cmd, mmc_data_st *
 static bool_t sdc_transfer_data_by_cpu(SDC_Type *sdc, mmc_data_st *dat)
 {
 	u64_t count = dat->blkcnt * dat->blksz;
-	u32_t *tmp = dat->buf;
+	u32_t *tmp = (u32_t *)dat->buf;
 	u32_t status, err, done;
 
 	status = sdc->SD_STAR_REG;
@@ -607,7 +607,7 @@ int sdc_set_mod_clk(SDC_Type *sdc, uint32_t hz)
 	return TRUE;
 }
 
-static void sdc_config_clock(SDC_Type *sdc, uint32_t hz)
+static bool sdc_config_clock(SDC_Type *sdc, uint32_t hz)
 {
 	if (!sdc_clock_disable(sdc))
 	{

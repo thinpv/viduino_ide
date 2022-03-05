@@ -2,29 +2,7 @@
 #define __F1C100S_H_
 
 #include <stddef.h>
-
-// typedef signed char         int8_t;
-// typedef signed short        int16_t;
-// typedef signed int          int32_t;
-// typedef signed long long    int64_t;
-// typedef unsigned char       uint8_t;
-// typedef unsigned short      uint16_t;
-// typedef unsigned int        uint32_t;
-// typedef unsigned long long  uint64_t;
-
-typedef volatile unsigned char vuint8_t;
-typedef volatile unsigned short vuint16_t;
-typedef volatile unsigned int vuint32_t;
-typedef volatile unsigned long long vuint64_t;
-
-typedef signed char s8;
-typedef signed short s16;
-typedef signed int s32;
-typedef signed long long s64;
-typedef unsigned char u8;
-typedef unsigned short u16;
-typedef unsigned int u32;
-typedef unsigned long long u64;
+#include <types.h>
 
 #define DMA_BASE 0x01C02000
 #define SPI_BASE 0x01C05000
@@ -416,7 +394,7 @@ typedef struct
 
 typedef struct
 {
-
+	vuint32_t rsv;
 } IRQn_Type;
 
 typedef struct
@@ -673,9 +651,9 @@ typedef struct
 #define UART2 ((UART_Type *)(UART_BASE + 0x800))
 
 #define TIMER ((TimerStruct_Type *)TIMER_BASE)
-#define TIMER0 ((Timer_Type *)TIMER_BASE + 0x10)
-#define TIMER1 ((Timer_Type *)TIMER_BASE + 0x20)
-#define TIMER2 ((Timer_Type *)TIMER_BASE + 0x30)
+#define TIMER0 ((Timer_Type *)(TIMER_BASE + 0x10))
+#define TIMER1 ((Timer_Type *)(TIMER_BASE + 0x20))
+#define TIMER2 ((Timer_Type *)(TIMER_BASE + 0x30))
 
 #define INTC ((INTC_Type *)INTC_BASE)
 
@@ -686,7 +664,7 @@ typedef struct
 #define CSI ((CSI_Type *)CSI_BASE)
 
 #define SDC0 ((SDC_Type *)SDC_BASE)
-#define SDC1 ((SDC_Type *)SDC_BASE + 0x1000)
+#define SDC1 ((SDC_Type *)(SDC_BASE + 0x1000))
 
 #define AUDIO ((Audio_Type *)AUDIOC_BASE)
 

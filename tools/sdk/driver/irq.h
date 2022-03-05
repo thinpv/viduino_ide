@@ -118,8 +118,8 @@ extern "C"
 	void irq_register(int32_t nIntTypeLevel, int32_t eIntNo, sys_pvFunPtr pvNewISR, uint8_t Priority);
 	void irq_enable(int32_t eIntNo);
 	void irq_disable(int32_t eIntNo);
-	void irq_init();
-	int32_t irq_handle();
+	void irq_init(void);
+	int32_t irq_handle(void);
 
 #ifdef __cplusplus
 }

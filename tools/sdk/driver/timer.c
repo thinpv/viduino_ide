@@ -17,18 +17,6 @@ void timer_irq_enbale(Timer_Type *timer)
 	default:
 		break;
 	}
-	// if (timer == TIMER0)
-	// {
-	// 	S_Bit(TIMER->TMR_IRQ_EN_REG, 0);
-	// }
-	// else if (timer == TIMER1)
-	// {
-	// 	S_Bit(TIMER->TMR_IRQ_EN_REG, 1);
-	// }
-	// else if (timer == TIMER2)
-	// {
-	// 	S_Bit(TIMER->TMR_IRQ_EN_REG, 2);
-	// }
 }
 
 void timer_irq_clear(Timer_Type *timer)
@@ -47,18 +35,6 @@ void timer_irq_clear(Timer_Type *timer)
 	default:
 		break;
 	}
-	// if (timer == TIMER0)
-	// {
-	// 	S_Bit(TIMER->TMR_IRQ_STA_REG, 0);
-	// }
-	// else if (timer == TIMER1)
-	// {
-	// 	S_Bit(TIMER->TMR_IRQ_STA_REG, 1);
-	// }
-	// else if (timer == TIMER2)
-	// {
-	// 	S_Bit(TIMER->TMR_IRQ_STA_REG, 2);
-	// }
 }
 
 void timer_set_mode(Timer_Type *timer, uint8_t mode)

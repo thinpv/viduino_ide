@@ -2,13 +2,38 @@
 #include <stddef.h>
 #include <stdlib.h>
 #include <arm32.h>
+#include <types.h>
 #include <io.h>
 #include <reg-ccu.h>
 #include <irq.h>
 #include <printf.h>
 
+#ifdef __UVISION_VERSION 
+void arm32_interrupt_enable()
+{
+	INT32 temp;
+	__asm
+	{
+		 MRS    temp, CPSR
+		 AND    temp, temp, ENABLE_IRQ
+		 MSR    CPSR_c, temp
+	}
+}
+
+void arm32_interrupt_disable()
+{
+	INT32 temp;
+	__asm
+	{
+		 MRS    temp, CPSR
+		 ORR    temp, temp, DISABLE_IRQ
+		 MSR    CPSR_c, temp
+	}
+}
+#endif
+
 static void F1C100S_Interrupt_Shell() {} /* Empty function */
-sys_pvFunPtr sysIrqHandlerTable[] = {
+sys_pvFunPtr irqHandlerTable[] = {
 		0,											 /* 0 */
 		F1C100S_Interrupt_Shell, /* 1 */
 		F1C100S_Interrupt_Shell, /* 2 */
@@ -53,7 +78,7 @@ sys_pvFunPtr sysIrqHandlerTable[] = {
 
 };
 
-sys_pvFunPtr sysFiqHandlerTable[] = {
+sys_pvFunPtr fiqHandlerTable[] = {
 		0,
 		F1C100S_Interrupt_Shell, /* 1 */
 		F1C100S_Interrupt_Shell, /* 2 */
@@ -163,28 +188,25 @@ void irq_register(int32_t nIntTypeLevel, int32_t eIntNo, sys_pvFunPtr pvNewISR, 
 {
 	int prio;
 	int en;
-	// void *_mOldVect;
 	switch (nIntTypeLevel)
 	{
-	case FIQ_LEVEL_0:
-		// _mOldVect = (void *)sysFiqHandlerTable[eIntNo];
-		sysFiqHandlerTable[eIntNo] = pvNewISR;
-		break;
+		case FIQ_LEVEL_0:
+			fiqHandlerTable[eIntNo] = pvNewISR;
+			break;
 
-	case IRQ_LEVEL_1:
-	case IRQ_LEVEL_2:
-	case IRQ_LEVEL_3:
-	case IRQ_LEVEL_4:
-	case IRQ_LEVEL_5:
-	case IRQ_LEVEL_6:
-	case IRQ_LEVEL_7:
-		// _mOldVect = (void *)sysIrqHandlerTable[eIntNo];
-		sysIrqHandlerTable[eIntNo] = pvNewISR;
-		break;
+		case IRQ_LEVEL_1:
+		case IRQ_LEVEL_2:
+		case IRQ_LEVEL_3:
+		case IRQ_LEVEL_4:
+		case IRQ_LEVEL_5:
+		case IRQ_LEVEL_6:
+		case IRQ_LEVEL_7:
+			irqHandlerTable[eIntNo] = pvNewISR;
+			break;
 
-	default:;
+		default:;
 	}
-
+	
 	arm32_interrupt_disable();
 	if (eIntNo > 63)
 	{
@@ -231,34 +253,21 @@ void irq_register(int32_t nIntTypeLevel, int32_t eIntNo, sys_pvFunPtr pvNewISR, 
 		S_Bit(INTC->INTC_EN_REG0, en); //Write interrupt enable
 	}
 	arm32_interrupt_enable();
-	// return _mOldVect;
 }
 
 int32_t irq_handle()
 {
-	// printf("irq_handle: %d\r\n", INTC->INTC_VECTOR_REG >> 2);
 	uint32_t pos = INTC->INTC_VECTOR_REG >> 2;
 	if (pos > 0)
 	{
-		(*sysIrqHandlerTable[pos])();
+		(*irqHandlerTable[pos])();
 	}
 	return 0;
-	// u64_t volatile Iid = 0;
-	// int32_t i = 0;
-	// //Read interrupt number
-	// Iid = INTC->INTC_PEND_REG0 | (u64_t)(INTC->INTC_PEND_REG1 << 32);
-	// INTC->INTC_PEND_REG0 = 0;
-	// INTC->INTC_PEND_REG1 = 0;
-	// // printf("Iid: %d, irq_handle: %d\r\n", Iid, INTC->INTC_VECTOR_REG >> 2);
-	// for (i = 1; i < 64; i++)
-	//     if (((Iid >> i) & 0x1) == 0x1)
-	//     {
-	//         //Execution interrupt number
-	//         (*sysIrqHandlerTable[i])();
-	//         break;
-	//         // return i;
-	//     }
-	// return 0;
+}
+
+int32_t swi_handle()
+{
+	return 0;
 }
 
 void irq_init()
