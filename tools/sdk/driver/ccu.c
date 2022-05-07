@@ -142,11 +142,13 @@ void ccu_reset(int32_t bit, bool enable)
 		{
 			CCU->BUS_CLK_GATING_REG2 |= (1 << bit);
 			CCU->BUS_SOFT_RST_REG2 |= (1 << bit);
+			CCU->DRAM_GATING_REG |= (1 << bit);
 		}
 		else
 		{
 			CCU->BUS_CLK_GATING_REG2 &= ~(1 << bit);
 			CCU->BUS_SOFT_RST_REG2 &= ~(1 << bit);
+			CCU->DRAM_GATING_REG &= ~(1 << bit);
 		}
 	}
 	else if (bit >= 32)
@@ -156,11 +158,13 @@ void ccu_reset(int32_t bit, bool enable)
 		{
 			CCU->BUS_CLK_GATING_REG1 |= (1 << bit);
 			CCU->BUS_SOFT_RST_REG1 |= (1 << bit);
+			CCU->DRAM_GATING_REG |= (1 << bit);
 		}
 		else
 		{
 			CCU->BUS_CLK_GATING_REG1 &= ~(1 << bit);
 			CCU->BUS_SOFT_RST_REG1 &= ~(1 << bit);
+			CCU->DRAM_GATING_REG &= ~(1 << bit);
 		}
 	}
 	else if (bit >= 0)
@@ -169,11 +173,13 @@ void ccu_reset(int32_t bit, bool enable)
 		{
 			CCU->BUS_CLK_GATING_REG0 |= (1 << bit);
 			CCU->BUS_SOFT_RST_REG0 |= (1 << bit);
+			CCU->DRAM_GATING_REG |= (1 << bit);
 		}
 		else
 		{
 			CCU->BUS_CLK_GATING_REG0 &= ~(1 << bit);
 			CCU->BUS_SOFT_RST_REG0 &= ~(1 << bit);
+			CCU->DRAM_GATING_REG &= ~(1 << bit);
 		}
 	}
 }

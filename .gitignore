@@ -51,3 +51,5 @@ Thumbs.db
 build
 viduino
 viduino-*.tar
+*.d
+*.o

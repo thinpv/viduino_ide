@@ -10,6 +10,7 @@
 #define TVD_BASE 0x01C0B000
 #define TCON_BASE 0x01C0C000
 #define VE_BASE 0x01C0E000
+#define MPEG_BASE 0x01C0E100
 #define SDC_BASE 0x01C0F000
 #define OTG_BASE 0x01C13000
 #define CCU_BASE 0x01C20000
@@ -154,6 +155,98 @@ typedef struct
 	vuint32_t rsv6[63];
 	vuint8_t SPI_RXD_REG; //RX Data Register
 } SPI_Type;
+
+typedef struct
+{
+	vuint32_t TVE_000; /* 0x000 */
+	vuint32_t TVE_004; /* 0x004 */
+	vuint32_t TVE_008; /* 0x008 */
+	vuint32_t TVE_00C; /* 0x00c */
+	vuint32_t TVE_010; /* 0x010 */
+	vuint32_t TVE_014; /* 0x014 */
+	vuint32_t TVE_018; /* 0x018 */
+	vuint32_t TVE_01C; /* 0x01c */
+	vuint32_t TVE_020; /* 0x020 */
+	vuint32_t TVE_024; /* 0x024 */
+	vuint32_t TVE_028; /* 0x028 */
+	vuint32_t TVE_02C; /* 0x02c */
+	vuint32_t TVE_030; /* 0X030 */
+	vuint32_t TVE_034; /* 0x034 */
+	vuint32_t TVE_038; /* 0x038 */
+	vuint32_t TVE_03C; /* 0x03c */
+	vuint32_t TVE_040; /* 0x040 */
+	vuint32_t TVE_044; /* 0x044 */
+	vuint32_t TVE_048; /* 0x048 */
+	vuint32_t TVE_04C; /* 0x04c */
+	vuint32_t TVE_050; /* 0x050 */
+	vuint32_t TVE_054; /* 0x054 */
+	vuint32_t TVE_058; /* 0x058 */
+	vuint32_t TVE_05C; /* 0x05c */
+	vuint32_t TVE_060; /* 0x060 */
+	vuint32_t TVE_064; /* 0x064 */
+	vuint32_t TVE_068; /* 0x068 */
+	vuint32_t TVE_06C; /* 0x06c */
+	vuint32_t TVE_070; /* 0x070 */
+	vuint32_t TVE_074; /* 0x074 */
+	vuint32_t TVE_078; /* 0x078 */
+	vuint32_t TVE_07C; /* 0x07c */
+	vuint32_t TVE_080; /* 0x080 */
+	vuint32_t TVE_084; /* 0x084 */
+	vuint32_t TVE_088; /* 0x088 */
+	vuint32_t TVE_08C; /* 0x08c */
+	vuint32_t TVE_090; /* 0x090 */
+	vuint32_t TVE_094; /* 0x094 */
+	vuint32_t TVE_098; /* 0x098 */
+	vuint32_t TVE_09C; /* 0x09c */
+	vuint32_t TVE_0A0; /* 0x0A0 */
+	vuint32_t TVE_0A4; /* 0x0A4 */
+	vuint32_t TVE_0A8; /* 0x0A8 */
+	vuint32_t TVE_0AC; /* 0x0Ac */
+	vuint32_t TVE_0B0; /* 0x0B0 */
+	vuint32_t TVE_0B4; /* 0x0B4 */
+	vuint32_t TVE_0B8; /* 0x0B8 */
+	vuint32_t TVE_0BC; /* 0x0Bc */
+	vuint32_t TVE_0C0; /* 0x0C0 */
+	vuint32_t TVE_0C4; /* 0x0C4 */
+	vuint32_t TVE_0C8; /* 0x0C8 */
+	vuint32_t TVE_0CC; /* 0x0Cc */
+	vuint32_t TVE_0D0; /* 0x0d0 */
+	vuint32_t TVE_0D4; /* 0x0d4 */
+	vuint32_t TVE_0D8; /* 0x0d8 */
+	vuint32_t TVE_0DC; /* 0x0dc */
+	vuint32_t TVE_0E0; /* 0x0e0 */
+	vuint32_t TVE_0E4; /* 0x0e4 */
+	vuint32_t TVE_0E8; /* 0x0e8 */
+	vuint32_t TVE_0EC; /* 0x0ec */
+	vuint32_t TVE_0F0; /* 0x0f0 */
+	vuint32_t TVE_0F4; /* 0x0f4 */
+	vuint32_t TVE_0F8; /* 0x0f8 */
+	vuint32_t TVE_0FC; /* 0x0fc */
+	vuint32_t TVE_100; /* 0x100 */
+	vuint32_t TVE_104; /* 0x104 */
+	vuint32_t TVE_108; /* 0x108 */
+	vuint32_t TVE_10C; /* 0x10c */
+	vuint32_t TVE_110; /* 0x110 */
+	vuint32_t TVE_114; /* 0x114 */
+	vuint32_t TVE_118; /* 0x118 */
+	vuint32_t TVE_11C; /* 0x11c */
+	vuint32_t TVE_120; /* 0x120 */
+	vuint32_t TVE_124; /* 0x124 */
+	vuint32_t TVE_128; /* 0x128 */
+	vuint32_t TVE_12C; /* 0x12c */
+	vuint32_t TVE_130; /* 0x130 */
+	vuint32_t TVE_134; /* 0x134 */
+	vuint32_t TVE_138; /* 0x138 */
+	vuint32_t TVE_13C; /* 0x13C */
+	vuint32_t res0[0x70];
+	vuint32_t TVE_300; /* 0x300 */
+	vuint32_t TVE_304; /* 0x304 */
+	vuint32_t TVE_308; /* 0x308 */
+	vuint32_t res1[0x1D];
+	vuint32_t TVE_380; /* 0x380 */
+	vuint32_t res2[0x7];
+	vuint32_t TVE_3A0; /* 0x3a0 */
+} TVE_Type;
 
 typedef struct
 {
@@ -519,97 +612,54 @@ typedef struct
 	vuint32_t TCON_DEBUG_INFO_REG;		 /* 0xfc */
 } TCON_Type;
 
-typedef struct
-{
-	vuint32_t TVE_000; /* 0x000 */
-	vuint32_t TVE_004; /* 0x004 */
-	vuint32_t TVE_008; /* 0x008 */
-	vuint32_t TVE_00C; /* 0x00c */
-	vuint32_t TVE_010; /* 0x010 */
-	vuint32_t TVE_014; /* 0x014 */
-	vuint32_t TVE_018; /* 0x018 */
-	vuint32_t TVE_01C; /* 0x01c */
-	vuint32_t TVE_020; /* 0x020 */
-	vuint32_t TVE_024; /* 0x024 */
-	vuint32_t TVE_028; /* 0x028 */
-	vuint32_t TVE_02C; /* 0x02c */
-	vuint32_t TVE_030; /* 0X030 */
-	vuint32_t TVE_034; /* 0x034 */
-	vuint32_t TVE_038; /* 0x038 */
-	vuint32_t TVE_03C; /* 0x03c */
-	vuint32_t TVE_040; /* 0x040 */
-	vuint32_t TVE_044; /* 0x044 */
-	vuint32_t TVE_048; /* 0x048 */
-	vuint32_t TVE_04C; /* 0x04c */
-	vuint32_t TVE_050; /* 0x050 */
-	vuint32_t TVE_054; /* 0x054 */
-	vuint32_t TVE_058; /* 0x058 */
-	vuint32_t TVE_05C; /* 0x05c */
-	vuint32_t TVE_060; /* 0x060 */
-	vuint32_t TVE_064; /* 0x064 */
-	vuint32_t TVE_068; /* 0x068 */
-	vuint32_t TVE_06C; /* 0x06c */
-	vuint32_t TVE_070; /* 0x070 */
-	vuint32_t TVE_074; /* 0x074 */
-	vuint32_t TVE_078; /* 0x078 */
-	vuint32_t TVE_07C; /* 0x07c */
-	vuint32_t TVE_080; /* 0x080 */
-	vuint32_t TVE_084; /* 0x084 */
-	vuint32_t TVE_088; /* 0x088 */
-	vuint32_t TVE_08C; /* 0x08c */
-	vuint32_t TVE_090; /* 0x090 */
-	vuint32_t TVE_094; /* 0x094 */
-	vuint32_t TVE_098; /* 0x098 */
-	vuint32_t TVE_09C; /* 0x09c */
-	vuint32_t TVE_0A0; /* 0x0A0 */
-	vuint32_t TVE_0A4; /* 0x0A4 */
-	vuint32_t TVE_0A8; /* 0x0A8 */
-	vuint32_t TVE_0AC; /* 0x0Ac */
-	vuint32_t TVE_0B0; /* 0x0B0 */
-	vuint32_t TVE_0B4; /* 0x0B4 */
-	vuint32_t TVE_0B8; /* 0x0B8 */
-	vuint32_t TVE_0BC; /* 0x0Bc */
-	vuint32_t TVE_0C0; /* 0x0C0 */
-	vuint32_t TVE_0C4; /* 0x0C4 */
-	vuint32_t TVE_0C8; /* 0x0C8 */
-	vuint32_t TVE_0CC; /* 0x0Cc */
-	vuint32_t TVE_0D0; /* 0x0d0 */
-	vuint32_t TVE_0D4; /* 0x0d4 */
-	vuint32_t TVE_0D8; /* 0x0d8 */
-	vuint32_t TVE_0DC; /* 0x0dc */
-	vuint32_t TVE_0E0; /* 0x0e0 */
-	vuint32_t TVE_0E4; /* 0x0e4 */
-	vuint32_t TVE_0E8; /* 0x0e8 */
-	vuint32_t TVE_0EC; /* 0x0ec */
-	vuint32_t TVE_0F0; /* 0x0f0 */
-	vuint32_t TVE_0F4; /* 0x0f4 */
-	vuint32_t TVE_0F8; /* 0x0f8 */
-	vuint32_t TVE_0FC; /* 0x0fc */
-	vuint32_t TVE_100; /* 0x100 */
-	vuint32_t TVE_104; /* 0x104 */
-	vuint32_t TVE_108; /* 0x108 */
-	vuint32_t TVE_10C; /* 0x10c */
-	vuint32_t TVE_110; /* 0x110 */
-	vuint32_t TVE_114; /* 0x114 */
-	vuint32_t TVE_118; /* 0x118 */
-	vuint32_t TVE_11C; /* 0x11c */
-	vuint32_t TVE_120; /* 0x120 */
-	vuint32_t TVE_124; /* 0x124 */
-	vuint32_t TVE_128; /* 0x128 */
-	vuint32_t TVE_12C; /* 0x12c */
-	vuint32_t TVE_130; /* 0x130 */
-	vuint32_t TVE_134; /* 0x134 */
-	vuint32_t TVE_138; /* 0x138 */
-	vuint32_t TVE_13C; /* 0x13C */
-	vuint32_t res0[0x70];
-	vuint32_t TVE_300; /* 0x300 */
-	vuint32_t TVE_304; /* 0x304 */
-	vuint32_t TVE_308; /* 0x308 */
-	vuint32_t res1[0x1D];
-	vuint32_t TVE_380; /* 0x380 */
-	vuint32_t res2[0x7];
-	vuint32_t TVE_3A0; /* 0x3a0 */
-} TVE_Type;
+typedef struct {
+  vuint32_t CTRL;           // 0x00 Sub-Engine & RAM Type Select
+  vuint32_t RST;            // 0x04 Sub-Engines Reset
+  vuint32_t RES[58];
+  vuint32_t VERSION;        // 0xF0 IP Version register
+} VE_Type;
+
+typedef struct {
+  vuint32_t PHDR;           // 0x00 MPEG12 Picture Header register
+  vuint32_t VOPHDR;         // 0x04 MPEG Video Object Plane Header
+  vuint32_t SIZE;           // 0x08 Frame size in MPEG macroblocks (16x16)
+  vuint32_t FRAME_SIZE;     // 0x0C Frame size in pixels
+  vuint32_t MBA;            // 0x10 MPEG Macro Block Address register
+  vuint32_t CTRL;           // 0x14 MPEG Control Register
+  vuint32_t TRIG;           // 0x18 MPEG Decoding Trigger
+  vuint32_t STATUS;         // 0x1C MACC MPEG Status register
+  vuint32_t TRBTRD_FIELD;   // 0x20 Temporal References (TRB(B-VOP)&TRD)
+  vuint32_t TRBTRD_FRAME;   // 0x24
+  vuint32_t VLD_ADDR;       // 0x28 MPEG Variable Length Decoding Address
+  vuint32_t VLD_OFFSET;     // 0x2C MPEG Variable Length Decoding Offset
+  vuint32_t VLD_LEN;        // 0x30 MPEG Variable Length Decoding Length
+  vuint32_t VLD_END;        // 0x34 MPEG video source buffer end
+  vuint32_t MBH_ADDR;       // 0x38 MBH buffer address
+  vuint32_t DCAC_ADDR;      // 0x3C DCAC Buffer address
+  vuint32_t BLK_OFFSET;     // 0x40 MPEG Block address???
+  vuint32_t NCF_ADDR;       // 0x44 NFC buffer address
+  vuint32_t REC_LUMA;       // 0x48 MPEG Luma reconstruct buffer
+  vuint32_t REC_CHROMA;     // 0x4C MPEG Chroma reconstruct buffer
+  vuint32_t FWD_LUMA;       // 0x50 MPEG Luma forward buffer
+  vuint32_t FWD_CHROMA;     // 0x54 MPEG Chroma forward buffer
+  vuint32_t BACK_LUMA;      // 0x58 MPEG Luma Back buffer
+  vuint32_t BACK_CHROMA;    // 0x5C MPEG Chroma Back buffer
+  vuint32_t RES0[8];
+  vuint32_t IQ_MIN_INPUT;   // 0x80 MPEG Inverse Quantization min input level
+  vuint32_t QP_INPUT;       // 0x84 MPEG Inverse Quantization input level
+  vuint32_t RES1[12];
+  vuint32_t JPEG_SIZE;      // 0xB8 JPEG Size
+  vuint32_t JPEG_MCU;       // 0xBC JPEG Minimum Coded Unit
+  vuint32_t JPEG_RES_INT;   // 0xC0 JPEG Restart Interval
+  vuint32_t RES2[2];
+  vuint32_t ROT_LUMA;       // 0xCC MPEG Rotate-Scale Luma buffer
+  vuint32_t ROT_CHROMA;     // 0xD0 MPEG Rotate-Scale Chroma buffer
+  vuint32_t ROT_SCALE_CTRL; // 0xD4 Control Rotate/Scale Buffe
+  vuint32_t JPEG_MCU_START; // 0xD8 JPEG Macro Cell Unit Start
+  vuint32_t JPEG_MCU_END;   // 0xDC JPEG Macro Cell Unit End
+  vuint32_t RAM_WRITE_PTR;  // 0xE0 Auto incremental pointer for rd/wr VE SRAM
+  vuint32_t RAM_WRITE_DATA; // 0xE4 FIFO Like Data register for wr/rd VE SRAM
+} MPEG_Type;
 
 typedef struct
 {
@@ -646,6 +696,8 @@ typedef struct
 #define SPI0 ((SPI_Type *)(SPI_BASE + 0x0))
 #define SPI1 ((SPI_Type *)(SPI_BASE + 0x1000))
 
+#define TVE ((TVE_Type *)TVE_BASE)
+
 #define UART0 ((UART_Type *)(UART_BASE + 0x0))
 #define UART1 ((UART_Type *)(UART_BASE + 0x400))
 #define UART2 ((UART_Type *)(UART_BASE + 0x800))
@@ -676,7 +728,9 @@ typedef struct
 
 #define TCON ((TCON_Type *)TCON_BASE)
 
-#define TVE ((TVE_Type *)TVE_BASE)
+#define VE ((VE_Type *)VE_BASE)
+
+#define MPEG ((MPEG_Type*)MPEG_BASE)
 
 #define TP ((TP_Type *)TP_BASE)
 
