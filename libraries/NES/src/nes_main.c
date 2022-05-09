@@ -6,7 +6,6 @@
 #include "timer.h"
 // #include "sys_audio.h"
 #include "sys-print.h"
-#include "ff.h"
 #include <string.h>
 #include <stdio.h>
 #include <fb.h>
@@ -14,6 +13,10 @@
 // #include "main.h"
 #include "defe.h"
 #include <nes_key.h>
+
+#ifdef USE_FATFS
+#include "ff.h"
+#endif
 
 #define SRAMIN 0
 
@@ -293,6 +296,9 @@ u8 nes_sram_malloc(u32 romsize)
 	memset(romfile, 0, romsize);									//清零
 	return 0;
 }
+
+
+#ifdef USE_FATFS
 //开始nes游戏
 //pname:nes游戏路径
 //返回值:
@@ -351,6 +357,8 @@ u8 nes_load_for_fat(s8 *pname)
 	nes_sram_free();			//释放内存
 	return res;
 }
+#endif
+
 u8 nes_xoff = 0; //显示在x轴方向的偏移量(实际显示宽度=256-2*nes_xoff)
 
 //开始nes游戏

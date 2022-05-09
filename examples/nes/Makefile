@@ -10,6 +10,7 @@
 
 ROOT = ../..
 BUILD ?= build
+LIBRARIES = $(ROOT)/libraries
 RM = rm
 ECHO = @echo
 CP = cp
@@ -52,10 +53,13 @@ INCDIRS			+= $(MACHINE) $(MACHINE)/f1c100s
 
 # ************************** USER **************************
 USER				= .
-INCDIRS			+= $(USER) src
-SRCDIRS			+= $(USER) src
+INCDIRS			+= $(USER)
+SRCDIRS			+= $(USER)
 
 # ************************** LIBRARIES **************************
+
+INCDIRS			+= $(LIBRARIES)/NES/src
+SRCDIRS			+= $(LIBRARIES)/NES/src
 
 # ************************** BUILD **************************
 

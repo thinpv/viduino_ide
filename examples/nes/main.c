@@ -1,8 +1,8 @@
 #include <fb.h>
 #include <io.h>
 #include <audio.h>
-#include <src/nes_main.h>
-#include <src/rom/zdcr.h> //dat bom
+#include <../../libraries/NES/src/nes_main.h>
+#include <../../libraries/NES/src/rom/zdcr.h> //dat bom
 
 void fb_run(int x, int y, int w, int h, unsigned int *data)
 {
