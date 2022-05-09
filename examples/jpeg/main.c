@@ -12,6 +12,8 @@ struct jpeg_t jpeg;
 
 void setup()
 {
+	sys_print_init();
+
   printf("setup\r\n");
   fb_init(LCD_TYPE_RGB_800_480, NULL);
 

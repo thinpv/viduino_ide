@@ -157,7 +157,7 @@ int boot_main(int argc, char **argv)
 {
 	// sys_clock_init();
 	// sys_dram_init();
-	sys_print_init();
+	// sys_print_init();
 
 	do_init_mem_pool();
 	// do_init_dma_pool();

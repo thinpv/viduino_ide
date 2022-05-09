@@ -171,11 +171,9 @@ SECTIONS
 	.heap ALIGN(8) (NOLOAD) :
 	{
 		PROVIDE(__heap_start = ORIGIN(heap));
-		end = __heap_start;
-		_end = end;
-		__end = end;
 		PROVIDE(__heap_end = ORIGIN(heap) + LENGTH(heap));
 	} > heap
+	end = .;
 
 	.stab 0 : { *(.stab) }
 	.stabstr 0 : { *(.stabstr) }

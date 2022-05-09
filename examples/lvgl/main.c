@@ -49,6 +49,8 @@ void lvgl_test()
 
 void setup()
 {
+	sys_print_init();
+
 	lvgl_test();
 }
 

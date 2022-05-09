@@ -9,6 +9,8 @@ u8 buff[100] = {0};
 
 void setup()
 {
+	sys_print_init();
+
 // sdc_init(SDC0);
 	FATFS sdfs;
 	DIR dp1;
