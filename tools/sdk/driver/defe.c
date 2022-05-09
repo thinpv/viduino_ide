@@ -1718,9 +1718,9 @@ void Open_Dev_Clock(int Dev)
 	S_BIT((CCU_BUS_CLK_GATING_REG0 + (((Dev >> 8) & 0x3) * 0x4)), (Dev & 0x1f));
 	//使能DMA复位
 	C_BIT((CCU_BUS_SOFT_RST_REG0 + (((Dev >> 8) & 0x3) * 0x4)), (Dev & 0x1f));
-	delay_us(100);
+	sys_delay_us(100);
 	S_BIT((CCU_BUS_SOFT_RST_REG0 + (((Dev >> 8) & 0x3) * 0x4)), (Dev & 0x1f));
-	delay_us(100);
+	sys_delay_us(100);
 }
 
 void Defe_Init(void)

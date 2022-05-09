@@ -1,9 +1,8 @@
-#include <types.h>
 #include <stdint.h>
 #include <io.h>
-#include <sys-print.h>
 #include <gpio.h>
 #include <uart.h>
+#include <printf.h>
 
 // #define DEBUG_ENABLE
 

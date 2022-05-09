@@ -16,9 +16,6 @@ CP = cp
 MKDIR = mkdir
 SED = sed
 PYTHON = python3
-NONOS	= NON_OS
-# FREERTOS = FREERTOS_OS
-OS		= $(NONOS)
 
 COMPILE			= /home/thinpv/.arduino15/packages/arduino/tools/arm-none-eabi-gcc/7-2017q4/bin/arm-none-eabi-
 CC					= $(COMPILE)gcc
@@ -32,10 +29,6 @@ SIZE				= $(COMPILE)size
 
 DEFINES			+= -D__ARM32_ARCH__=5 -D__ARM926EJS__ -D__ARM32__ -Wno-unused-function
 
-# ifeq ($(OS), $(FREERTOS))
-# DEFINES			+= -DFREERTOS_OS
-# endif
-
 ASFLAGS			:= -g -ggdb -Wall -O3
 CFLAGS			:= -g -ggdb -Wall -O3
 CPFLAGS			:= -g -ggdb -Wall -O3
@@ -47,33 +40,15 @@ CFLAGS			+=	-ffunction-sections -fdata-sections -ffreestanding -std=gnu11 $(DEFI
 CPFLAGS			+=	-ffunction-sections -fdata-sections -ffreestanding -std=gnu++11 $(DEFINES) -fno-rtti -fno-use-cxa-atexit -fno-threadsafe-statics -fno-exceptions
 LDFLAGS			+=	-Wl,-gc-sections -ffunction-sections -fdata-sections
 
-# ************************** API **************************
-# API					= cores/allwinner/api
-# CORES				= cores/allwinner
-
-# INCDIRS			+= $(API)
-# SRCDIRS			+= $(API)
-
-# INCDIRS			+= $(CORES) variants/viduino_uno
-# SRCDIRS			+= $(CORES)
-
-# SRCDIRS			+= .
-
 # ************************** SDK **************************
 SDK					= $(ROOT)/tools/sdk
 DRV					= $(SDK)/driver
 UTIL				= $(SDK)/util
-MACHINE			= $(SDK)/$(NONOS)/boot
-# FREERTOS_BOOT		= $(SDK)/$(FREERTOS)/boot $(SDK)/$(FREERTOS)/freertos
+MACHINE			= $(SDK)/NON_OS/boot
 
 INCDIRS			+= $(DRV)
 INCDIRS			+= $(UTIL)
 INCDIRS			+= $(MACHINE) $(MACHINE)/f1c100s
-# ifeq ($(OS), $(NONOS))
-# INCDIRS			+= $(SDK)/$(NONOS)/boot $(SDK)/$(NONOS)/boot/f1c100s
-# else
-# INCDIRS			+= $(SDK)/$(FREERTOS)/boot $(SDK)/$(FREERTOS)/boot/f1c100s $(SDK)/$(FREERTOS)/freertos/include
-# endif
 
 # ************************** USER **************************
 USER				= .
@@ -100,18 +75,6 @@ MACHINECFILES	:=	$(foreach dir, $(MACHINE), $(wildcard $(dir)/*.c))
 MACHINESOBJS		:=	$(patsubst %, $(BUILD)/%, $(MACHINESFILES:.S=.o))
 MACHINECOBJS		:=	$(patsubst %, $(BUILD)/%, $(MACHINECFILES:.c=.o))
 MACHINEOBJS = $(MACHINESOBJS) $(MACHINECOBJS)
-
-# FREERTOS_BOOTSFILES	:=	$(foreach dir, $(FREERTOS_BOOT), $(wildcard $(dir)/*.S))
-# FREERTOS_BOOTCFILES	:=	$(foreach dir, $(FREERTOS_BOOT), $(wildcard $(dir)/*.c))
-# FREERTOS_BOOTSOBJS		:=	$(patsubst %, $(BUILD)/%, $(FREERTOS_BOOTSFILES:.S=.o))
-# FREERTOS_BOOTCOBJS		:=	$(patsubst %, $(BUILD)/%, $(FREERTOS_BOOTCFILES:.c=.o))
-# FREERTOS_BOOTOBJS = $(FREERTOS_BOOTSOBJS) $(FREERTOS_BOOTCOBJS)
-
-# ifeq ($(OS), $(NONOS))
-# BOOTOBJS = $(MACHINEOBJS)
-# else
-# BOOTOBJS = $(FREERTOS_BOOTOBJS)
-# endif
 
 SDKOBJS = $(DRVOBJS) $(UTILOBJS) $(MACHINEOBJS)
 
@@ -164,24 +127,6 @@ write:
 
 write2:
 	$(PYTHON) $(ROOT)/tools/upload.py --port /dev/ttyUSB0 --baud 921600 write_flash 0x80000 $(BUILD)/firmware.bin
-
-# viduino: $(SDKOBJS)
-# 	mkdir -p viduino
-# 	cp -r cores libraries tools variants boards.txt platform.txt programmers.txt viduino
-# 	mkdir -p viduino/$(SDK)/lib
-# 	mkdir -p viduino/$(SDK)/$(NONOS)/lib
-# 	mkdir -p viduino/$(SDK)/$(FREERTOS)/lib
-# 	$(AR) viduino/$(SDK)/lib/libdriver.a $(DRVOBJS) $(UTILOBJS)
-# 	$(AR) viduino/$(SDK)/$(NONOS)/lib/libsdk.a $(MACHINEOBJS)
-# 	$(AR) viduino/$(SDK)/$(FREERTOS)/lib/libsdk.a $(FREERTOS_BOOTOBJS)
-# 	rm viduino/$(MACHINE)/*.c viduino/$(MACHINE)/*.S
-# 	rm viduino/$(SDK)/$(FREERTOS)/boot/*.c viduino/$(SDK)/$(FREERTOS)/boot/*.S viduino/$(SDK)/$(FREERTOS)/freertos/*.c
-# 	rm viduino/$(DRV)/*.c
-# 	rm viduino/$(UTIL)/*.c
-# 	tar -cf $(VIDUINO) viduino 
-# 	rm -r viduino
-# 	sha256sum $(VIDUINO) | tr '[a-z]' '[A-Z]'
-# 	ls -ls $(VIDUINO)
 
 clean:
 	rm -rf $(BUILD)/

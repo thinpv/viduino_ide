@@ -25,7 +25,7 @@ static void arduinoThread(void *pvParameters)
 
 int boot_main(int argc, char **argv)
 {
-	sys_print_init();
+	// sys_print_init();
 	// printf("boot_main\r\n");
 	do_init_mem_pool();
 	sys_init();
