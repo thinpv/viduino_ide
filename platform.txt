@@ -83,8 +83,10 @@ recipe.ar.pattern="{compiler.path}{compiler.ar.cmd}" {compiler.ar.flags} {compil
 recipe.c.combine.pattern="{compiler.path}{compiler.cpp.cmd}" {compiler.ld.flags} {build.extra_flags} -Wl,--cref,-Map={build.path}/{build.project_name}.elf.map {object_files} "{archive_file_path}" -o "{build.path}/{build.project_name}.elf" "{compiler.os.path}/lib/libsdk.a" "{compiler.sdk.path}/lib/libdriver.a" "{compiler.os.path}/lib/libsdk.a" -lgcc -lm -lc -lnosys
 
 ## Create binary
-recipe.objcopy.eep.1.pattern="{compiler.path}{compiler.objcopy.cmd}" {compiler.objcopy.eep.flags} -v --output-format=binary "{build.path}/{build.project_name}.elf" "{build.path}/{build.project_name}.bin"
-recipe.objcopy.eep.2.pattern={runtime.tools.python3.path}/python3 "{runtime.platform.path}/tools/lzmatool.py" "{build.path}/{build.project_name}.bin" "{build.path}/{build.project_name}.lzma"
+recipe.objcopy.eep.1.pattern="{compiler.path}{compiler.objcopy.cmd}" {compiler.objcopy.eep.flags} -v --output-format=binary "{build.path}/{build.project_name}.elf" "{build.path}/{build.project_name}.bin.temp"
+recipe.objcopy.eep.2.pattern={runtime.tools.python3.path}/python3 "{runtime.platform.path}/tools/pack.py" "{build.path}/{build.project_name}.bin.temp" "{build.path}/{build.project_name}.bin"
+recipe.objcopy.eep.3.pattern={runtime.tools.python3.path}/python3 "{runtime.platform.path}/tools/pack_lzma.py" "{build.path}/{build.project_name}.bin.temp" "{build.path}/{build.project_name}.lzma"
+# recipe.objcopy.eep.2.pattern={runtime.tools.python3.path}/python3 "{runtime.platform.path}/tools/lzmatool.py" "{build.path}/{build.project_name}.bin.temp" "{build.path}/{build.project_name}.lzma"
 
 ## Create hex
 recipe.objcopy.hex.pattern=

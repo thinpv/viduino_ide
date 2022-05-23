@@ -157,8 +157,9 @@ ssize_t uart_read(UART_Type *uart, uint8_t *buf, size_t count, uint32_t delay)
 	{
 		while ((uart->UART_USR_REG & (1 << 3)) == 0)
 		{
-			if (--u32delayno == 0)
+			if (u32delayno == 0)
 				return i;
+			--u32delayno;
 		}
 		buf[i] = uart->UART_RBR_THR_DLL_REG & 0xFF;
 	}
@@ -173,8 +174,9 @@ ssize_t uart_write(UART_Type *uart, const uint8_t *buf, size_t count, uint32_t d
 	{
 		while (!(uart->UART_USR_REG & (1 << 1)))
 		{
-			if (--u32delayno == 0)
+			if (u32delayno == 0)
 				return i;
+			--u32delayno;
 		}
 		uart->UART_RBR_THR_DLL_REG = buf[i];
 	}
@@ -186,9 +188,9 @@ ssize_t uart_write_c(UART_Type *uart, const uint8_t c, uint32_t delay)
 	uint32_t u32delayno = delay * 10000;
 	while (!(uart->UART_USR_REG & (1 << 1)))
 	{
-		--u32delayno;
 		if (u32delayno == 0)
 			return 0;
+		--u32delayno;
 	}
 	uart->UART_RBR_THR_DLL_REG = c;
 	return 1;
