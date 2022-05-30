@@ -51,28 +51,9 @@ INCDIRS			+= $(UTIL)
 INCDIRS			+= $(MACHINE) $(MACHINE)/f1c100s
 
 # ************************** USER **************************
-USER				= .
-INCDIRS			+= $(USER) src
-SRCDIRS			+= $(USER) src
-
-INCDIRS			+= lvgl/src \
-	lvgl/src/lv_core \
-	lvgl/src/lv_draw \
-	lvgl/src/lv_font \
-	lvgl/src/lv_gpu \
-	lvgl/src/lv_hal \
-	lvgl/src/lv_misc \
-	lvgl/src/lv_themes \
-	lvgl/src/lv_widgets
-
-SRCDIRS			+= lvgl/src/lv_core \
-	lvgl/src/lv_draw \
-	lvgl/src/lv_font \
-	lvgl/src/lv_gpu \
-	lvgl/src/lv_hal \
-	lvgl/src/lv_misc \
-	lvgl/src/lv_themes \
-	lvgl/src/lv_widgets
+USER			= .
+INCDIRS			+= $(USER)
+SRCDIRS			+= $(USER)
 
 # ************************** LIBRARIES **************************
 

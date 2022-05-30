@@ -54,9 +54,11 @@ void setup()
 	sys_print_init();
 
 	lvgl_test();
+	gpio_set_dir(GPIOA, 0, GPIO_DIRECTION_OUTPUT);
 }
 
 void loop()
 {
-  lv_task_handler();
+	gpio_set_value(GPIOA, 0, ~gpio_get_value(GPIOA, 0));
+	lv_task_handler();
 }
