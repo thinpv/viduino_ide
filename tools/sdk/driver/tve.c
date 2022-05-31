@@ -1,6 +1,8 @@
 #include "tve.h"
 #include <io.h>
 
+#define DEBUG( ... ) // printf(##__VA_ARGS__)
+
 // __u32 tve_reg_base = 0;
 // __u8 TVE_dac_set_de_bounce(__u8 index,__u32 times);
 // __u8 TVE_dac_int_disable(__u8 index);
@@ -243,7 +245,7 @@ __s32 TVE_get_dac_status(__u32 index)
 	}
 	else
 	{
-		printf("ERR: There is only one dac!\n");
+		DEBUG("ERR: There is only one dac!\n");
 	}
 
 	return readval;
@@ -309,7 +311,7 @@ __u8 TVE_dac_enable(__u8 index)
 	}
 	else
 	{
-		printf("ERR: There is only one DAC to enable!\n");
+		DEBUG("ERR: There is only one DAC to enable!\n");
 	}
 
 	return 0;
@@ -327,7 +329,7 @@ __u8 TVE_dac_disable(__u8 index)
 	}
 	else
 	{
-		printf("ERR: There is only one DAC to disable!\n");
+		DEBUG("ERR: There is only one DAC to disable!\n");
 	}
 
 	return 0;
@@ -336,7 +338,7 @@ __u8 TVE_dac_disable(__u8 index)
 __s32 TVE_dac_set_source(__u32 index, __u32 source)
 {
 
-	printf("ERR: DAC source can't be set\n");
+	DEBUG("ERR: DAC source can't be set\n");
 
 	return 0;
 }
@@ -353,7 +355,7 @@ __u8 TVE_dac_set_de_bounce(__u8 index, __u32 times)
 	}
 	else
 	{
-		printf("ERR: There is only one DAC to set de-bounce!\n");
+		DEBUG("ERR: There is only one DAC to set de-bounce!\n");
 		return 0;
 	}
 	// TVE_WUINT32(TVE_03C, readval);
@@ -375,7 +377,7 @@ __u8 TVE_dac_get_de_bounce(__u8 index)
 	}
 	else
 	{
-		printf("ERR: There is only one DAC to get de-bounce!\r\n");
+		DEBUG("ERR: There is only one DAC to get de-bounce!\r\n");
 		return 0;
 	}
 
@@ -541,8 +543,8 @@ int TVE_Config(__u8 mode)
 	// S_Bit(TVE->TVE_004, 8); //tao soc man hinh de test
 	TVE_open(0);
 
-	// printf("TVE-%08x\r\n", TVE_RUINT32(TVE_004)); //
-	printf("TVE-%08x\r\n", TVE->TVE_004); //
+	// DEBUG("TVE-%08x\r\n", TVE_RUINT32(TVE_004)); //
+	DEBUG("TVE-%08x\r\n", TVE->TVE_004); //
 	return 0;
 }
 /*——————————————————————————————————————————————————————————————————————————————
@@ -550,7 +552,7 @@ TV初始化
 */
 void TVE_Init(lcd_type_t lcd_type)
 {
-	printf("TVE_Init\r\n");
+	DEBUG("TVE_Init\r\n");
 	TVE_Clock_Open();
 	if (LCD_TYPE_TV_PAL_720_576 == lcd_type)
 	{
@@ -562,18 +564,19 @@ void TVE_Init(lcd_type_t lcd_type)
 		TCON1_Init(DISP_TV_MOD_NTSC);
 		TVE_Config(DISP_TV_MOD_NTSC);
 	}
-	printf("TVE_end\r\n");
+	DEBUG("TVE_end\r\n");
 }
 //测试 ——————————————————————————————————————————————————————————————————————————————
 extern unsigned short *BT1;
 
-extern unsigned int LCDbuff1[720 * 480 * 2];
+//extern 
+	unsigned int LCDbuff1[720 * 480 * 2];
 unsigned int *BT2;
 
 void TVE_Demo(void)
 {
 	int i, l;
-	printf("TVE_Demo\r\n");
+	DEBUG("TVE_Demo\r\n");
 
 	BT2 = (unsigned int *)LCDbuff1;
 
@@ -641,6 +644,6 @@ void TVE_Demo(void)
 	while (1)
 	{
 		sys_delay_ms(999);
-		printf("R..%d\r\n", TVE_get_dac_status(0));
+		DEBUG("R..%d\r\n", TVE_get_dac_status(0));
 	}
 }

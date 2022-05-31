@@ -4,6 +4,9 @@
 #include <io.h>
 #include <inttypes.h>
 #include <stdio.h>
+// #include <sys_print.h>
+
+#define DEBUG( ... ) // printf(##__VA_ARGS__)
 
 enum
 {
@@ -189,7 +192,7 @@ static bool_t sdc_transfer_command(SDC_Type *sdc, mmc_cmd_st *cmd, mmc_data_st *
 	u32_t cmdval = SDXC_START;
 	u32_t status = 0;
 	int timeout = 0;
-	// printf("sdc_transfer_command id: %d, sizeof(u32_t): %d\r\n", cmd->cmdidx, sizeof(u32_t));
+	// DEBUG("sdc_transfer_command id: %d, sizeof(u32_t): %d\r\n", cmd->cmdidx, sizeof(u32_t));
 
 	if (cmd->cmdidx == MMC_STOP_TRANSMISSION)
 	{
@@ -201,7 +204,7 @@ static bool_t sdc_transfer_command(SDC_Type *sdc, mmc_cmd_st *cmd, mmc_data_st *
 			{
 				sdc->SD_GCTL_REG = SDXC_HARDWARE_RESET;
 				sdc->SD_RISR_REG = 0xffffffff;
-				printf("fail 1 id: %d, status: 0x%08X\r\n", cmd->cmdidx, status);
+				DEBUG("fail 1 id: %d, status: 0x%08X\r\n", cmd->cmdidx, status);
 				return FALSE;
 			}
 		} while (status & SDXC_CARD_DATA_BUSY);
@@ -242,7 +245,7 @@ static bool_t sdc_transfer_command(SDC_Type *sdc, mmc_cmd_st *cmd, mmc_data_st *
 		{
 			sdc->SD_GCTL_REG = SDXC_HARDWARE_RESET;
 			sdc->SD_RISR_REG = 0xffffffff;
-			printf("fail 2 id: %d, status: 0x%08X\r\n", cmd->cmdidx, status);
+			DEBUG("fail 2 id: %d, status: 0x%08X\r\n", cmd->cmdidx, status);
 			return FALSE;
 		}
 		sdc_delay_us(5);
@@ -258,7 +261,7 @@ static bool_t sdc_transfer_command(SDC_Type *sdc, mmc_cmd_st *cmd, mmc_data_st *
 			{
 				sdc->SD_GCTL_REG = SDXC_HARDWARE_RESET;
 				sdc->SD_RISR_REG = 0xffffffff;
-				printf("fail 3 id: %d, status: 0x%08X\r\n", cmd->cmdidx, status);
+				DEBUG("fail 3 id: %d, status: 0x%08X\r\n", cmd->cmdidx, status);
 				return FALSE;
 			}
 			sdc_delay_us(5);
@@ -490,7 +493,7 @@ static bool_t sdc_update_clock(SDC_Type *sdc)
 	}
 	if (!timeout)
 	{
-		printf("mmc update clk failed");
+		DEBUG("mmc update clk failed");
 		return FALSE;
 	}
 	sdc->SD_RISR_REG = sdc->SD_RISR_REG;
@@ -534,7 +537,7 @@ bool_t sdc_clock_disable(SDC_Type *sdc)
 
 int sdc_set_mod_clk(SDC_Type *sdc, uint32_t hz)
 {
-	printf("sdc_set_mod_clk hz: %u\r\n", hz);
+	DEBUG("sdc_set_mod_clk hz: %u\r\n", hz);
 	uint32_t pll, pll_hz, div, n, oclk_dly, sclk_dly;
 
 	if (hz <= 24000000)
@@ -561,7 +564,7 @@ int sdc_set_mod_clk(SDC_Type *sdc, uint32_t hz)
 
 	if (n > 3)
 	{
-		printf("ERR: sdc_set_mod_clk hz: %u\r\n", hz);
+		DEBUG("ERR: sdc_set_mod_clk hz: %u\r\n", hz);
 		return FALSE;
 	}
 
@@ -600,7 +603,7 @@ int sdc_set_mod_clk(SDC_Type *sdc, uint32_t hz)
 	}
 
 #if SD_DBG_PRINTF
-	printf("sdc set [mod-clk req %u]-[parent %u]-[n %u]-[m %u]-[rate %u]\r\n",
+	DEBUG("sdc set [mod-clk req %u]-[parent %u]-[n %u]-[m %u]-[rate %u]\r\n",
 				 hz, pll_hz, 1u << n, div,
 				 pll_hz / (1u << n) / div);
 #endif
@@ -611,14 +614,14 @@ static bool sdc_config_clock(SDC_Type *sdc, uint32_t hz)
 {
 	if (!sdc_clock_disable(sdc))
 	{
-		printf("err: mmc_clock_disable\r\n");
+		DEBUG("err: mmc_clock_disable\r\n");
 		return FALSE;
 	}
 
 	/* Set new clock */
 	if (!sdc_set_mod_clk(sdc, hz))
 	{
-		printf("err: sdc_set_mod_clk\r\n");
+		DEBUG("err: sdc_set_mod_clk\r\n");
 		return FALSE;
 	}
 	/* Clear the internal frequency divider to 0 */
@@ -626,7 +629,7 @@ static bool sdc_config_clock(SDC_Type *sdc, uint32_t hz)
 
 	if (!sdc_clock_enable(sdc))
 	{
-		printf("err: sdc_clock_enable\r\n");
+		DEBUG("err: sdc_clock_enable\r\n");
 		return FALSE;
 	}
 	return TRUE;
@@ -706,10 +709,10 @@ void sdc_get_sd_info(SDC_Type *sdc, mmc_cmd_st *cmd, disk_data_t *sd_info)
 	for (i = 0; i < 4; i++)
 		sd_info->serial[i] = *ptr++;
 
-	printf("SD_info print...\r\n");
-	printf("SD_info->diskSize=[%d]\r\n", sd_info->diskSize);
-	printf("SD_info->totalSectorN=[%d]\r\n", sd_info->totalSectorN);
-	printf("SD_info->sectorSize=[%d]\r\n", sd_info->sectorSize);
+	DEBUG("SD_info print...\r\n");
+	DEBUG("SD_info->diskSize=[%d]\r\n", sd_info->diskSize);
+	DEBUG("SD_info->totalSectorN=[%d]\r\n", sd_info->totalSectorN);
+	DEBUG("SD_info->sectorSize=[%d]\r\n", sd_info->sectorSize);
 }
 
 int sdc_switch_to_high_speed(SDC_Type *sdc, mmc_cmd_st *cmd)
@@ -753,7 +756,7 @@ int sdc_switch_to_high_speed(SDC_Type *sdc, mmc_cmd_st *cmd)
 		busy_status1 = _card_ucSDHCBuffer[28] << 8 | _card_ucSDHCBuffer[29];
 
 		if (!busy_status1)
-			printf("switch into high speed mode !!!\r\n");
+			DEBUG("switch into high speed mode !!!\r\n");
 
 		return TRUE;
 	}
@@ -765,7 +768,7 @@ int sdc_select_sdcard(SDC_Type *sdc, mmc_cmd_st *cmd, char CARD_WIDTH)
 {
 	mmc_data_st data;
 	int volatile status = FALSE, i;
-	printf("SelectCard...\r\n");
+	DEBUG("SelectCard...\r\n");
 	// CMD7, put the SD card into the Transfer state
 	if ((status = sdc_transfer_cmd(sdc, cmd, NULL, 7, CARD_uRCA, MMC_RSP_PRESENT | MMC_RSP_CRC)) != TRUE)
 		return status;
@@ -773,7 +776,7 @@ int sdc_select_sdcard(SDC_Type *sdc, mmc_cmd_st *cmd, char CARD_WIDTH)
 	// Set bit width
 	if (card_type == CARD_TYPE_SD_HIGH)
 	{
-		printf("CARD_TYPE_SD_HIGH \r\n");
+		DEBUG("CARD_TYPE_SD_HIGH \r\n");
 		//Read SCR register
 		//SD data line default 1 bit width transmission
 		if ((status = sdc_transfer_cmd(sdc, cmd, NULL, 55, CARD_uRCA, MMC_RSP_PRESENT | MMC_RSP_CRC)) != TRUE)
@@ -785,10 +788,10 @@ int sdc_select_sdcard(SDC_Type *sdc, mmc_cmd_st *cmd, char CARD_WIDTH)
 		if ((status = sdc_transfer_cmd(sdc, cmd, &data, 51, 0, MMC_RSP_PRESENT | MMC_RSP_CRC)) != TRUE)
 			return status;
 #if SD_DBG_PRINTF
-		printf("buf=0x");
+		DEBUG("buf=0x");
 		for (i = 0; i < 8; i++)
-			printf("%02x", _card_ucSDHCBuffer[i]);
-		printf(" \r\n");
+			DEBUG("%02x", _card_ucSDHCBuffer[i]);
+		DEBUG(" \r\n");
 #endif
 		//
 		if ((_card_ucSDHCBuffer[0] & 0xf) == 0x2) //Judging the SD version 56-59 bits
@@ -802,7 +805,7 @@ int sdc_select_sdcard(SDC_Type *sdc, mmc_cmd_st *cmd, char CARD_WIDTH)
 		}
 		if (CARD_WIDTH == MMC_BUS_WIDTH_4)
 		{
-			printf("MMC_BUS_WIDTH_4 \r\n");
+			DEBUG("MMC_BUS_WIDTH_4 \r\n");
 			//Set the CARD bit width parameter=0x2 is 4 bits, 00 is 1 bit
 			if ((status = sdc_transfer_cmd(sdc, cmd, NULL, 55, CARD_uRCA, MMC_RSP_PRESENT | MMC_RSP_CRC)) != TRUE)
 				return status;
@@ -813,11 +816,11 @@ int sdc_select_sdcard(SDC_Type *sdc, mmc_cmd_st *cmd, char CARD_WIDTH)
 	}
 	else if (card_type == CARD_TYPE_SD_LOW)
 	{
-		printf("CARD_TYPE_SD_LOW \r\n");
+		DEBUG("CARD_TYPE_SD_LOW \r\n");
 		sdc_config_clock(sdc, 12000000);
 		if (CARD_WIDTH == MMC_BUS_WIDTH_4)
 		{
-			printf("MMC_BUS_WIDTH_4 \r\n");
+			DEBUG("MMC_BUS_WIDTH_4 \r\n");
 			//Set the bit width parameter=0x2 is 4 bits, 00 is 1 bit
 			if ((status = sdc_transfer_cmd(sdc, cmd, NULL, 55, CARD_uRCA, MMC_RSP_PRESENT | MMC_RSP_CRC)) != TRUE)
 				return status;
@@ -829,7 +832,7 @@ int sdc_select_sdcard(SDC_Type *sdc, mmc_cmd_st *cmd, char CARD_WIDTH)
 	else if (card_type == CARD_TYPE_MMC)
 	{
 	}
-	printf("SD_BLOCK_SIZE 512 \r\n");
+	DEBUG("SD_BLOCK_SIZE 512 \r\n");
 	//Set block length
 	if ((status = sdc_transfer_cmd(sdc, cmd, NULL, 16, SD_BLOCK_SIZE, MMC_RSP_PRESENT | MMC_RSP_CRC | MMC_RSP_BUSY)) != TRUE)
 	{
@@ -857,12 +860,12 @@ int sdc_read_in(SDC_Type *sdc, unsigned int sector, unsigned int count, unsigned
 
 	if (buff == 0)
 	{
-		printf("ERROR: fmiSD_Read_in(): uBufcnt cannot be 0!!\r\n");
+		DEBUG("ERROR: fmiSD_Read_in(): uBufcnt cannot be 0!!\r\n");
 		return -745435;
 	}
 	if ((u32)(long)buff & 0x3)
 	{
-		printf("SD_Read Addr Align Err[%08x] ...\r\n", buff);
+		DEBUG("SD_Read Addr Align Err[%08x] ...\r\n", buff);
 		return -474385;
 	}
 	/* 
@@ -913,12 +916,12 @@ int sdc_write_out(SDC_Type *sdc, unsigned int sector, unsigned int count, unsign
 
 	if (buff == 0)
 	{
-		printf("ERROR: fmiSD_Read_in(): uBufcnt cannot be 0!!\r\n");
+		DEBUG("ERROR: fmiSD_Read_in(): uBufcnt cannot be 0!!\r\n");
 		return -745435;
 	}
 	if ((u32)(long)buff & 0x3)
 	{
-		printf("Addr Align Err ...\r\n");
+		DEBUG("Addr Align Err ...\r\n");
 		return FALSE;
 	}
 	/* 
@@ -978,7 +981,7 @@ int sdc_init(SDC_Type *sdc)
 	sdc_delay(20);
 	if (result)
 	{
-		printf("SD2.0...\r\n");
+		DEBUG("SD2.0...\r\n");
 		/* CMD55, pre-special command command, this command needs to be sent before sending ACMD commands */
 		sdc_transfer_cmd(sdc, &cmd, NULL, 55, 0, MMC_RSP_PRESENT | MMC_RSP_CRC);
 		/* CMD41, get SD voltage value */
@@ -996,17 +999,17 @@ int sdc_init(SDC_Type *sdc)
 		if (cmd.response[0] & 0x40000000)
 		{
 			card_type = CARD_TYPE_SD_HIGH;
-			printf("TYPE_SD_HIGH...\r\n");
+			DEBUG("TYPE_SD_HIGH...\r\n");
 		}
 		else
 		{
 			card_type = CARD_TYPE_SD_LOW;
-			printf("TYPE_SD_LOW...\r\n");
+			DEBUG("TYPE_SD_LOW...\r\n");
 		}
 	}
 	else
 	{
-		printf("SD1.1...\r\n");
+		DEBUG("SD1.1...\r\n");
 		sdc_transfer_cmd(sdc, &cmd, NULL, 0, 0, 0); //发送复位命令 CMD0
 		sdc_delay(10);
 
@@ -1024,12 +1027,12 @@ int sdc_init(SDC_Type *sdc)
 						break;
 				}
 				card_type = CARD_TYPE_MMC;
-				printf("TYPE_MMC...\r\n");
+				DEBUG("TYPE_MMC...\r\n");
 			}
 			else
 			{
 				card_type = CARD_TYPE_UNKNOWN;
-				printf("ERR_DEVICE...\r\n");
+				DEBUG("ERR_DEVICE...\r\n");
 				return FALSE;
 			}
 		}
@@ -1044,12 +1047,12 @@ int sdc_init(SDC_Type *sdc)
 					break;
 			}
 			card_type = CARD_TYPE_SD_LOW;
-			printf("TYPE_SD_LOW...\r\n");
+			DEBUG("TYPE_SD_LOW...\r\n");
 		}
 		else
 		{
 			card_type = CARD_TYPE_UNKNOWN;
-			printf("Init Error !!\r\n");
+			DEBUG("Init Error !!\r\n");
 			return FALSE;
 		}
 	}

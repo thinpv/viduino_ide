@@ -1,6 +1,8 @@
 #include "adc.h"
 #include <F1C100S.h>
 
+#define DEBUG( ... ) // printf(##__VA_ARGS__)
+
 void Init_TP_ADC(/* int mode */)
 {
 	/*配置IO*/

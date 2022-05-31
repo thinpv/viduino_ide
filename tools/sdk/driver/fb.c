@@ -6,6 +6,8 @@
 #include <ccu.h>
 #include <debe.h>
 
+#define DEBUG( ... ) // printf(##__VA_ARGS__)
+
 // Global structure
 struct fb_f1c100s_pdata_t f1;
 pixel_format *fb_buffer;
@@ -136,7 +138,13 @@ void fb_tcon_init(uint8_t f)
 		S_Bit(TCON->TCON_FRM_CTRL_REG, 31);
 	}
 	// Polarity control
-	TCON->TCON0_IO_CTRL_REG0 = (1 << 28) | (1 << 24) | (1 << 25) | (1 << 26); // | (1 << 27);
+	val = (1 << 28);	
+	if(!pdat->timing.h_sync_active)	val |= (1 << 25);	
+	if(!pdat->timing.v_sync_active)	val |= (1 << 24);	
+	if(!pdat->timing.den_active)		val |= (1 << 27);		
+	if(!pdat->timing.clk_active)		val |= (1 << 26);	
+	if(!pdat->timing.dat_active)		val |= 0x0ffffff;	
+	TCON->TCON0_IO_CTRL_REG0 = val; // | (1 << 27);
 	// Trigger control off
 	TCON->TCON0_IO_CTRL_REG1 = 0;
 	//
@@ -173,6 +181,7 @@ void fb_init(lcd_type_t lcd_type, void *buffer)
 		lcd_pdat->timing.v_sync_active = 0;
 		lcd_pdat->timing.den_active = 1; // Inverted
 		lcd_pdat->timing.clk_active = 0;
+		lcd_pdat->timing.dat_active = 1;
 		/*********************************DEBE SET**************************/
 		lcd_pdat->index = 0;					 // FB index
 		lcd_pdat->bytes_per_pixel = 2; // buff color bit width
@@ -180,9 +189,44 @@ void fb_init(lcd_type_t lcd_type, void *buffer)
 		// Set the video clock to 390MHZ
 		u8 N = 65, M = 4;
 		F = 25; //(24MHz*N)/M/F=15.6MHZ
-		C_Bit(TCON->TCON_FRM_CTRL_REG, 31);
-		TCON->TCON_FRM_CTRL_REG = ((N - 1) << 8) | ((M - 1) << 0) | (3 << 24);
-		S_Bit(TCON->TCON_FRM_CTRL_REG, 31);
+		C_Bit(CCU->PLL_VIDEO_CTRL_REG, 31);
+		CCU->PLL_VIDEO_CTRL_REG = ((N - 1) << 8) | ((M - 1) << 0) | (3 << 24);
+		S_Bit(CCU->PLL_VIDEO_CTRL_REG, 31);
+		sys_delay_ms(1);
+	}
+	else if (lcd_type == LCD_TYPE_RGB_480_480)
+	{
+		// LCD mode 0-cpu 1-rgb
+		lcd_pdat->mode = 1;
+		// LCD width and height
+		lcd_pdat->width = 480;
+		lcd_pdat->height = 480;
+		// Pixel width
+		lcd_pdat->bits_per_pixel = 18;
+
+		// Timing
+		lcd_pdat->timing.h_front_porch = 10; //
+		lcd_pdat->timing.h_back_porch = 50;     //
+		lcd_pdat->timing.h_sync_len = 8;         //HSPW
+		lcd_pdat->timing.v_front_porch = 10; //
+		lcd_pdat->timing.v_back_porch = 20;     //
+		lcd_pdat->timing.v_sync_len = 8;         //VSPW
+		// Polarity setting 0 inverted
+		lcd_pdat->timing.h_sync_active = 1;
+		lcd_pdat->timing.v_sync_active = 1;
+		lcd_pdat->timing.den_active = 1; // Inverted
+		lcd_pdat->timing.clk_active = 0;
+		lcd_pdat->timing.dat_active = 0;
+		/*********************************DEBE SET**************************/
+		lcd_pdat->index = 0;					 // FB index
+		lcd_pdat->bytes_per_pixel = 2; // buff color bit width
+
+		// Set the video clock to 390MHZ
+		u8 N = 23, M = 2;
+		F = 16; //LCD=276000000/16=17250000
+		C_Bit(CCU->PLL_VIDEO_CTRL_REG, 31);
+		CCU->PLL_VIDEO_CTRL_REG = ((N - 1) << 8) | ((M - 1) << 0) | (3 << 24);
+		S_Bit(CCU->PLL_VIDEO_CTRL_REG, 31);
 		sys_delay_ms(1);
 	}
 	else if (lcd_type == LCD_TYPE_RGB_800_480)
@@ -207,6 +251,7 @@ void fb_init(lcd_type_t lcd_type, void *buffer)
 		lcd_pdat->timing.v_sync_active = 0;
 		lcd_pdat->timing.den_active = 1; // Inverted
 		lcd_pdat->timing.clk_active = 0;
+		lcd_pdat->timing.dat_active = 1;
 		/*********************************DEBE SET**************************/
 		lcd_pdat->index = 0;					 // FB index
 		lcd_pdat->bytes_per_pixel = 2; // buff color bit width
@@ -214,9 +259,9 @@ void fb_init(lcd_type_t lcd_type, void *buffer)
 		// Set the video clock to 390MHZ
 		u8 N = 65, M = 4;
 		F = 9; //(24MHz*N)/M/F=43.33MHZ
-		C_Bit(TCON->TCON_FRM_CTRL_REG, 31);
-		TCON->TCON_FRM_CTRL_REG = ((N - 1) << 8) | ((M - 1) << 0) | (3 << 24);
-		S_Bit(TCON->TCON_FRM_CTRL_REG, 31);
+		C_Bit(CCU->PLL_VIDEO_CTRL_REG, 31);
+		CCU->PLL_VIDEO_CTRL_REG = ((N - 1) << 8) | ((M - 1) << 0) | (3 << 24);
+		S_Bit(CCU->PLL_VIDEO_CTRL_REG, 31);
 		sys_delay_ms(1);
 	}
 	else if (lcd_type == LCD_TYPE_VGA_1024_768)
@@ -241,15 +286,16 @@ void fb_init(lcd_type_t lcd_type, void *buffer)
 		lcd_pdat->timing.v_sync_active = 0;
 		lcd_pdat->timing.den_active = 1; // Inverted
 		lcd_pdat->timing.clk_active = 0;
+		lcd_pdat->timing.dat_active = 1;
 		/*********************************DEBE SET**************************/
 		lcd_pdat->index = 0;					 // FB index
 		lcd_pdat->bytes_per_pixel = 2; // buff color bit width
 
 		u8 N = 65, M = 4;
 		F = 6; //(24MHz*N)/M/F=65MHZ
-		C_Bit(TCON->TCON_FRM_CTRL_REG, 31);
-		TCON->TCON_FRM_CTRL_REG = ((N - 1) << 8) | ((M - 1) << 0) | (3 << 24);
-		S_Bit(TCON->TCON_FRM_CTRL_REG, 31);
+		C_Bit(CCU->PLL_VIDEO_CTRL_REG, 31);
+		CCU->PLL_VIDEO_CTRL_REG = ((N - 1) << 8) | ((M - 1) << 0) | (3 << 24);
+		S_Bit(CCU->PLL_VIDEO_CTRL_REG, 31);
 		sys_delay_ms(1);
 	}
 	else if (lcd_type == LCD_TYPE_VGA_640_480_60HZ)
@@ -274,15 +320,16 @@ void fb_init(lcd_type_t lcd_type, void *buffer)
 		lcd_pdat->timing.v_sync_active = 0;
 		lcd_pdat->timing.den_active = 1; // Inverted
 		lcd_pdat->timing.clk_active = 0;
+		lcd_pdat->timing.dat_active = 1;
 		/*********************************DEBE SET**************************/
 		lcd_pdat->index = 0;					 // FB index
 		lcd_pdat->bytes_per_pixel = 2; // buff color bit width
 
 		u8 N = 23, M = 2;
 		F = 11; //LCD=276000000/11=25090909
-		C_Bit(TCON->TCON_FRM_CTRL_REG, 31);
-		TCON->TCON_FRM_CTRL_REG = ((N - 1) << 8) | ((M - 1) << 0) | (3 << 24);
-		S_Bit(TCON->TCON_FRM_CTRL_REG, 31);
+		C_Bit(CCU->PLL_VIDEO_CTRL_REG, 31);
+		CCU->PLL_VIDEO_CTRL_REG = ((N - 1) << 8) | ((M - 1) << 0) | (3 << 24);
+		S_Bit(CCU->PLL_VIDEO_CTRL_REG, 31);
 		sys_delay_ms(1);
 	}
 	else if (lcd_type == LCD_TYPE_VGA_640_480_75HZ)
@@ -307,15 +354,16 @@ void fb_init(lcd_type_t lcd_type, void *buffer)
 		lcd_pdat->timing.v_sync_active = 0;
 		lcd_pdat->timing.den_active = 1; // Inverted
 		lcd_pdat->timing.clk_active = 0;
+		lcd_pdat->timing.dat_active = 1;
 		/*********************************DEBE SET**************************/
 		lcd_pdat->index = 0;					 // FB index
 		lcd_pdat->bytes_per_pixel = 2; // buff color bit width
 
 		u8 N = 63, M = 8;
 		F = 6;
-		C_Bit(TCON->TCON_FRM_CTRL_REG, 31);
-		TCON->TCON_FRM_CTRL_REG = ((N - 1) << 8) | ((M - 1) << 0) | (3 << 24);
-		S_Bit(TCON->TCON_FRM_CTRL_REG, 31);
+		C_Bit(CCU->PLL_VIDEO_CTRL_REG, 31);
+		CCU->PLL_VIDEO_CTRL_REG = ((N - 1) << 8) | ((M - 1) << 0) | (3 << 24);
+		S_Bit(CCU->PLL_VIDEO_CTRL_REG, 31);
 		sys_delay_ms(1);
 	}
 	else if (lcd_type == LCD_TYPE_TV_PAL_720_576)
@@ -340,6 +388,7 @@ void fb_init(lcd_type_t lcd_type, void *buffer)
 		lcd_pdat->timing.v_sync_active = 0;
 		lcd_pdat->timing.den_active = 1; // Inverted
 		lcd_pdat->timing.clk_active = 0;
+		lcd_pdat->timing.dat_active = 1;
 		/*********************************DEBE SET**************************/
 		lcd_pdat->index = 0;					 // FB index
 		lcd_pdat->bytes_per_pixel = 2; // buff color bit width
@@ -347,9 +396,9 @@ void fb_init(lcd_type_t lcd_type, void *buffer)
 		// Set the video clock to 390MHZ
 		u8 N = 65, M = 4;
 		F = 25; //(24MHz*N)/M/F=15.6MHZ
-		C_Bit(TCON->TCON_FRM_CTRL_REG, 31);
-		TCON->TCON_FRM_CTRL_REG = ((N - 1) << 8) | ((M - 1) << 0) | (3 << 24);
-		S_Bit(TCON->TCON_FRM_CTRL_REG, 31);
+		C_Bit(CCU->PLL_VIDEO_CTRL_REG, 31);
+		CCU->PLL_VIDEO_CTRL_REG = ((N - 1) << 8) | ((M - 1) << 0) | (3 << 24);
+		S_Bit(CCU->PLL_VIDEO_CTRL_REG, 31);
 		sys_delay_ms(1);
 	}
 	else if (lcd_type == LCD_TYPE_TV_NTSC_720_480)
@@ -374,6 +423,7 @@ void fb_init(lcd_type_t lcd_type, void *buffer)
 		lcd_pdat->timing.v_sync_active = 0;
 		lcd_pdat->timing.den_active = 1; // Inverted
 		lcd_pdat->timing.clk_active = 0;
+		lcd_pdat->timing.dat_active = 1;
 		/*********************************DEBE SET**************************/
 		lcd_pdat->index = 0;					 // FB index
 		lcd_pdat->bytes_per_pixel = 2; // buff color bit width
@@ -381,14 +431,14 @@ void fb_init(lcd_type_t lcd_type, void *buffer)
 		// Set the video clock to 390MHZ
 		u8 N = 65, M = 4;
 		F = 25; //(24MHz*N)/M/F=15.6MHZ
-		C_Bit(TCON->TCON_FRM_CTRL_REG, 31);
-		TCON->TCON_FRM_CTRL_REG = ((N - 1) << 8) | ((M - 1) << 0) | (3 << 24);
-		S_Bit(TCON->TCON_FRM_CTRL_REG, 31);
+		C_Bit(CCU->PLL_VIDEO_CTRL_REG, 31);
+		CCU->PLL_VIDEO_CTRL_REG = ((N - 1) << 8) | ((M - 1) << 0) | (3 << 24);
+		S_Bit(CCU->PLL_VIDEO_CTRL_REG, 31);
 		sys_delay_ms(1);
 	}
 	else
 	{
-		return 1;
+		return;
 	}
 
 	if (buffer)

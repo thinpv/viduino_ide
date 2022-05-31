@@ -58,12 +58,14 @@ extern "C"
 			int v_sync_active;
 			int den_active;
 			int clk_active;
+			int dat_active;
 		} timing;
 	};
 
 	typedef enum
 	{
 		LCD_TYPE_RGB_480_272 = 0,
+		LCD_TYPE_RGB_480_480,
 		LCD_TYPE_RGB_800_480,
 		LCD_TYPE_VGA_1024_768,
 		LCD_TYPE_VGA_640_480_60HZ,

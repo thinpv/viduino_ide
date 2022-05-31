@@ -1,6 +1,8 @@
 #include <keyadc.h>
 #include <io.h>
 
+#define DEBUG( ... ) // printf(##__VA_ARGS__)
+
 #define KEYADC_UNKNOW 0
 #define KEYADC_DOWN 1
 #define KEYADC_UP 2
@@ -21,7 +23,7 @@ void keyadc_interrupt_handle(int arg)
 	{
 		key_func = KEYADC_DOWN;
 		adc_value = (KEYADC->KEYADC_DATA_REG & 0x3f) * 200 / 63;
-		printf("adc_value=%d\r\n", adc_value);
+		DEBUG("adc_value=%d\r\n", adc_value);
 	}
 
 	// up
@@ -66,13 +68,13 @@ int keyadc_getkey()
 			if ((adc_value > (keyad[i] - 5)) && (adc_value < (keyad[i] + 5)))
 			{
 				// KEY_v |= (1 << (i));
-				printf("key %d\r\n", i);
+				DEBUG("key %d\r\n", i);
 				break;
 			}
 		}
 		break;
 	case KEYADC_UP:
-		printf("KEYADC_UP\r\n");
+		DEBUG("KEYADC_UP\r\n");
 		break;
 
 	default:

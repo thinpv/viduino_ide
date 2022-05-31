@@ -6,7 +6,9 @@
 #include <io.h>
 #include <reg-ccu.h>
 #include <irq.h>
-#include <printf.h>
+//#include <sys_print.h>
+
+#define DEBUG( ... ) // printf(##__VA_ARGS__)
 
 #ifdef __UVISION_VERSION 
 void arm32_interrupt_enable()
@@ -128,7 +130,7 @@ void irq_enable(int32_t eIntNo)
 	arm32_interrupt_disable();
 	if (eIntNo > 63)
 	{
-		printf("irq number too large");
+		DEBUG("irq number too large");
 	}
 	else if (eIntNo >= 48)
 	{
@@ -159,7 +161,7 @@ void irq_disable(int32_t eIntNo)
 	arm32_interrupt_disable();
 	if (eIntNo > 63)
 	{
-		printf("irq number too large");
+		DEBUG("irq number too large");
 	}
 	else if (eIntNo >= 48)
 	{
@@ -210,7 +212,7 @@ void irq_register(int32_t nIntTypeLevel, int32_t eIntNo, sys_pvFunPtr pvNewISR, 
 	arm32_interrupt_disable();
 	if (eIntNo > 63)
 	{
-		printf("irq number too large");
+		DEBUG("irq number too large");
 	}
 	else if (eIntNo >= 48)
 	{
@@ -285,13 +287,13 @@ void irq_init()
 	INTC->INTC_FF_REG1 = 0x00000000;
 }
 
-void arm32_do_irq(struct arm_regs_t *regs)
+void arm32_do_irq()
 {
 	irq_handle();
 	// vPreemptiveTick();
 }
 
-void arm32_do_fiq(struct arm_regs_t *regs)
+void arm32_do_fiq()
 {
 	irq_handle();
 	// vPreemptiveTick();

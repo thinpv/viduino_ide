@@ -1,5 +1,7 @@
 #include <ccu.h>
 
+#define DEBUG( ... ) // printf(##__VA_ARGS__)
+
 void ccu_set_enable_cpu(bool enable)
 {
 	if (enable)

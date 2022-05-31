@@ -3,6 +3,8 @@
 #include <io.h>
 #include <ccu.h>
 
+#define DEBUG( ... ) // printf(##__VA_ARGS__)
+
 const uint32_t bpp[] = {1, 2, 4, 8, 16, 16, 16, 16, 16, 32, 32, 24};
 // RGB to YUV coefficient
 unsigned int csc_tab2[4][12] =

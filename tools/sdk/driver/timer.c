@@ -1,6 +1,8 @@
 #include <timer.h>
 #include <io.h>
 
+#define DEBUG( ... ) // printf(##__VA_ARGS__)
+
 void timer_irq_enbale(Timer_Type *timer)
 {
 	switch ((uint32_t)timer)

@@ -6,6 +6,8 @@
 #include <i2c.h>
 #include <ccu.h>
 
+#define DEBUG( ... ) // printf(##__VA_ARGS__)
+
 #define TIMEOUT 50000
 
 enum
@@ -90,7 +92,7 @@ int i2c_init(I2C_Type *i2c)
 	} while (timeout <= TIMEOUT);
 	// if (R_Bit(i2c->TWI_CNTR_REG, 4))
 	// {
-	// 	printf("stop error\r\n");
+	// 	DEBUG("stop error\r\n");
 	// }
 	return 1;
 }
@@ -102,12 +104,12 @@ int i2c_wait_status(I2C_Type *i2c)
 	{
 		if (i2c->TWI_CNTR_REG & (1 << 3))
 		{
-			//printf("i2c->TWI_STAT_REG: 0x%02X\r\n", i2c->TWI_STAT_REG);
+			//DEBUG("i2c->TWI_STAT_REG: 0x%02X\r\n", i2c->TWI_STAT_REG);
 			return i2c->TWI_STAT_REG;
 		}
 		timeout++;
 	} while (timeout <= TIMEOUT);
-	// printf("i2c_wait_status timeout\r\n");
+	// DEBUG("i2c_wait_status timeout\r\n");
 	return I2C_STAT_BUS_ERROR;
 }
 
@@ -126,7 +128,7 @@ int i2c_start(I2C_Type *i2c)
 	} while (timeout <= TIMEOUT);
 	// if (R_Bit(i2c->TWI_CNTR_REG, 5))
 	// {
-	// 	printf("i2c_start error\r\n");
+	// 	DEBUG("i2c_start error\r\n");
 	// }
 	return i2c_wait_status(i2c);
 }
@@ -144,7 +146,7 @@ int i2c_stop(I2C_Type *i2c)
 	} while (timeout <= TIMEOUT);
 	// if (R_Bit(i2c->TWI_CNTR_REG, 4))
 	// {
-	// 	printf("i2c_stop error\r\n");
+	// 	DEBUG("i2c_stop error\r\n");
 	// }
 	return 0;
 }
@@ -163,7 +165,7 @@ uint8_t i2c_read(I2C_Type *i2c, uint8_t addr, uint8_t *buf, size_t len, uint8_t 
 	int rs = i2c_send_data(i2c, (u8_t)(addr << 1 | 1));
 	if (rs != I2C_STAT_TX_AR_ACK)
 	{
-		// printf("i2c_read addr 0x%02X error %d\r\n", addr, rs);
+		// DEBUG("i2c_read addr 0x%02X error %d\r\n", addr, rs);
 		if (sendStop)
 		{
 			i2c_stop(i2c);
@@ -215,7 +217,7 @@ uint8_t i2c_write(I2C_Type *i2c, uint8_t addr, uint8_t *buf, size_t len, uint8_t
 	uint8_t rs = i2c_send_data(i2c, (u8_t)(addr << 1));
 	if (rs != I2C_STAT_TX_AW_ACK)
 	{
-		// printf("i2c_write error 0x%02X addr 0x%02X\r\n", rs, addr);
+		// DEBUG("i2c_write error 0x%02X addr 0x%02X\r\n", rs, addr);
 		if (sendStop)
 		{
 			i2c_stop(i2c);

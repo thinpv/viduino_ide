@@ -7,6 +7,8 @@
 #include <gpio.h>
 #include <ccu.h>
 
+#define DEBUG( ... ) // printf(##__VA_ARGS__)
+
 void spi_init(SPI_Type *spi)
 {
 	if (spi == SPI0)

@@ -8,6 +8,8 @@
 #include <dma.h>
 #include <audio.h>
 
+#define DEBUG( ... ) // printf(##__VA_ARGS__)
+
 /*DMA-register address*/
 #define DMA_Base_Address (0x01C02000)
 /*Register address*/
@@ -127,7 +129,7 @@ void audio_disable()
 /*Audio initialization*/
 void audio_init(void)
 {
-	printf("AUDIO Init...\r\n");
+	DEBUG("AUDIO Init...\r\n");
 	ccu_reset(RESET_AUDIO_CODEC, true);
 	sys_delay_ms(1);
 
@@ -317,10 +319,10 @@ int audio_play_wav_init(void)
 	wav.sample_rate = 22050;
 
 	/*Output*/
-	printf("Sampling format: %d \r\n", wav.audio_format);
-	printf("Sampling channel: %d \r\n", wav.num_channels);
-	printf("Sampling bit width: %d bit\r\n", wav.bits_per_sample);
-	printf("The sampling period: %d Hz\r\n", wav.sample_rate);
+	DEBUG("Sampling format: %d \r\n", wav.audio_format);
+	DEBUG("Sampling channel: %d \r\n", wav.num_channels);
+	DEBUG("Sampling bit width: %d bit\r\n", wav.bits_per_sample);
+	DEBUG("The sampling period: %d Hz\r\n", wav.sample_rate);
 
 	/*Uncompressed format*/
 	if (wav.audio_format == 1)
@@ -332,7 +334,7 @@ int audio_play_wav_init(void)
 		if (audio_play_init(&wav) == 0)
 		{
 			//S_BIT(AUDIO_CODEC_CLK_REG,31);//Clock gating
-			printf("audio_play_wav_init OK \r\n");
+			DEBUG("audio_play_wav_init OK \r\n");
 		}
 	}
 	return 0;

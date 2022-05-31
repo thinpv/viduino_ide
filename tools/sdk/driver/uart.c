@@ -7,6 +7,8 @@
 #include <timer.h>
 #include <ccu.h>
 
+#define DEBUG( ... ) // printf(##__VA_ARGS__)
+
 bool_t uart_set(UART_Type *uart, uint32_t baud, uint32_t data, uint32_t parity, uint32_t stop)
 {
 	uint8_t dreg, preg, sreg;

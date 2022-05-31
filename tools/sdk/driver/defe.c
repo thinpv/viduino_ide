@@ -3,6 +3,8 @@
 #include <irq.h>
 #include <io.h>
 
+#define DEBUG( ... ) // printf(##__VA_ARGS__)
+
 #define DEFE_Base_Address 0x01E00000
 
 static volatile __de_scal_dev_t *scal_dev[1];
@@ -428,10 +430,10 @@ __s32 DE_SCAL_Set_Scaling_Factor(__u8 sel, __scal_scan_mod_t *in_scan, __scal_sr
 
 	//step factor
 
-	//		printf("s1=%d\r\n",in_w0);
-	//		printf("s2=%d\r\n",out_w0);
-	//		printf("s3=%d\r\n",in_w0<<16);
-	//		printf("s3=%x\r\n",(in_w0<<16)/out_w0);
+	//		DEBUG("s1=%d\r\n",in_w0);
+	//		DEBUG("s2=%d\r\n",out_w0);
+	//		DEBUG("s3=%d\r\n",in_w0<<16);
+	//		DEBUG("s3=%x\r\n",(in_w0<<16)/out_w0);
 	//
 	//
 	ch0_hstep = (in_w0 << 16) / out_w0;
@@ -1686,14 +1688,14 @@ void IRQ_DEFE_ISR(int a)
 	if (res & Wb_end)
 	{
 		DE_SCAL_ClearINT(0, Wb_end); //write 1 to clear
-		printf("DEFE ISR wb\r\n");
+		DEBUG("DEFE ISR wb\r\n");
 	}
 	if (res & Line)
 	{
 		DE_SCAL_ClearINT(0, Line); //write 1 to clear
 		if ((millis() - Stime) > 1000)
 		{
-			printf("Defe Fram %d fps\r\n", 1000 / (millis() - defetime));
+			DEBUG("Defe Fram %d fps\r\n", 1000 / (millis() - defetime));
 			Stime = millis();
 		}
 		defetime = millis();
@@ -1958,7 +1960,7 @@ void Defe_Config_yuv_to_argb(int in_format, int inw, int inh, int outw, int outh
 	//开始
 	DE_SCAL_Start(0);
 	//等待完成
-	//sysprintf("wait defe end...\r\n");
+	//DEBUG("wait defe end...\r\n");
 	while (i < 500)
 	{
 		//等待
@@ -1967,7 +1969,7 @@ void Defe_Config_yuv_to_argb(int in_format, int inw, int inh, int outw, int outh
 		if (DE_SCAL_QueryINT(0) & Wb_end)
 		{
 			DE_SCAL_ClearINT(0, Wb_end); //write 1 to clear
-			//sysprintf("转码完成...\r\n");
+			//DEBUG("转码完成...\r\n");
 			break;
 		}
 		i++;

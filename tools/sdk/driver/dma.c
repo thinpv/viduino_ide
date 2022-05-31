@@ -2,6 +2,8 @@
 #include <ccu.h>
 #include <io.h>
 
+#define DEBUG( ... ) // printf(##__VA_ARGS__)
+
 void dma_init()
 {
 	ccu_reset(RESET_DMA, true);

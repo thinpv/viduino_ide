@@ -6,6 +6,8 @@
 #include <reg-ccu.h>
 #include <csi.h>
 
+#define DEBUG( ... ) // printf(##__VA_ARGS__)
+
 #define FALSE 0
 #define TRUE 1
 

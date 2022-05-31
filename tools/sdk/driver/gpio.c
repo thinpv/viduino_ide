@@ -1,6 +1,8 @@
 #include <gpio.h>
 #include <io.h>
 
+#define DEBUG( ... ) // printf(##__VA_ARGS__)
+
 void gpio_set_cfg(GPIO_Type *gpio, uint16_t pin, uint16_t cfg)
 {
 	if (pin >= 32)

@@ -6,6 +6,8 @@
 #include <reg-ccu.h>
 #include <irq_gpio.h>
 
+#define DEBUG( ... ) // printf(##__VA_ARGS__)
+
 static void F1C100S_Interrupt_Shell() {} /* Empty function */
 
 #define GPIOD_MAX 22
