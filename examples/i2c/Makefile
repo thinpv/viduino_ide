@@ -18,14 +18,14 @@ SED = sed
 PYTHON = python3
 
 COMPILE			= /home/thinpv/.arduino15/packages/arduino/tools/arm-none-eabi-gcc/7-2017q4/bin/arm-none-eabi-
-CC					= $(COMPILE)gcc
-CXX					= $(COMPILE)g++
-AS					= $(COMPILE)gcc -x assembler-with-cpp
-AR					= $(COMPILE)ar rcs
-LD					= $(COMPILE)ld
+CC				= $(COMPILE)gcc
+CXX				= $(COMPILE)g++
+AS				= $(COMPILE)gcc -x assembler-with-cpp
+AR				= $(COMPILE)ar rcs
+LD				= $(COMPILE)ld
 OBJCOPY			= $(COMPILE)objcopy
 OBJDUMP			= $(COMPILE)objdump
-SIZE				= $(COMPILE)size
+SIZE			= $(COMPILE)size
 
 DEFINES			+= -D__ARM32_ARCH__=5 -D__ARM926EJS__ -D__ARM32__ -Wno-unused-function
 
@@ -41,9 +41,9 @@ CPFLAGS			+=	-ffunction-sections -fdata-sections -ffreestanding -std=gnu++11 $(D
 LDFLAGS			+=	-Wl,-gc-sections -ffunction-sections -fdata-sections
 
 # ************************** SDK **************************
-SDK					= $(ROOT)/tools/sdk
-DRV					= $(SDK)/driver
-UTIL				= $(SDK)/util
+SDK				= $(ROOT)/tools/sdk
+DRV				= $(SDK)/driver
+UTIL			= $(SDK)/util
 MACHINE			= $(SDK)/NON_OS/boot
 
 INCDIRS			+= $(DRV)
@@ -52,8 +52,8 @@ INCDIRS			+= $(MACHINE) $(MACHINE)/f1c100s
 
 # ************************** USER **************************
 USER				= .
-INCDIRS			+= $(USER)
-SRCDIRS			+= $(USER)
+INCDIRS			+= $(USER) src
+SRCDIRS			+= $(USER) src
 
 # ************************** LIBRARIES **************************
 
@@ -61,35 +61,35 @@ SRCDIRS			+= $(USER)
 
 DRVCFILES		:=	$(foreach dir, $(DRV), $(wildcard $(dir)/*.c))
 DRVCOBJS		:=	$(patsubst %, $(BUILD)/%, $(DRVCFILES:.c=.o))
-DRVOBJS = $(DRVCOBJS) 
+DRVOBJS 		= $(DRVCOBJS) 
 
 UTILCFILES		:=	$(foreach dir, $(UTIL), $(wildcard $(dir)/*.c))
 UTILCOBJS		:=	$(patsubst %, $(BUILD)/%, $(UTILCFILES:.c=.o))
-UTILOBJS = $(UTILCOBJS) 
+UTILOBJS 		= $(UTILCOBJS) 
 
 MACHINESFILES	:=	$(foreach dir, $(MACHINE), $(wildcard $(dir)/*.S))
 MACHINECFILES	:=	$(foreach dir, $(MACHINE), $(wildcard $(dir)/*.c))
-MACHINESOBJS		:=	$(patsubst %, $(BUILD)/%, $(MACHINESFILES:.S=.o))
-MACHINECOBJS		:=	$(patsubst %, $(BUILD)/%, $(MACHINECFILES:.c=.o))
-MACHINEOBJS = $(MACHINESOBJS) $(MACHINECOBJS)
+MACHINESOBJS	:=	$(patsubst %, $(BUILD)/%, $(MACHINESFILES:.S=.o))
+MACHINECOBJS	:=	$(patsubst %, $(BUILD)/%, $(MACHINECFILES:.c=.o))
+MACHINEOBJS 	= $(MACHINESOBJS) $(MACHINECOBJS)
 
-SDKOBJS = $(DRVOBJS) $(UTILOBJS) $(MACHINEOBJS)
+SDKOBJS 		= $(DRVOBJS) $(UTILOBJS) $(MACHINEOBJS)
 
-SFILES	:=	$(foreach dir, $(SRCDIRS), $(wildcard $(dir)/*.S))
-CFILES	:=	$(foreach dir, $(SRCDIRS), $(wildcard $(dir)/*.c))
-CPFILES	:=	$(foreach dir, $(SRCDIRS), $(wildcard $(dir)/*.cpp))
+SFILES			:=	$(foreach dir, $(SRCDIRS), $(wildcard $(dir)/*.S))
+CFILES			:=	$(foreach dir, $(SRCDIRS), $(wildcard $(dir)/*.c))
+CPFILES			:=	$(foreach dir, $(SRCDIRS), $(wildcard $(dir)/*.cpp))
 
-INCLUDE	:=	$(patsubst %, -I %, $(INCDIRS))
-SOBJS		:=	$(patsubst %, $(BUILD)/%, $(SFILES:.S=.o))
-COBJS		:=	$(patsubst %, $(BUILD)/%, $(CFILES:.c=.o))
-CPOBJS		:=	$(patsubst %, $(BUILD)/%, $(CPFILES:.cpp=.o))
-OBJS = $(SOBJS) $(COBJS) $(CPOBJS)
+INCLUDE			:=	$(patsubst %, -I %, $(INCDIRS))
+SOBJS			:=	$(patsubst %, $(BUILD)/%, $(SFILES:.S=.o))
+COBJS			:=	$(patsubst %, $(BUILD)/%, $(CFILES:.c=.o))
+CPOBJS			:=	$(patsubst %, $(BUILD)/%, $(CPFILES:.cpp=.o))
+OBJS 			= $(SOBJS) $(COBJS) $(CPOBJS)
 
-ALLOBJ = $(OBJS) $(DRVOBJS) $(UTILOBJS) $(MACHINEOBJS)
+ALLOBJ 			= $(OBJS) $(DRVOBJS) $(UTILOBJS) $(MACHINEOBJS)
 
-ALLOBJ_DIRS = $(sort $(dir $(ALLOBJ)))
+ALLOBJ_DIRS 	= $(sort $(dir $(ALLOBJ)))
 
-all: $(BUILD)/firmware.bin
+all: $(BUILD)/firmware.bin.temp
 
 $(ALLOBJ): | $(ALLOBJ_DIRS)
 $(ALLOBJ_DIRS):
@@ -115,9 +115,10 @@ $(BUILD)/firmware.elf: $(ALLOBJ)
 	@$(CXX) -Wl,--cref,-Map=$@.map $(LDFLAGS) -Wl,--start-group $(OBJS) -Wl,--end-group -Wl,-EL -o $@ $(BUILD)/lib/libsdk.a $(BUILD)/lib/libdriver.a $(BUILD)/lib/libsdk.a -lgcc -lm -lc -lnosys
 	@$(SIZE) $@
 
-$(BUILD)/firmware.bin: $(BUILD)/firmware.elf
+$(BUILD)/firmware.bin.temp: $(BUILD)/firmware.elf
 	@$(OBJCOPY) -v -O binary $^ $@
-	$(PYTHON) $(ROOT)/tools/lzmatool.py $(BUILD)/firmware.bin $(BUILD)/firmware.bin.lzma
+	$(PYTHON) $(ROOT)/tools/pack.py $(BUILD)/firmware.bin.temp $(BUILD)/firmware.bin
+	$(PYTHON) $(ROOT)/tools/pack_lzma.py $(BUILD)/firmware.bin.temp $(BUILD)/firmware.bin.lzma
 
 write:
 	$(PYTHON) $(ROOT)/tools/upload.py --port /dev/ttyUSB0 --baud 921600 write_flash 0x80000 $(BUILD)/firmware.bin.lzma

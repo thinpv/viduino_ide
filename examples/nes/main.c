@@ -1,6 +1,7 @@
 #include <fb.h>
 #include <io.h>
 #include <audio.h>
+#include <nes_main.h>
 #include <../../libraries/NES/src/nes_main.h>
 #include <../../libraries/NES/src/rom/zdcr.h> //dat bom
 

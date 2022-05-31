@@ -4,15 +4,16 @@
 void setup()
 {
 	sys_print_init();
+	printf("setup\r\n");
 
-	// gpio_set_cfg(GPIOD, 0, GPIO_FUNC_011);
-	// gpio_set_pull(GPIOD, 0, GPIO_PULL_UP);
-	// gpio_set_cfg(GPIOD, 12, GPIO_FUNC_011);
-	// gpio_set_pull(GPIOD, 12, GPIO_PULL_UP);
-	gpio_set_cfg(GPIOE, 11, GPIO_FUNC_011);
-	gpio_set_pull(GPIOE, 11, GPIO_PULL_UP);
-	gpio_set_cfg(GPIOE, 12, GPIO_FUNC_011);
-	gpio_set_pull(GPIOE, 12, GPIO_PULL_UP);
+	gpio_set_cfg(GPIOD, 0, GPIO_FUNC_011);
+	gpio_set_pull(GPIOD, 0, GPIO_PULL_UP);
+	gpio_set_cfg(GPIOD, 12, GPIO_FUNC_011);
+	gpio_set_pull(GPIOD, 12, GPIO_PULL_UP);
+	// gpio_set_cfg(GPIOE, 11, GPIO_FUNC_011);
+	// gpio_set_pull(GPIOE, 11, GPIO_PULL_UP);
+	// gpio_set_cfg(GPIOE, 12, GPIO_FUNC_011);
+	// gpio_set_pull(GPIOE, 12, GPIO_PULL_UP);
 	i2c_init(I2C0);
 	i2c_set_frequency(I2C0, 400000);
 	uint8_t data;

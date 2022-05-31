@@ -120,10 +120,10 @@ $(BUILD)/firmware.bin.temp: $(BUILD)/firmware.elf
 	$(PYTHON) $(ROOT)/tools/pack.py $(BUILD)/firmware.bin.temp $(BUILD)/firmware.bin
 	$(PYTHON) $(ROOT)/tools/pack_lzma.py $(BUILD)/firmware.bin.temp $(BUILD)/firmware.bin.lzma
 
-write:
+write: $(BUILD)/firmware.bin.temp
 	$(PYTHON) $(ROOT)/tools/upload.py --port /dev/ttyUSB0 --baud 921600 write_flash 0x80000 $(BUILD)/firmware.bin.lzma
 
-write2:
+write2: $(BUILD)/firmware.bin.temp
 	$(PYTHON) $(ROOT)/tools/upload.py --port /dev/ttyUSB0 --baud 921600 write_flash 0x80000 $(BUILD)/firmware.bin
 
 clean:
