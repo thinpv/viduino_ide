@@ -6,6 +6,8 @@
 #include <ccu.h>
 #include <debe.h>
 
+#include <sys-delay.h>
+
 #define DEBUG( ... ) // printf(##__VA_ARGS__)
 
 // Global structure

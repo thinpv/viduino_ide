@@ -8,6 +8,7 @@
 .PHONY:dump
 .PHONY:test
 
+ROOT = .
 BUILD ?= build
 RM = rm
 ECHO = @echo
@@ -15,34 +16,23 @@ CP = cp
 MKDIR = mkdir
 SED = sed
 PYTHON = python3
-VIDUINO = viduino-0.0.15.tar
-NONOS	= NON_OS
-FREERTOS = FREERTOS_OS
-OS		= $(FREERTOS)
 
 COMPILE			= /home/thinpv/.arduino15/packages/arduino/tools/arm-none-eabi-gcc/7-2017q4/bin/arm-none-eabi-
-CC					= $(COMPILE)gcc
-CXX					= $(COMPILE)g++
-AS					= $(COMPILE)gcc -x assembler-with-cpp
-AR					= $(COMPILE)ar rcs
-LD					= $(COMPILE)ld
+CC				= $(COMPILE)gcc
+CXX				= $(COMPILE)g++
+AS				= $(COMPILE)gcc -x assembler-with-cpp
+AR				= $(COMPILE)ar rcs
+LD				= $(COMPILE)ld
 OBJCOPY			= $(COMPILE)objcopy
 OBJDUMP			= $(COMPILE)objdump
-SIZE				= $(COMPILE)size
-
-API					= cores/allwinner/api
-CORES				= cores/allwinner
+SIZE			= $(COMPILE)size
 
 DEFINES			+= -D__ARM32_ARCH__=5 -D__ARM926EJS__ -D__ARM32__ -Wno-unused-function
-
-ifeq ($(OS), $(FREERTOS))
-DEFINES			+= -DFREERTOS_OS
-endif
 
 ASFLAGS			:= -g -ggdb -Wall -O3
 CFLAGS			:= -g -ggdb -Wall -O3
 CPFLAGS			:= -g -ggdb -Wall -O3
-LDFLAGS			:= -T variants/viduino_uno/f1c100s.ld -nostdlib
+LDFLAGS			:= -T $(ROOT)/variants/viduino_uno/f1c100s.ld -nostdlib
 MCFLAGS			:= -march=armv5te -mtune=arm926ej-s -mfloat-abi=soft -marm -specs=nosys.specs -mno-thumb-interwork
 
 ASFLAGS			+=	-ffunction-sections -fdata-sections -ffreestanding -std=gnu11 $(DEFINES)
@@ -51,146 +41,48 @@ CPFLAGS			+=	-ffunction-sections -fdata-sections -ffreestanding -std=gnu++11 $(D
 LDFLAGS			+=	-Wl,-gc-sections -ffunction-sections -fdata-sections
 
 # ************************** SDK **************************
-SDK					= tools/sdk
-DRV					= $(SDK)/driver
-UTIL				= $(SDK)/util
-NONOS_BOOT			= $(SDK)/$(NONOS)/boot
-FREERTOS_BOOT		= $(SDK)/$(FREERTOS)/boot $(SDK)/$(FREERTOS)/freertos
+SDK				= $(ROOT)/tools/sdk
+DRIVER			= $(SDK)/driver
+MACHINE			= $(SDK)/nonos
+SYSTEM			= $(SDK)/system
+UTIL			= $(SDK)/util
 
-INCDIRS			+= $(DRV)
+INCDIRS			+= $(DRIVER)
+INCDIRS			+= $(MACHINE) $(MACHINE)/include
+INCDIRS			+= $(SYSTEM) $(SYSTEM)/f1c100s
 INCDIRS			+= $(UTIL)
-ifeq ($(OS), $(NONOS))
-INCDIRS			+= $(SDK)/$(NONOS)/boot $(SDK)/$(NONOS)/boot/f1c100s
-else
-INCDIRS			+= $(SDK)/$(FREERTOS)/boot $(SDK)/$(FREERTOS)/boot/f1c100s $(SDK)/$(FREERTOS)/freertos/include
-endif
 
-# ************************** API **************************
+SRCDIRS			+= $(MACHINE)
+SRCDIRS			+= $(SYSTEM)
+SRCDIRS			+= $(UTIL)
 
-INCDIRS			+= $(API)
-SRCDIRS			+= $(API)
-
-INCDIRS			+= $(CORES) variants/viduino_uno
-SRCDIRS			+= $(CORES)
-
-SRCDIRS			+= .
+# ************************** USER **************************
+USER			= examples/blink
+INCDIRS			+= $(USER)
+SRCDIRS			+= $(USER)
 
 # ************************** LIBRARIES **************************
 
-# INCDIRS			+= libraries/Wire/src
-# SRCDIRS			+= libraries/Wire/src
-
-# INCDIRS			+= libraries/fatfs/src
-# SRCDIRS			+= libraries/fatfs/src
-
-# INCDIRS			+= libraries/FrameBuffer/src
-# SRCDIRS			+= libraries/FrameBuffer/src
-
-# INCDIRS			+= libraries/NS2009/src
-# SRCDIRS			+= libraries/NS2009/src
-
-# INCDIRS			+= libraries/SoftwareTimer
-# SRCDIRS			+= libraries/SoftwareTimer
-
-# INCDIRS			+= libraries/lvgl/src \
-# 	libraries/lvgl/src/lvgl/src \
-# 	libraries/lvgl/src/lvgl/src/lv_core \
-# 	libraries/lvgl/src/lvgl/src/lv_draw \
-# 	libraries/lvgl/src/lvgl/src/lv_font \
-# 	libraries/lvgl/src/lvgl/src/lv_gpu \
-# 	libraries/lvgl/src/lvgl/src/lv_hal \
-# 	libraries/lvgl/src/lvgl/src/lv_misc \
-# 	libraries/lvgl/src/lvgl/src/lv_themes \
-# 	libraries/lvgl/src/lvgl/src/lv_widgets \
-# 	libraries/lvgl/examples/lv_demo_music
-# SRCDIRS			+= libraries/lvgl/src/lvgl/src/lv_core \
-# 	libraries/lvgl/src/lvgl/src/lv_draw \
-# 	libraries/lvgl/src/lvgl/src/lv_font \
-# 	libraries/lvgl/src/lvgl/src/lv_gpu \
-# 	libraries/lvgl/src/lvgl/src/lv_hal \
-# 	libraries/lvgl/src/lvgl/src/lv_misc \
-# 	libraries/lvgl/src/lvgl/src/lv_themes \
-# 	libraries/lvgl/src/lvgl/src/lv_widgets \
-# 	libraries/lvgl/examples/lv_demo_music
-
-# INCDIRS			+= libraries/tinyusb/src \
-# 	libraries/tinyusb/src/common \
-# 	libraries/tinyusb/src/device \
-# 	libraries/tinyusb/src/class \
-# 	libraries/tinyusb/src/portable/sunxi \
-# 	libraries/tinyusb/examples/device/cdc_dual_ports/src
-
-# SRCDIRS			+= libraries/tinyusb/src \
-# 	libraries/tinyusb/src/common \
-# 	libraries/tinyusb/src/device \
-# 	libraries/tinyusb/src/class/cdc \
-# 	libraries/tinyusb/src/portable/sunxi \
-# 	libraries/tinyusb/examples/device/cdc_dual_ports/src
-
-# INCDIRS			+= libraries/png/libz
-# SRCDIRS			+= libraries/png/libz
-
-# INCDIRS			+= libraries/png/libpng
-# SRCDIRS			+= libraries/png/libpng
-
-# INCDIRS			+= libraries/nes/src
-# SRCDIRS			+= libraries/nes/src
-
-# INCDIRS			+= libraries/png/png
-# SRCDIRS			+= libraries/png/png
-
-# LIBFILES		+= libraries/mjpegDecorder/jpeg_dec.a
-# INCDIRS			+= libraries/mjpegDecorder \
-# 	libraries/mjpegDecorder/videoplay \
-# 	libraries/mjpegDecorder/test_jpeg
-# SRCDIRS			+= libraries/mjpegDecorder \
-# 	libraries/mjpegDecorder/videoplay
-
 # ************************** BUILD **************************
 
-DRVCFILES		:=	$(foreach dir, $(DRV), $(wildcard $(dir)/*.c))
-DRVCOBJS		:=	$(patsubst %, $(BUILD)/%, $(DRVCFILES:.c=.o))
-DRVOBJS = $(DRVCOBJS) 
+DRIVERFILES		:=	$(foreach dir, $(DRIVER), $(wildcard $(dir)/*.c))
+DRIVEROBJS		:=	$(patsubst %, $(BUILD)/%, $(DRIVERFILES:.c=.o))
 
-UTILCFILES		:=	$(foreach dir, $(UTIL), $(wildcard $(dir)/*.c))
-UTILCOBJS		:=	$(patsubst %, $(BUILD)/%, $(UTILCFILES:.c=.o))
-UTILOBJS = $(UTILCOBJS) 
+SFILES			:=	$(foreach dir, $(SRCDIRS), $(wildcard $(dir)/*.S))
+CFILES			:=	$(foreach dir, $(SRCDIRS), $(wildcard $(dir)/*.c))
+CPFILES			:=	$(foreach dir, $(SRCDIRS), $(wildcard $(dir)/*.cpp))
 
-NONOS_BOOTSFILES	:=	$(foreach dir, $(NONOS_BOOT), $(wildcard $(dir)/*.S))
-NONOS_BOOTCFILES	:=	$(foreach dir, $(NONOS_BOOT), $(wildcard $(dir)/*.c))
-NONOS_BOOTSOBJS		:=	$(patsubst %, $(BUILD)/%, $(NONOS_BOOTSFILES:.S=.o))
-NONOS_BOOTCOBJS		:=	$(patsubst %, $(BUILD)/%, $(NONOS_BOOTCFILES:.c=.o))
-NONOS_BOOTOBJS = $(NONOS_BOOTSOBJS) $(NONOS_BOOTCOBJS)
+INCLUDE			:=	$(patsubst %, -I %, $(INCDIRS))
+SOBJS			:=	$(patsubst %, $(BUILD)/%, $(SFILES:.S=.o))
+COBJS			:=	$(patsubst %, $(BUILD)/%, $(CFILES:.c=.o))
+CPOBJS			:=	$(patsubst %, $(BUILD)/%, $(CPFILES:.cpp=.o))
+SRCOBJS 		= $(SOBJS) $(COBJS) $(CPOBJS)
 
-FREERTOS_BOOTSFILES	:=	$(foreach dir, $(FREERTOS_BOOT), $(wildcard $(dir)/*.S))
-FREERTOS_BOOTCFILES	:=	$(foreach dir, $(FREERTOS_BOOT), $(wildcard $(dir)/*.c))
-FREERTOS_BOOTSOBJS		:=	$(patsubst %, $(BUILD)/%, $(FREERTOS_BOOTSFILES:.S=.o))
-FREERTOS_BOOTCOBJS		:=	$(patsubst %, $(BUILD)/%, $(FREERTOS_BOOTCFILES:.c=.o))
-FREERTOS_BOOTOBJS = $(FREERTOS_BOOTSOBJS) $(FREERTOS_BOOTCOBJS)
+ALLOBJ 			= $(SRCOBJS) $(DRIVEROBJS)
 
-ifeq ($(OS), $(NONOS))
-BOOTOBJS = $(NONOS_BOOTOBJS)
-else
-BOOTOBJS = $(FREERTOS_BOOTOBJS)
-endif
+ALLOBJ_DIRS 	= $(sort $(dir $(ALLOBJ)))
 
-SDKOBJS = $(DRVOBJS) $(UTILOBJS) $(NONOS_BOOTOBJS) $(FREERTOS_BOOTOBJS)
-
-SFILES	:=	$(foreach dir, $(SRCDIRS), $(wildcard $(dir)/*.S))
-CFILES	:=	$(foreach dir, $(SRCDIRS), $(wildcard $(dir)/*.c))
-CPFILES	:=	$(foreach dir, $(SRCDIRS), $(wildcard $(dir)/*.cpp))
-
-INCLUDE	:=	$(patsubst %, -I %, $(INCDIRS))
-SOBJS		:=	$(patsubst %, $(BUILD)/%, $(SFILES:.S=.o))
-COBJS		:=	$(patsubst %, $(BUILD)/%, $(CFILES:.c=.o))
-CPOBJS		:=	$(patsubst %, $(BUILD)/%, $(CPFILES:.cpp=.o))
-OBJS = $(SOBJS) $(COBJS) $(CPOBJS)
-
-ALLOBJ = $(OBJS) $(SDKOBJS)
-
-ALLOBJ_DIRS = $(sort $(dir $(ALLOBJ)))
-
-all: $(BUILD)/firmware.bin
+all: $(BUILD)/firmware.bin.temp
 
 $(ALLOBJ): | $(ALLOBJ_DIRS)
 $(ALLOBJ_DIRS):
@@ -210,39 +102,21 @@ $(BUILD)/%.o: %.cpp
 
 $(BUILD)/firmware.elf: $(ALLOBJ)
 	@$(MKDIR) -p $(BUILD)/lib
-	@$(AR) $(BUILD)/lib/libsdk.a $(BOOTOBJS)
-	@$(AR) $(BUILD)/lib/libdriver.a $(DRVOBJS) $(UTILOBJS)
+	@$(AR) $(BUILD)/lib/libsdk.a $(DRIVEROBJS)
 	$(ECHO) "LINK $@"
-	@$(CXX) -Wl,--cref,-Map=$@.map $(LDFLAGS) -Wl,--start-group $(OBJS) -Wl,--end-group -Wl,-EL -o $@ $(BUILD)/lib/libsdk.a $(BUILD)/lib/libdriver.a $(BUILD)/lib/libsdk.a -lgcc -lm -lc -lnosys
+	@$(CXX) -Wl,--cref,-Map=$@.map $(LDFLAGS) -Wl,--start-group $(SRCOBJS) -Wl,--end-group -Wl,-EL -o $@ $(BUILD)/lib/libsdk.a -lgcc -lm -lc -lnosys
 	@$(SIZE) $@
 
-$(BUILD)/firmware.bin: $(BUILD)/firmware.elf
+$(BUILD)/firmware.bin.temp: $(BUILD)/firmware.elf
 	@$(OBJCOPY) -v -O binary $^ $@
-	$(PYTHON) tools/lzmatool.py $(BUILD)/firmware.bin $(BUILD)/firmware.bin.lzma
+	$(PYTHON) $(ROOT)/tools/pack.py $(BUILD)/firmware.bin.temp $(BUILD)/firmware.bin
+	$(PYTHON) $(ROOT)/tools/pack_lzma.py $(BUILD)/firmware.bin.temp $(BUILD)/firmware.bin.lzma
 
-write:
-	$(PYTHON) tools/upload.py --port /dev/ttyUSB0 --baud 921600 write_flash 0x80000 $(BUILD)/firmware.bin.lzma
+write: $(BUILD)/firmware.bin.temp
+	$(PYTHON) $(ROOT)/tools/upload.py --port /dev/ttyUSB0 --baud 921600 write_flash 0x80000 $(BUILD)/firmware.bin
 
-write2:
-	$(PYTHON) tools/upload.py --port /dev/ttyUSB0 --baud 921600 write_flash 0x80000 $(BUILD)/firmware.bin
-
-viduino: $(SDKOBJS)
-	mkdir -p viduino
-	cp -r cores libraries tools variants boards.txt platform.txt programmers.txt viduino
-	mkdir -p viduino/$(SDK)/lib
-	mkdir -p viduino/$(SDK)/$(NONOS)/lib
-	mkdir -p viduino/$(SDK)/$(FREERTOS)/lib
-	$(AR) viduino/$(SDK)/lib/libdriver.a $(DRVOBJS) $(UTILOBJS)
-	$(AR) viduino/$(SDK)/$(NONOS)/lib/libsdk.a $(NONOS_BOOTOBJS)
-	$(AR) viduino/$(SDK)/$(FREERTOS)/lib/libsdk.a $(FREERTOS_BOOTOBJS)
-	rm viduino/$(NONOS_BOOT)/*.c viduino/$(NONOS_BOOT)/*.S
-	rm viduino/$(SDK)/$(FREERTOS)/boot/*.c viduino/$(SDK)/$(FREERTOS)/boot/*.S viduino/$(SDK)/$(FREERTOS)/freertos/*.c
-	rm viduino/$(DRV)/*.c
-	rm viduino/$(UTIL)/*.c
-	tar -cf $(VIDUINO) viduino 
-	rm -r viduino
-	sha256sum $(VIDUINO) | tr '[a-z]' '[A-Z]'
-	ls -ls $(VIDUINO)
+writelzma: $(BUILD)/firmware.bin.temp
+	$(PYTHON) $(ROOT)/tools/upload.py --port /dev/ttyUSB0 --baud 921600 write_flash 0x80000 $(BUILD)/firmware.bin.lzma
 
 clean:
-	rm -rf $(BUILD)
+	$(RM) -rf $(BUILD)/
