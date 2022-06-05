@@ -59,7 +59,9 @@ SRCDIRS			+= $(UTIL)
 
 # ************************** USER **************************
 
-ifeq ($(MAKECMDGOALS), clean)
+ifeq ($(MAKECMDGOALS), )
+else ifeq ($(MAKECMDGOALS), all)
+else ifeq ($(MAKECMDGOALS), clean)
 else ifeq ($(MAKECMDGOALS), write)
 else ifeq ($(MAKECMDGOALS), writelzma)
 else
@@ -87,6 +89,11 @@ SRCOBJS 		= $(SOBJS) $(COBJS) $(CPOBJS)
 ALLOBJ 			= $(SRCOBJS) $(DRIVEROBJS)
 
 ALLOBJ_DIRS 	= $(sort $(dir $(ALLOBJ)))
+
+all:
+	$(ECHO) "user make <target>"
+
+$(TARGET): $(BUILD)/firmware.bin.temp
 
 $(ALLOBJ): | $(ALLOBJ_DIRS)
 $(ALLOBJ_DIRS):
@@ -116,8 +123,6 @@ $(BUILD)/firmware.bin.temp: $(BUILD)/firmware.elf
 	$(PYTHON) $(ROOT)/tools/pack.py $(BUILD)/firmware.bin.temp $(BUILD)/firmware.bin
 	$(PYTHON) $(ROOT)/tools/pack_lzma.py $(BUILD)/firmware.bin.temp $(BUILD)/firmware.bin.lzma
 
-$(TARGET): $(BUILD)/firmware.bin.temp
-
 write: $(BUILD)/firmware.bin.temp
 	$(PYTHON) $(ROOT)/tools/upload.py --port /dev/ttyUSB0 --baud 921600 write_flash 0x80000 $(BUILD)/firmware.bin
 
@@ -125,5 +130,4 @@ writelzma: $(BUILD)/firmware.bin.temp
 	$(PYTHON) $(ROOT)/tools/upload.py --port /dev/ttyUSB0 --baud 921600 write_flash 0x80000 $(BUILD)/firmware.bin.lzma
 
 clean:
-	$(ECHO) $(shell basename $(CURDIR))
 	$(RM) -rf $(BUILD)/

@@ -172,7 +172,7 @@ void vPortYieldProcessor( void )
 
 	/* The preemptive scheduler is defined as "naked" as the full context is
 	saved on entry as part of the context switch. */
-	//void __attribute__ ((interrupt ("IRQ"))) vPreemptiveTick( void )
+	// void __attribute__ ((interrupt ("IRQ"))) vPreemptiveTick( void )
 	void  __attribute__((naked)) vPreemptiveTick( void )
 	{
 		/* Save the context of the interrupted task. */
@@ -181,7 +181,7 @@ void vPortYieldProcessor( void )
 		/* WARNING - Do not use local (stack) variables here.  Use globals
 					 if you must! */
 
-		if(INTC->INTC_PEND_REG0 & (1 << F1C100S_IRQ_TIMER0) != 0) // TIMER0 IRQ number is 17
+		if(INTC->INTC_PEND_REG0 & (1 << F1C100S_IRQ_TIMER0)) // TIMER0 IRQ number is 17
 		{
 			/* Increment the RTOS tick count, then look for the highest priority 
 			task that is ready to run. */
@@ -189,8 +189,11 @@ void vPortYieldProcessor( void )
 			{
 				vTaskSwitchContext();
 			}
-		}
-		irq_handle();
+			S_Bit(TIMER->TMR_IRQ_STA_REG, 0);
+		} else
+			irq_handle();
+		INTC->INTC_PEND_REG0 = 0;
+		// INTC->INTC_PEND_REG1 = 0;
 
 		/* Restore the context of the new task. */
 		portRESTORE_CONTEXT();
