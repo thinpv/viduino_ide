@@ -30,6 +30,7 @@ int boot_main(int argc, char **argv)
 	do_init_mem_pool();
 	sys_init();
 	irq_init();
+	timer0_set();
 
 	// printf("xTaskCreate\r\n");
 	xTaskCreate(arduinoThread, "arduino", 1024, NULL, tskIDLE_PRIORITY + 2, NULL);

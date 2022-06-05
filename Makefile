@@ -16,6 +16,7 @@ CP = cp
 MKDIR = mkdir
 SED = sed
 PYTHON = python3
+OS ?= nonos
 
 COMPILE			= /home/thinpv/.arduino15/packages/arduino/tools/arm-none-eabi-gcc/7-2017q4/bin/arm-none-eabi-
 CC				= $(COMPILE)gcc
@@ -43,7 +44,7 @@ LDFLAGS			+=	-Wl,-gc-sections -ffunction-sections -fdata-sections
 # ************************** SDK **************************
 SDK				= $(ROOT)/tools/sdk
 DRIVER			= $(SDK)/driver
-MACHINE			= $(SDK)/nonos
+MACHINE			= $(SDK)/$(OS)
 SYSTEM			= $(SDK)/system
 UTIL			= $(SDK)/util
 
@@ -57,9 +58,14 @@ SRCDIRS			+= $(SYSTEM)
 SRCDIRS			+= $(UTIL)
 
 # ************************** USER **************************
-USER			= examples/blink
-INCDIRS			+= $(USER)
-SRCDIRS			+= $(USER)
+
+ifeq ($(MAKECMDGOALS), clean)
+else ifeq ($(MAKECMDGOALS), write)
+else ifeq ($(MAKECMDGOALS), writelzma)
+else
+include examples/$(MAKECMDGOALS)/component.mk
+TARGET = $(MAKECMDGOALS)
+endif
 
 # ************************** LIBRARIES **************************
 
@@ -81,8 +87,6 @@ SRCOBJS 		= $(SOBJS) $(COBJS) $(CPOBJS)
 ALLOBJ 			= $(SRCOBJS) $(DRIVEROBJS)
 
 ALLOBJ_DIRS 	= $(sort $(dir $(ALLOBJ)))
-
-all: $(BUILD)/firmware.bin.temp
 
 $(ALLOBJ): | $(ALLOBJ_DIRS)
 $(ALLOBJ_DIRS):
@@ -112,6 +116,8 @@ $(BUILD)/firmware.bin.temp: $(BUILD)/firmware.elf
 	$(PYTHON) $(ROOT)/tools/pack.py $(BUILD)/firmware.bin.temp $(BUILD)/firmware.bin
 	$(PYTHON) $(ROOT)/tools/pack_lzma.py $(BUILD)/firmware.bin.temp $(BUILD)/firmware.bin.lzma
 
+$(TARGET): $(BUILD)/firmware.bin.temp
+
 write: $(BUILD)/firmware.bin.temp
 	$(PYTHON) $(ROOT)/tools/upload.py --port /dev/ttyUSB0 --baud 921600 write_flash 0x80000 $(BUILD)/firmware.bin
 
@@ -119,4 +125,5 @@ writelzma: $(BUILD)/firmware.bin.temp
 	$(PYTHON) $(ROOT)/tools/upload.py --port /dev/ttyUSB0 --baud 921600 write_flash 0x80000 $(BUILD)/firmware.bin.lzma
 
 clean:
+	$(ECHO) $(shell basename $(CURDIR))
 	$(RM) -rf $(BUILD)/
