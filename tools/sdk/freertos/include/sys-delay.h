@@ -7,7 +7,6 @@ void sys_delay_us(int us);
 void sys_delay_ms(int ms);
 
 uint64_t timer_get_ticker();
-void timer0_set();
 unsigned long millis(void);
 unsigned long micros(void);
 void delay(unsigned long);

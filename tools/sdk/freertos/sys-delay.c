@@ -1,16 +1,9 @@
 #include "sys-delay.h"
 #include <F1C100S.h>
 #include <timer.h>
-// #include "soft-pwm.h"
 
 #include "FreeRTOS.h"
 #include "task.h"
-
-#define TICK_PER_SECOND 1000
-#define TICK_PER_MILLISECOND (TICK_PER_SECOND / 1000)
-#define MICROSECOND_PER_TICK (1000000 / TICK_PER_SECOND)
-
-static volatile uint64_t ticker = 0;
 
 /*
 408M ��ʱ1ms
@@ -55,7 +48,7 @@ unsigned long millis(void)
 
 unsigned long micros(void)
 {
-    return xTaskGetTickCount() * MICROSECOND_PER_TICK + (0xB71B00 - TIMER->TIME0.TIME_CUR_VALUE_REG) / 12;
+    return xTaskGetTickCount() * 1000 + (0xB71B00 - TIMER->TIME0.TIME_CUR_VALUE_REG) / 12;
 }
 
 void delay(unsigned long ms)

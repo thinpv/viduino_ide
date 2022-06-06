@@ -177,23 +177,8 @@ void vPortYieldProcessor( void )
 	{
 		/* Save the context of the interrupted task. */
 		portSAVE_CONTEXT();	
-
-		/* WARNING - Do not use local (stack) variables here.  Use globals
-					 if you must! */
-
-		if(INTC->INTC_PEND_REG0 & (1 << F1C100S_IRQ_TIMER0)) // TIMER0 IRQ number is 17
-		{
-			/* Increment the RTOS tick count, then look for the highest priority 
-			task that is ready to run. */
-			if( xTaskIncrementTick() != pdFALSE )
-			{
-				vTaskSwitchContext();
-			}
-			S_Bit(TIMER->TMR_IRQ_STA_REG, 0);
-		} else
-			irq_handle();
-		INTC->INTC_PEND_REG0 = 0;
-		// INTC->INTC_PEND_REG1 = 0;
+		
+		irq_handle();
 
 		/* Restore the context of the new task. */
 		portRESTORE_CONTEXT();

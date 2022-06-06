@@ -78,6 +78,7 @@
 /* Sdk includes. */
 #include "F1C100S.h"
 #include "irq.h"
+#include "timer.h"
 #include <io.h>
 
 /* Constants required to setup the initial task context. */
@@ -210,35 +211,23 @@ void vPortEndScheduler( void )
 	return back to main. */
 }
 /*-----------------------------------------------------------*/
-
-// /* Interrupt Handler */
-// void systemIrqHandler(UINT32 _mIPER, UINT32 _mISNR)
-// {		
-//     _mIPER = (_mIPER >> 2) & 0x3f;
-		
-//     if (_mISNR != 0)
-//         if (_mIPER == _mISNR)
-//             (*sysIrqHandlerTable[_mIPER])();
-		
-//     outpw(REG_AIC_EOSCR, 1);
-// }
-
-/*-----------------------------------------------------------*/
 extern void vPreemptiveTick( void );
 
-static void vTimerInterruptHandle(int arg)
+static void vTimerInterruptHandle()
 {
-	S_Bit(TIMER->TMR_IRQ_STA_REG, 0);
+	if( xTaskIncrementTick() != pdFALSE )
+	{
+		vTaskSwitchContext();
+	}
+	timer_irq_clear(TIMER0);
 }
 
 static void prvSetupTimerInterrupt( void )
 {
-	TIMER->TIME0.TIME_INTV_VALUE_REG = 0xB71B00 / 1000;
-	TIMER->TIME0.TIME_CTRL_REG &= 0xffffff00;
-	TIMER->TIME0.TIME_CTRL_REG |= (1 << 4) | (1 << 2);
-	TIMER->TIME0.TIME_CTRL_REG |= 1 << 0;
-	S_Bit(TIMER->TMR_IRQ_EN_REG, 0);
+	timer_set_prescale(TIMER0, TIMER_PRESCALE_2);
+	timer_set_interval(TIMER0, 12000000/configTICK_RATE_HZ);
 	irq_register(IRQ_LEVEL_1, F1C100S_IRQ_TIMER0, vTimerInterruptHandle, 3);
+	timer_irq_enbale(TIMER0);
 }
 
 /*-----------------------------------------------------------*/
