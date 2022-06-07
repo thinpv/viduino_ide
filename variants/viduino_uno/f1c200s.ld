@@ -21,10 +21,10 @@ SECTIONS
 	{
 		PROVIDE(__image_start = .);
 		PROVIDE(__text_start = .);
-    PROVIDE(__vectors_start = .);
-    *(.vectors);
-    . = ALIGN(4);
-    PROVIDE(__vectors_end = .);
+		PROVIDE(__vectors_start = .);
+		*(.vectors);
+		. = ALIGN(4);
+		PROVIDE(__vectors_end = .);
 		*(.text*)
 		*(.init.text)
 		*(.exit.text)

@@ -16,7 +16,7 @@ CP = cp
 MKDIR = mkdir
 SED = sed
 PYTHON = python3
-OS ?= nonos
+OS ?= freertos
 
 COMPILE			= /home/thinpv/.arduino15/packages/arduino/tools/arm-none-eabi-gcc/7-2017q4/bin/arm-none-eabi-
 CC				= $(COMPILE)gcc

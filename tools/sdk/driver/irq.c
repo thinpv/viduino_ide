@@ -265,6 +265,8 @@ int32_t irq_handle()
 	if (pos > 0)
 	{
 		(*irqHandlerTable[pos])();
+		// f1c100s_intc_clear_fast_forcing(pos);
+		// f1c100s_intc_clear_pend(pos);
 	}
 	return 0;
 }
@@ -289,27 +291,15 @@ void irq_init()
 	INTC->INTC_FF_REG1 = 0x00000000;
 }
 
-void arm32_do_irq()
-{
-	irq_handle();
-	// vPreemptiveTick();
-}
-
-void arm32_do_fiq()
-{
-	irq_handle();
-	// vPreemptiveTick();
-}
-
 void f1c100s_intc_mask_irq(uint8_t nIRQ)
 {
 	if (nIRQ > 31)
 	{
-		INTC->INTC_MASK_REG1 |= (1 << (nIRQ % 32));
+		S_Bit(INTC->INTC_MASK_REG1, nIRQ % 32);
 	}
 	else
 	{
-		INTC->INTC_MASK_REG0 |= (1 << (nIRQ % 32));
+		S_Bit(INTC->INTC_MASK_REG0, nIRQ % 32);
 	}
 }
 
@@ -317,11 +307,11 @@ void f1c100s_intc_unmask_irq(uint8_t nIRQ)
 {
 	if (nIRQ > 31)
 	{
-		INTC->INTC_MASK_REG1 &= ~(1 << (nIRQ % 32));
+		C_Bit(INTC->INTC_MASK_REG1, nIRQ % 32);
 	}
 	else
 	{
-		INTC->INTC_MASK_REG0 &= ~(1 << (nIRQ % 32));
+		C_Bit(INTC->INTC_MASK_REG0, nIRQ % 32);
 	}
 }
 
@@ -329,10 +319,26 @@ void f1c100s_intc_clear_pend(uint8_t nIRQ)
 {
 	if (nIRQ > 31)
 	{
-		INTC->INTC_PEND_REG1 = (1 << (nIRQ % 32));
+		S_Bit(INTC->INTC_PEND_REG1, nIRQ % 32);
+		// INTC->INTC_PEND_REG1 = (1 << (nIRQ % 32));
 	}
 	else
 	{
-		INTC->INTC_PEND_REG0 = (1 << (nIRQ % 32));
+		S_Bit(INTC->INTC_PEND_REG0, nIRQ % 32);
+		// INTC->INTC_PEND_REG0 = (1 << (nIRQ % 32));
+	}
+}
+
+void f1c100s_intc_clear_fast_forcing(uint8_t nIRQ)
+{
+	if (nIRQ > 31)
+	{
+		S_Bit(INTC->INTC_FF_REG1, nIRQ % 32);
+		// INTC->INTC_FF_REG1 = (1 << (nIRQ % 32));
+	}
+	else
+	{
+		S_Bit(INTC->INTC_FF_REG0, nIRQ % 32);
+		// INTC->INTC_FF_REG0 = (1 << (nIRQ % 32));
 	}
 }

@@ -1,71 +1,38 @@
 /*
-    FreeRTOS V9.0.0 - Copyright (C) 2016 Real Time Engineers Ltd.
-    All rights reserved
+ * FreeRTOS Kernel V10.4.3 LTS Patch 1
+ * Copyright (C) 2020 Amazon.com, Inc. or its affiliates.  All Rights Reserved.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of
+ * this software and associated documentation files (the "Software"), to deal in
+ * the Software without restriction, including without limitation the rights to
+ * use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+ * the Software, and to permit persons to whom the Software is furnished to do so,
+ * subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+ * FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+ * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+ * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+ * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ *
+ * https://www.FreeRTOS.org
+ * https://github.com/FreeRTOS
+ *
+ * 1 tab == 4 spaces!
+ */
 
-    VISIT http://www.FreeRTOS.org TO ENSURE YOU ARE USING THE LATEST VERSION.
 
-    This file is part of the FreeRTOS distribution.
-
-    FreeRTOS is free software; you can redistribute it and/or modify it under
-    the terms of the GNU General Public License (version 2) as published by the
-    Free Software Foundation >>>> AND MODIFIED BY <<<< the FreeRTOS exception.
-
-    ***************************************************************************
-    >>!   NOTE: The modification to the GPL is included to allow you to     !<<
-    >>!   distribute a combined work that includes FreeRTOS without being   !<<
-    >>!   obliged to provide the source code for proprietary components     !<<
-    >>!   outside of the FreeRTOS kernel.                                   !<<
-    ***************************************************************************
-
-    FreeRTOS is distributed in the hope that it will be useful, but WITHOUT ANY
-    WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
-    FOR A PARTICULAR PURPOSE.  Full license text is available on the following
-    link: http://www.freertos.org/a00114.html
-
-    ***************************************************************************
-     *                                                                       *
-     *    FreeRTOS provides completely free yet professionally developed,    *
-     *    robust, strictly quality controlled, supported, and cross          *
-     *    platform software that is more than just the market leader, it     *
-     *    is the industry's de facto standard.                               *
-     *                                                                       *
-     *    Help yourself get started quickly while simultaneously helping     *
-     *    to support the FreeRTOS project by purchasing a FreeRTOS           *
-     *    tutorial book, reference manual, or both:                          *
-     *    http://www.FreeRTOS.org/Documentation                              *
-     *                                                                       *
-    ***************************************************************************
-
-    http://www.FreeRTOS.org/FAQHelp.html - Having a problem?  Start by reading
-    the FAQ page "My application does not run, what could be wrong?".  Have you
-    defined configASSERT()?
-
-    http://www.FreeRTOS.org/support - In return for receiving this top quality
-    embedded software for free we request you assist our global community by
-    participating in the support forum.
-
-    http://www.FreeRTOS.org/training - Investing in training allows your team to
-    be as productive as possible as early as possible.  Now you can receive
-    FreeRTOS training directly from Richard Barry, CEO of Real Time Engineers
-    Ltd, and the world's leading authority on the world's leading RTOS.
-
-    http://www.FreeRTOS.org/plus - A selection of FreeRTOS ecosystem products,
-    including FreeRTOS+Trace - an indispensable productivity tool, a DOS
-    compatible FAT file system, and our tiny thread aware UDP/IP stack.
-
-    http://www.FreeRTOS.org/labs - Where new FreeRTOS products go to incubate.
-    Come and try FreeRTOS+TCP, our new open source TCP/IP stack for FreeRTOS.
-
-    http://www.OpenRTOS.com - Real Time Engineers ltd. license FreeRTOS to High
-    Integrity Systems ltd. to sell under the OpenRTOS brand.  Low cost OpenRTOS
-    licenses offer ticketed support, indemnification and commercial middleware.
-
-    http://www.SafeRTOS.com - High Integrity Systems also provide a safety
-    engineered and independently SIL3 certified version for use in safety and
-    mission critical applications that require provable dependability.
-
-    1 tab == 4 spaces!
-*/
+/*-----------------------------------------------------------
+ * Implementation of functions defined in portable.h for the ARM7 port.
+ *
+ * Components that can be compiled to either ARM or THUMB mode are
+ * contained in this file.  The ISR routines, which can only be compiled
+ * to ARM mode are contained in portISR.c.
+ *----------------------------------------------------------*/
 
 
 /* Standard includes. */
@@ -75,28 +42,11 @@
 #include "FreeRTOS.h"
 #include "task.h"
 
-/* Sdk includes. */
-#include "F1C100S.h"
-#include "irq.h"
-#include "timer.h"
-#include <io.h>
-
-/* Constants required to setup the initial task context. */
+/* Constants required to setup the task context. */
 #define portINITIAL_SPSR				( ( StackType_t ) 0x1f ) /* System mode, ARM mode, interrupts enabled. */
 #define portTHUMB_MODE_BIT				( ( StackType_t ) 0x20 )
 #define portINSTRUCTION_SIZE			( ( StackType_t ) 4 )
 #define portNO_CRITICAL_SECTION_NESTING	( ( StackType_t ) 0 )
-
-/*-----------------------------------------------------------*/
-
-/* The code generated by the Keil compiler does not maintain separate
-stack and frame pointers. The portENTER_CRITICAL macro cannot therefore
-use the stack as per other ports.  Instead a variable is used to keep
-track of the critical section nesting.  This variable has to be stored
-as part of the task context and must be initialised to a non zero value. */
-
-//#define portNO_CRITICAL_NESTING		( ( uint32_t ) 0 )
-extern volatile uint32_t ulCriticalNesting;// = 9999UL;
 
 /*-----------------------------------------------------------*/
 
@@ -105,30 +55,30 @@ static void prvSetupTimerInterrupt( void );
 
 /* 
  * The scheduler can only be started from ARM mode, so 
- * vPortStartFirstSTask() is defined in portISR.c. 
+ * vPortISRStartFirstSTask() is defined in portISR.c. 
  */
-//extern __asm void vPortStartFirstTask( void );
-//extern void vPortStartFirstTask( void );
-#define vPortStartFirstTask portRESTORE_CONTEXT
+extern void vPortISRStartFirstTask( void );
+
 /*-----------------------------------------------------------*/
 
 /* 
+ * Initialise the stack of a task to look exactly as if a call to 
+ * portSAVE_CONTEXT had been called.
+ *
  * See header file for description. 
  */
 StackType_t *pxPortInitialiseStack( StackType_t *pxTopOfStack, TaskFunction_t pxCode, void *pvParameters )
 {
 StackType_t *pxOriginalTOS;
 
-	/* Setup the initial stack of the task.  The stack is set exactly as 
-	expected by the portRESTORE_CONTEXT() macro.
-
-	Remember where the top of the (simulated) stack is before we place 
-	anything on it. */
 	pxOriginalTOS = pxTopOfStack;
 	
 	/* To ensure asserts in tasks.c don't fail, although in this case the assert
 	is not really required. */
 	pxTopOfStack--;
+
+	/* Setup the initial stack of the task.  The stack is set exactly as 
+	expected by the portRESTORE_CONTEXT() macro. */
 
 	/* First on the stack is the return address - which in this case is the
 	start of the task.  The offset is added to make the return address appear
@@ -136,7 +86,7 @@ StackType_t *pxOriginalTOS;
 	*pxTopOfStack = ( StackType_t ) pxCode + portINSTRUCTION_SIZE;		
 	pxTopOfStack--;
 
-	*pxTopOfStack = ( StackType_t ) 0xaaaaaaaa;	/* R14 */
+	*pxTopOfStack = ( StackType_t ) 0x00000000;	/* R14 */
 	pxTopOfStack--;	
 	*pxTopOfStack = ( StackType_t ) pxOriginalTOS; /* Stack used when task starts goes in R13. */
 	pxTopOfStack--;
@@ -164,6 +114,9 @@ StackType_t *pxOriginalTOS;
 	pxTopOfStack--;	
 	*pxTopOfStack = ( StackType_t ) 0x01010101;	/* R1 */
 	pxTopOfStack--;	
+
+	/* When the task starts is will expect to find the function parameter in
+	R0. */
 	*pxTopOfStack = ( StackType_t ) pvParameters; /* R0 */
 	pxTopOfStack--;
 
@@ -171,7 +124,7 @@ StackType_t *pxOriginalTOS;
 	system mode, with interrupts enabled. */
 	*pxTopOfStack = ( StackType_t ) portINITIAL_SPSR;
 
-	if( ( ( uint32_t ) pxCode & 0x01UL ) != 0x00UL )
+	if( ( ( uint32_t ) pxCode & 0x01UL ) != 0x00 )
 	{
 		/* We want the task to start in thumb mode. */
 		*pxTopOfStack |= portTHUMB_MODE_BIT;
@@ -179,11 +132,10 @@ StackType_t *pxOriginalTOS;
 
 	pxTopOfStack--;
 
-	/* The code generated by the Keil compiler does not maintain separate
-	stack and frame pointers. The portENTER_CRITICAL macro cannot therefore
-	use the stack as per other ports.  Instead a variable is used to keep
-	track of the critical section nesting.  This variable has to be stored
-	as part of the task context and is initially set to zero. */
+	/* Some optimisation levels use the stack differently to others.  This 
+	means the interrupt flags cannot always be stored on the stack and will
+	instead be stored in a variable, which is then saved as part of the
+	tasks context. */
 	*pxTopOfStack = portNO_CRITICAL_SECTION_NESTING;
 
 	return pxTopOfStack;
@@ -192,12 +144,12 @@ StackType_t *pxOriginalTOS;
 
 BaseType_t xPortStartScheduler( void )
 {
-	/* Start the timer that generates the tick ISR. */
+	/* Start the timer that generates the tick ISR.  Interrupts are disabled
+	here already. */
 	prvSetupTimerInterrupt();
 
-	/* Start the first task.  This is done from portISR.c as ARM mode must be
-	used. */
-	vPortStartFirstTask();
+	/* Start the first task. */
+	vPortISRStartFirstTask();	
 
 	/* Should not get here! */
 	return 0;
@@ -207,11 +159,16 @@ BaseType_t xPortStartScheduler( void )
 void vPortEndScheduler( void )
 {
 	/* It is unlikely that the ARM port will require this function as there
-	is nothing to return to.  If this is required - stop the tick ISR then
-	return back to main. */
+	is nothing to return to.  */
 }
 /*-----------------------------------------------------------*/
-extern void vPreemptiveTick( void );
+
+/*
+ * Setup the timer 1 to generate the tick interrupts at the required frequency.
+ */
+/*note: this freertos portable refer to ARM7_LPC23xx of official by Aysi*/
+#include "timer.h"
+#include "irq.h"
 
 static void vTimerInterruptHandle()
 {
@@ -222,14 +179,14 @@ static void vTimerInterruptHandle()
 	timer_irq_clear(TIMER0);
 }
 
-static void prvSetupTimerInterrupt( void )
+static void prvSetupTimerInterrupt(void)
 {
 	timer_set_prescale(TIMER0, TIMER_PRESCALE_2);
 	timer_set_interval(TIMER0, 12000000/configTICK_RATE_HZ);
 	irq_register(IRQ_LEVEL_1, F1C100S_IRQ_TIMER0, vTimerInterruptHandle, 3);
 	timer_irq_enbale(TIMER0);
 }
-
 /*-----------------------------------------------------------*/
+
 
 

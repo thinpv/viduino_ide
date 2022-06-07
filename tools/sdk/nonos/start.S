@@ -170,15 +170,12 @@ not_used:
 irq:
 	sub lr, lr, #4
 	save_regs
-	bl arm32_do_irq
+	bl irq_handle
 	restore_regs
 
 	.align 5
 fiq:
-	sub lr, lr, #4
-	save_regs
-	bl arm32_do_fiq
-	restore_regs
+	b .
 
 /*
  * The location of section

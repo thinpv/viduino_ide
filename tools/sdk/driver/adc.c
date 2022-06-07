@@ -1,5 +1,6 @@
 #include "adc.h"
 #include <F1C100S.h>
+#include <io.h>
 
 #define DEBUG( ... ) // printf(##__VA_ARGS__)
 

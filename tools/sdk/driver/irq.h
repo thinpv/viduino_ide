@@ -122,6 +122,7 @@ extern "C"
 	void f1c100s_intc_mask_irq(uint8_t nIRQ);
 	void f1c100s_intc_unmask_irq(uint8_t nIRQ);
 	void f1c100s_intc_clear_pend(uint8_t nIRQ);
+	void f1c100s_intc_clear_fast_forcing(uint8_t nIRQ);
 
 #ifdef __cplusplus
 }
