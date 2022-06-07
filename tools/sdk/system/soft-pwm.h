@@ -18,7 +18,7 @@ typedef struct _softpwm_node_t
 } softpwm_node_t;
 
 void softpwm_add(GPIO_Type *gpio, uint16_t pin, uint32_t duty);
-void softpwm_remove(GPIO_Type *gpio, uint16_t pin);
+bool softpwm_remove(GPIO_Type *gpio, uint16_t pin);
 void softpwm_update(void);
 
 #ifdef __cplusplus

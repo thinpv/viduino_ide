@@ -33,7 +33,7 @@ void softpwm_add(GPIO_Type *gpio, uint16_t pin, uint32_t duty)
 	}
 }
 
-void softpwm_remove(GPIO_Type *gpio, uint16_t pin)
+bool softpwm_remove(GPIO_Type *gpio, uint16_t pin)
 {
 	softpwm_node_t *current = first;
 	softpwm_node_t *previous = NULL;

@@ -173,9 +173,7 @@ void vPortEndScheduler( void )
 static void vTimerInterruptHandle()
 {
 	if( xTaskIncrementTick() != pdFALSE )
-	{
 		vTaskSwitchContext();
-	}
 	timer_irq_clear(TIMER0);
 }
 

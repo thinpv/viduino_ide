@@ -767,7 +767,7 @@ int sdc_switch_to_high_speed(SDC_Type *sdc, mmc_cmd_st *cmd)
 int sdc_select_sdcard(SDC_Type *sdc, mmc_cmd_st *cmd, char CARD_WIDTH)
 {
 	mmc_data_st data;
-	int volatile status = FALSE, i;
+	int volatile status = FALSE;
 	DEBUG("SelectCard...\r\n");
 	// CMD7, put the SD card into the Transfer state
 	if ((status = sdc_transfer_cmd(sdc, cmd, NULL, 7, CARD_uRCA, MMC_RSP_PRESENT | MMC_RSP_CRC)) != TRUE)

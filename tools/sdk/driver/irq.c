@@ -261,12 +261,12 @@ void irq_register(int32_t nIntTypeLevel, int32_t eIntNo, sys_pvFunPtr pvNewISR, 
 
 int32_t irq_handle()
 {
-	uint32_t pos = (INTC->INTC_VECTOR_REG >> 2) & 0x3f;
+	uint32_t pos = ((INTC->INTC_VECTOR_REG - INTC->INTC_BASE_ADDR_REG) >> 2) & 0x3f;
 	if (pos > 0)
 	{
 		(*irqHandlerTable[pos])();
 		// f1c100s_intc_clear_fast_forcing(pos);
-		// f1c100s_intc_clear_pend(pos);
+		f1c100s_intc_clear_pend(pos);
 	}
 	return 0;
 }
@@ -319,12 +319,12 @@ void f1c100s_intc_clear_pend(uint8_t nIRQ)
 {
 	if (nIRQ > 31)
 	{
-		S_Bit(INTC->INTC_PEND_REG1, nIRQ % 32);
+		C_Bit(INTC->INTC_PEND_REG1, nIRQ % 32);
 		// INTC->INTC_PEND_REG1 = (1 << (nIRQ % 32));
 	}
 	else
 	{
-		S_Bit(INTC->INTC_PEND_REG0, nIRQ % 32);
+		C_Bit(INTC->INTC_PEND_REG0, nIRQ % 32);
 		// INTC->INTC_PEND_REG0 = (1 << (nIRQ % 32));
 	}
 }
