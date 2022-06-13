@@ -211,7 +211,7 @@ void irq_register(int32_t nIntTypeLevel, int32_t eIntNo, sys_pvFunPtr pvNewISR, 
 	default:;
 	}
 
-	arm32_interrupt_disable();
+	// arm32_interrupt_disable();
 	if (eIntNo > 63)
 	{
 		DEBUG("irq number too large");
@@ -256,7 +256,7 @@ void irq_register(int32_t nIntTypeLevel, int32_t eIntNo, sys_pvFunPtr pvNewISR, 
 		C_Bit(INTC->INTC_MASK_REG0, en);
 		S_Bit(INTC->INTC_EN_REG0, en); // Write interrupt enable
 	}
-	arm32_interrupt_enable();
+	// arm32_interrupt_enable();
 }
 
 int32_t irq_handle()

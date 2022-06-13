@@ -15,6 +15,7 @@ extern void loop();
 static void arduinoThread(void *pvParameters)
 {
 	( void ) pvParameters;
+	delay(10);
 	// init();
 	setup();
 	for (;;)
@@ -25,21 +26,18 @@ static void arduinoThread(void *pvParameters)
 
 int boot_main(int argc, char **argv)
 {
-	// sys_print_init();
-	// printf("boot_main\r\n");
 	do_init_mem_pool();
 	sys_init();
 	irq_init();
 
 	xTaskCreate(arduinoThread, "arduino", 1024, NULL, 3, NULL);
-	// xTaskCreate(arduinoThread, "arduino", 1024, NULL, tskIDLE_PRIORITY + 2, NULL);
 	vTaskStartScheduler();
 	return 0;
 }
 
 void __fatal_error(const char *msg)
 {
-	printf(msg);
+	// printf(msg);
 	while (1)
 	{
 	}

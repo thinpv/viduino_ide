@@ -2,6 +2,7 @@
 #include <sys-init.h>
 #include <sys-delay.h>
 #include <irq.h>
+#include <arm32.h>
 
 void init(){}
 extern void setup();
@@ -13,6 +14,7 @@ int boot_main(int argc, char **argv)
 	sys_init();
 	irq_init();
 	timer0_set();
+	arm32_interrupt_enable();
 
 	init();
 	setup();

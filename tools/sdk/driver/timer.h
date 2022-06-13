@@ -22,7 +22,7 @@ extern "C"
 #define TIMER_PRESCALE_64 6
 #define TIMER_PRESCALE_128 7
 
-	void timer_irq_enbale(Timer_Type *timer);
+	void timer_irq_enable(Timer_Type *timer);
 	void timer_irq_clear(Timer_Type *timer);
 	void timer_set_mode(Timer_Type *timer, uint8_t mode);
 	void timer_set_prescale(Timer_Type *timer, uint8_t mode);

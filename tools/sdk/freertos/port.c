@@ -182,7 +182,8 @@ static void prvSetupTimerInterrupt(void)
 	timer_set_prescale(TIMER0, TIMER_PRESCALE_2);
 	timer_set_interval(TIMER0, 12000000/configTICK_RATE_HZ);
 	irq_register(IRQ_LEVEL_1, F1C100S_IRQ_TIMER0, vTimerInterruptHandle, 3);
-	timer_irq_enbale(TIMER0);
+	timer_irq_enable(TIMER0);
+	timer_enable(TIMER0);
 }
 /*-----------------------------------------------------------*/
 

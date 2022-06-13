@@ -3,7 +3,7 @@
 
 #define DEBUG( ... ) // printf(##__VA_ARGS__)
 
-void timer_irq_enbale(Timer_Type *timer)
+void timer_irq_enable(Timer_Type *timer)
 {
 	switch ((uint32_t)timer)
 	{
