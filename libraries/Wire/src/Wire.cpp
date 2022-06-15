@@ -392,6 +392,6 @@ void TwoWire::scan(Print &print, int start, int end)
 	print.println("I2C scan done");
 }
 
-TwoWire Wire(&I2C_Desc[0]);
+TwoWire Wire(&I2C_Desc[1]);
 TwoWire Wire1(&I2C_Desc[2]);
 TwoWire Wire2(&I2C_Desc[3]);

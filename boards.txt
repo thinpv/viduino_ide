@@ -24,7 +24,7 @@ menu.OS=OS
 vuno32.menu.OS.Non=non os
 vuno32.menu.OS.Non.OS=NON_OS
 vuno32.menu.OS.freertos=freertos
-vuno32.menu.OS.freertos.OS=FREERTOS_OS
+vuno32.menu.OS.freertos.OS=FREERTOS
 
 ## CPU Clock
 vuno32.menu.clksrc.400=400MHz CPU Clock Frequency
@@ -98,7 +98,7 @@ menu.OS=OS
 vuno64.menu.OS.Non=non os
 vuno64.menu.OS.Non.OS=NON_OS
 vuno64.menu.OS.freertos=freertos
-vuno64.menu.OS.freertos.OS=FREERTOS_OS
+vuno64.menu.OS.freertos.OS=FREERTOS
 
 ## CPU Clock
 vuno64.menu.clksrc.400=400MHz CPU Clock Frequency

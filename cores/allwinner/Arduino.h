@@ -57,7 +57,7 @@ extern "C"
 #include "Uart.h"
 // #include "Wire.h"
 
-#ifdef FREERTOS_OS
+#ifdef FREERTOS
 #include "FreeRTOS.h"
 #include "task.h"
 #endif
