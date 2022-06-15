@@ -1,6 +1,6 @@
 #include "Mp3Player.h"
 #include "audio_file.h"
-#include "sys-delay.h"
+#include "sys_delay.h"
 
 extern "C" void setup();
 extern "C" void loop();

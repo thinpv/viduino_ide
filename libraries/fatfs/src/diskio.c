@@ -3,9 +3,9 @@
 // #include "sys_sd.h"
 #include <stdlib.h>
 #include <string.h>
-#include <sys-print.h>
+#include <sys_print.h>
 // #include "usb_Mass_storage.h"
-#include <sys-spi-flash.h>
+#include <sys_spi_flash.h>
 #include <sdc.h>
 
 #define SECTOR_SIZE 512

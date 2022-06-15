@@ -1,6 +1,6 @@
 #include <malloc.h>
-#include <sys-init.h>
-#include <sys-delay.h>
+#include <sys_init.h>
+#include <sys_delay.h>
 #include <irq.h>
 #include <arm32.h>
 

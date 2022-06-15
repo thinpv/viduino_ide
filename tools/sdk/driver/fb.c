@@ -6,7 +6,7 @@
 #include <ccu.h>
 #include <debe.h>
 
-#include <sys-delay.h>
+#include <sys_delay.h>
 
 #define DEBUG( ... ) // printf(##__VA_ARGS__)
 

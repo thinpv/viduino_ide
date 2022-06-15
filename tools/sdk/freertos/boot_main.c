@@ -1,22 +1,18 @@
 #include <irq.h>
-#include <sys-print.h>
+#include <sys_print.h>
+#include <sys_init.h>
 #include <printf.h>
 #include <malloc.h>
 
 #include "FreeRTOS.h"
 #include "task.h"
 
-extern void sys_init(void);
 extern void setup();
 extern void loop();
-
-// void init() {}
 
 static void arduinoThread(void *pvParameters)
 {
 	( void ) pvParameters;
-	// delay(100);
-	// init();
 	setup();
 	for (;;)
 	{

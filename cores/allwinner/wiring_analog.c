@@ -24,7 +24,7 @@ extern "C"
 #endif
 
 #include <pwm.h>
-#include <soft-pwm.h>
+#include <soft_pwm.h>
 
 	int analogRead(pin_size_t pinNumber)
 	{

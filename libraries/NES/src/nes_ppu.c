@@ -1,6 +1,6 @@
 #include "nes_ppu.h"
 #include "string.h"
-#include "sys-print.h"
+#include "sys_print.h"
 #include "nes_main.h"
 #include <fb.h>
 #include <io.h>

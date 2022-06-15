@@ -1,7 +1,7 @@
 #include <fb.h>
 #include <lvgl.h>
 #include "src/lv_demo_benchmark.h"
-#include <sys-print.h>
+#include <sys_print.h>
 
 static lv_disp_buf_t disp_buf;
 static lv_color_t buf[LV_HOR_RES_MAX * 10];

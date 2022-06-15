@@ -1,7 +1,6 @@
-#include "sys-delay.h"
+#include "sys_delay.h"
 #include <F1C100S.h>
 #include <timer.h>
-// #include "soft-pwm.h"
 
 #define TICK_PER_SECOND 1000
 #define TICK_PER_MILLISECOND (TICK_PER_SECOND / 1000)

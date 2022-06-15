@@ -1,5 +1,5 @@
 #include <fb.h>
-#include <sys-delay.h>
+#include <sys_delay.h>
 #include <jpeg.h>
 #include <printf.h>
 #include "flower.h"

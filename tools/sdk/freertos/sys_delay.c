@@ -1,4 +1,4 @@
-#include "sys-delay.h"
+#include "sys_delay.h"
 #include <F1C100S.h>
 #include <timer.h>
 

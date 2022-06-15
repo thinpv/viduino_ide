@@ -1,4 +1,4 @@
-#include "soft-pwm.h"
+#include "soft_pwm.h"
 #include <malloc.h>
 
 static softpwm_node_t *first = NULL;

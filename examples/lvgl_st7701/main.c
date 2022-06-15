@@ -1,7 +1,7 @@
 #include <fb.h>
 #include <lvgl.h>
 #include "src/lv_demo_music.h"
-#include <sys-print.h>
+#include <sys_print.h>
 #include "st7701.h"
 
 static lv_disp_buf_t disp_buf;
