@@ -129,7 +129,9 @@ sys_pvFunPtr fiqHandlerTable[] = {
 void irq_enable(int32_t eIntNo)
 {
 	int en;
-	// arm32_interrupt_disable();
+#ifndef FREERTOS
+	arm32_interrupt_disable();
+#endif
 	if (eIntNo > 63)
 	{
 		DEBUG("irq number too large");
@@ -154,13 +156,17 @@ void irq_enable(int32_t eIntNo)
 		en = eIntNo - 0;
 		S_Bit(INTC->INTC_EN_REG0, en); // Write interrupt enable
 	}
-	// arm32_interrupt_enable();
+#ifndef FREERTOS
+	arm32_interrupt_enable();
+#endif
 }
 
 void irq_disable(int32_t eIntNo)
 {
 	int en;
-	// arm32_interrupt_disable();
+#ifndef FREERTOS
+	arm32_interrupt_disable();
+#endif
 	if (eIntNo > 63)
 	{
 		DEBUG("irq number too large");
@@ -185,7 +191,9 @@ void irq_disable(int32_t eIntNo)
 		en = eIntNo - 0;
 		C_Bit(INTC->INTC_EN_REG0, en); // Write interrupt enable
 	}
-	// arm32_interrupt_enable();
+#ifndef FREERTOS
+	arm32_interrupt_enable();
+#endif
 }
 
 void irq_register(int32_t nIntTypeLevel, int32_t eIntNo, sys_pvFunPtr pvNewISR, uint8_t Priority)
@@ -211,7 +219,9 @@ void irq_register(int32_t nIntTypeLevel, int32_t eIntNo, sys_pvFunPtr pvNewISR, 
 	default:;
 	}
 
-	// arm32_interrupt_disable();
+#ifndef FREERTOS
+	arm32_interrupt_disable();
+#endif
 	if (eIntNo > 63)
 	{
 		DEBUG("irq number too large");
@@ -256,7 +266,9 @@ void irq_register(int32_t nIntTypeLevel, int32_t eIntNo, sys_pvFunPtr pvNewISR, 
 		C_Bit(INTC->INTC_MASK_REG0, en);
 		S_Bit(INTC->INTC_EN_REG0, en); // Write interrupt enable
 	}
-	// arm32_interrupt_enable();
+#ifndef FREERTOS
+	arm32_interrupt_enable();
+#endif
 }
 
 int32_t irq_handle()

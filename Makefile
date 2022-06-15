@@ -30,11 +30,16 @@ OBJDUMP			= $(COMPILE)objdump
 SIZE			= $(COMPILE)size
 
 DEFINES			+= -D__ARM32_ARCH__=5 -D__ARM926EJS__ -D__ARM32__ -DARM -Wno-unused-function
+ifeq ($(OS), freertos)
+DEFINES			+= -DFREERTOS
+else
+DEFINES			+= -DNONOS
+endif
 
 ASFLAGS			:= -g -ggdb -Wall -O3
 CFLAGS			:= -g -ggdb -Wall -O3
 CPFLAGS			:= -g -ggdb -Wall -O3
-LDFLAGS			:= -T $(ROOT)/variants/viduino_uno/f1c100s.ld -nostdlib
+LDFLAGS			:= -T $(ROOT)/variants/viduino_uno/f1c200s.ld -nostdlib
 MCFLAGS			:= -march=armv5te -mtune=arm926ej-s -mfloat-abi=soft -marm -specs=nosys.specs -mno-thumb-interwork
 
 ASFLAGS			+=	-ffunction-sections -fdata-sections -ffreestanding -std=gnu11 $(DEFINES)

@@ -15,7 +15,7 @@ extern void loop();
 static void arduinoThread(void *pvParameters)
 {
 	( void ) pvParameters;
-	delay(100);
+	// delay(100);
 	// init();
 	setup();
 	for (;;)
