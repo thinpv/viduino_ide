@@ -1,7 +1,7 @@
-#ifndef __KEY_BOARD_H_
-#define __KEY_BOARD_H_
+#ifndef __MP3_PLAYER_H_
+#define __MP3_PLAYER_H_
 
-#include "usb_keyboard.h"
+#include "types.h"
 
 #ifdef __cplusplus
 class Mp3Player

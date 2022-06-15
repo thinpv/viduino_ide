@@ -17,6 +17,7 @@ MKDIR = mkdir
 SED = sed
 PYTHON = python3
 OS ?= freertos
+ARDUINO = cores/allwinner
 
 COMPILE			= /home/thinpv/.arduino15/packages/arduino/tools/arm-none-eabi-gcc/7-2017q4/bin/arm-none-eabi-
 CC				= $(COMPILE)gcc
@@ -28,7 +29,7 @@ OBJCOPY			= $(COMPILE)objcopy
 OBJDUMP			= $(COMPILE)objdump
 SIZE			= $(COMPILE)size
 
-DEFINES			+= -D__ARM32_ARCH__=5 -D__ARM926EJS__ -D__ARM32__ -Wno-unused-function
+DEFINES			+= -D__ARM32_ARCH__=5 -D__ARM926EJS__ -D__ARM32__ -DARM -Wno-unused-function
 
 ASFLAGS			:= -g -ggdb -Wall -O3
 CFLAGS			:= -g -ggdb -Wall -O3
@@ -57,6 +58,14 @@ SRCDIRS			+= $(MACHINE)
 SRCDIRS			+= $(SYSTEM)
 SRCDIRS			+= $(UTIL)
 
+# ************************** ARDUINO **************************
+INCDIRS			+= $(ARDUINO)
+INCDIRS			+= $(ARDUINO)/api
+INCDIRS			+= variants/viduino_uno
+
+SRCDIRS			+= $(ARDUINO)
+SRCDIRS			+= $(ARDUINO)/api
+
 # ************************** USER **************************
 
 ifeq ($(MAKECMDGOALS), )
@@ -68,6 +77,9 @@ else
 include examples/$(MAKECMDGOALS)/component.mk
 TARGET = $(MAKECMDGOALS)
 endif
+
+INCDIRS			+= examples/$(MAKECMDGOALS)
+SRCDIRS			+= examples/$(MAKECMDGOALS)
 
 # ************************** LIBRARIES **************************
 
@@ -91,7 +103,7 @@ ALLOBJ 			= $(SRCOBJS) $(DRIVEROBJS)
 ALLOBJ_DIRS 	= $(sort $(dir $(ALLOBJ)))
 
 all:
-	$(ECHO) "user make <target>"
+	$(ECHO) "user make <example>"
 
 $(TARGET): $(BUILD)/firmware.bin.temp
 

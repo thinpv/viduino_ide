@@ -25,9 +25,10 @@ void setup()
 			printf("found i2c addr 0x%02X\r\n", i);
 		}
 	}
+	gpio_set_dir(GPIOA, 0, GPIO_DIRECTION_OUTPUT);
+	gpio_set_value(GPIOA, 0, ~gpio_get_value(GPIOA, 0));
 }
 
 void loop()
 {
-  
 }

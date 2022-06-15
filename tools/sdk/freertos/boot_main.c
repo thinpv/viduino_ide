@@ -15,7 +15,7 @@ extern void loop();
 static void arduinoThread(void *pvParameters)
 {
 	( void ) pvParameters;
-	delay(10);
+	delay(100);
 	// init();
 	setup();
 	for (;;)
@@ -51,7 +51,5 @@ void __assert_func(const char *file, int line, const char *func, const char *exp
 }
 #endif
 
-void __aeabi_dcmpun()
-{
-}
+void __aeabi_dcmpun() {}
 void __aeabi_fcmpun() {}
