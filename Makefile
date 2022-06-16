@@ -39,7 +39,7 @@ endif
 ASFLAGS			:= -g -ggdb -Wall -O3
 CFLAGS			:= -g -ggdb -Wall -O3
 CPFLAGS			:= -g -ggdb -Wall -O3
-LDFLAGS			:= -T $(ROOT)/variants/viduino_uno/f1c200s.ld -nostdlib
+LDFLAGS			:= -T $(ROOT)/variants/viduino_uno/f1c100s.ld -nostdlib
 MCFLAGS			:= -march=armv5te -mtune=arm926ej-s -mfloat-abi=soft -marm -specs=nosys.specs -mno-thumb-interwork
 
 ASFLAGS			+=	-ffunction-sections -fdata-sections -ffreestanding -std=gnu11 $(DEFINES)
