@@ -25,29 +25,26 @@ extern "C"
 
     extern void pinMode(pin_size_t pinNumber, uint8_t pinMode)
     {
-        GPIOPinDescription *gpio = &GPIO_Desc[pinNumber];
-        if (gpio->port == NULL)
-            return;
         switch (pinMode)
         {
         case INPUT:
-            gpio_set_dir(gpio->port, gpio->pin, GPIO_DIRECTION_INPUT);
-            gpio_set_pull(gpio->port, gpio->pin, GPIO_PULL_NONE);
+            gpio_set_dir_pn(pinNumber, GPIO_DIRECTION_INPUT);
+            gpio_set_pull_pn(pinNumber, GPIO_PULL_NONE);
             break;
 
         case OUTPUT:
-            gpio_set_dir(gpio->port, gpio->pin, GPIO_DIRECTION_OUTPUT);
-            gpio_set_pull(gpio->port, gpio->pin, GPIO_PULL_NONE);
+            gpio_set_dir_pn(pinNumber, GPIO_DIRECTION_OUTPUT);
+            gpio_set_pull_pn(pinNumber, GPIO_PULL_NONE);
             break;
 
         case INPUT_PULLUP:
-            gpio_set_dir(gpio->port, gpio->pin, GPIO_DIRECTION_INPUT);
-            gpio_set_pull(gpio->port, gpio->pin, GPIO_PULL_UP);
+            gpio_set_dir_pn(pinNumber, GPIO_DIRECTION_INPUT);
+            gpio_set_pull_pn(pinNumber, GPIO_PULL_UP);
             break;
 
         case INPUT_PULLDOWN:
-            gpio_set_dir(gpio->port, gpio->pin, GPIO_DIRECTION_INPUT);
-            gpio_set_pull(gpio->port, gpio->pin, GPIO_PULL_DOWN);
+            gpio_set_dir_pn(pinNumber, GPIO_DIRECTION_INPUT);
+            gpio_set_pull_pn(pinNumber, GPIO_PULL_DOWN);
             break;
 
         default:
@@ -57,17 +54,14 @@ extern "C"
 
     extern void digitalWrite(pin_size_t pinNumber, uint8_t status)
     {
-        GPIOPinDescription *gpio = &GPIO_Desc[pinNumber];
-        if (gpio->port == NULL)
-            return;
         switch (status)
         {
         case LOW:
-            gpio_set_value(gpio->port, gpio->pin, 0);
+            gpio_set_value_pn(pinNumber, 0);
             break;
 
         case HIGH:
-            gpio_set_value(gpio->port, gpio->pin, 1);
+            gpio_set_value_pn(pinNumber, 1);
             break;
 
         default:
@@ -77,32 +71,33 @@ extern "C"
 
     extern int digitalRead(pin_size_t pinNumber)
     {
-        GPIOPinDescription *gpio = &GPIO_Desc[pinNumber];
-        if (gpio->port == NULL)
-            return 0xff;
-        return gpio_get_value(gpio->port, gpio->pin);
+        return gpio_get_value_pn(pinNumber);
     }
 
-    void attachInterrupt(pin_size_t interruptNumber, voidFuncPtr callback, uint8_t mode)
+    void attachInterrupt(pin_size_t pinNumber, voidFuncPtr callback, uint8_t mode)
     {
-        GPIOPinDescription *gpio = &GPIO_Desc[interruptNumber];
-        if (gpio->port == GPIOD)
-        {
-            gpio_set_cfg(gpio->port, gpio->pin, GPIO_FUNC_110);
-            irq_gpio_settype(GPIOD_INT, gpio->pin, mode, callback);
-            irq_gpio_enable(GPIOD_INT, gpio->pin);
-        }
-        else if (gpio->port == GPIOE)
-        {
-            gpio_set_cfg(gpio->port, gpio->pin, GPIO_FUNC_110);
-            irq_gpio_settype(GPIOE_INT, gpio->pin, mode, callback);
-            irq_gpio_enable(GPIOE_INT, gpio->pin);
-        }
-        else if (gpio->port == GPIOF)
-        {
-            gpio_set_cfg(gpio->port, gpio->pin, GPIO_FUNC_110);
-            irq_gpio_settype(GPIOF_INT, gpio->pin, mode, callback);
-            irq_gpio_enable(GPIOF_INT, gpio->pin);
+        // GPIOPinDescription *gpio = &GPIO_Desc[interruptNumber];
+        GPIO_Type *gpio;
+	    uint16_t pin;
+        if(pin_to_port(pinNumber, &gpio, &pin) == 0) {
+            if (gpio == GPIOD)
+            {
+                gpio_set_cfg_pn(pinNumber, GPIO_FUNC_110);
+                irq_gpio_settype(GPIOD_INT, pin, mode, callback);
+                irq_gpio_enable(GPIOD_INT, pin);
+            }
+            else if (gpio == GPIOE)
+            {
+                gpio_set_cfg_pn(pinNumber, GPIO_FUNC_110);
+                irq_gpio_settype(GPIOE_INT, pin, mode, callback);
+                irq_gpio_enable(GPIOE_INT, pin);
+            }
+            else if (gpio == GPIOF)
+            {
+                gpio_set_cfg_pn(pinNumber, GPIO_FUNC_110);
+                irq_gpio_settype(GPIOF_INT, pin, mode, callback);
+                irq_gpio_enable(GPIOF_INT, pin);
+            }
         }
     }
 

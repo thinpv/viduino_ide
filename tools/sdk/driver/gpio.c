@@ -119,3 +119,157 @@ uint16_t gpio_to_irq(GPIO_Type *gpio, uint16_t pin)
 	// return port->oirq + pin;
 	return 0xFF;
 }
+
+uint8_t pin_to_port(uint16_t pin_num, GPIO_Type **gpio, uint16_t *pin)
+{
+	switch (pin_num >> 5)
+	{
+	case 0:
+		*gpio = GPIOA;
+		*pin = pin_num & 0x1F;
+		return 0;
+	
+	case 1:
+		*gpio = GPIOB;
+		*pin = pin_num & 0x1F;
+		return 0;
+	
+	case 2:
+		*gpio = GPIOC;
+		*pin = pin_num & 0x1F;
+		return 0;
+	
+	case 3:
+		*gpio = GPIOD;
+		*pin = pin_num & 0x1F;
+		return 0;
+	
+	case 4:
+		*gpio = GPIOE;
+		*pin = pin_num & 0x1F;
+		return 0;
+	
+	case 5:
+		*gpio = GPIOF;
+		*pin = pin_num & 0x1F;
+		return 0;
+
+	default:
+		return 1;
+	}
+	return 1;
+}
+
+void gpio_set_cfg_pn(uint16_t pin_num, uint16_t cfg)
+{
+	GPIO_Type *gpio;
+	uint16_t pin;
+	if(pin_to_port(pin_num, &gpio, &pin) == 0) {
+		return gpio_set_cfg(gpio, pin, cfg);
+	}
+}
+
+uint16_t gpio_get_cfg_pn(uint16_t pin_num)
+{
+	GPIO_Type *gpio;
+	uint16_t pin;
+	if(pin_to_port(pin_num, &gpio, &pin) == 0) {
+		return gpio_get_cfg(gpio, pin);
+	}
+	return 0xFF;
+}
+
+void gpio_set_pull_pn(uint16_t pin_num, gpio_pull_t pull)
+{
+	GPIO_Type *gpio;
+	uint16_t pin;
+	if(pin_to_port(pin_num, &gpio, &pin) == 0) {
+		return gpio_set_pull(gpio, pin, pull);
+	}
+}
+
+gpio_pull_t gpio_get_pull_pn(uint16_t pin_num)
+{
+	GPIO_Type *gpio;
+	uint16_t pin;
+	if(pin_to_port(pin_num, &gpio, &pin) == 0) {
+		return gpio_get_pull(gpio, pin);
+	}
+	return GPIO_PULL_NONE;
+}
+
+void gpio_set_drv_pn(uint16_t pin_num, gpio_drv_t drv)
+{
+	GPIO_Type *gpio;
+	uint16_t pin;
+	if(pin_to_port(pin_num, &gpio, &pin) == 0) {
+		return gpio_set_drv(gpio, pin, drv);
+	}
+}
+
+gpio_drv_t gpio_get_drv_pn(uint16_t pin_num)
+{
+	GPIO_Type *gpio;
+	uint16_t pin;
+	if(pin_to_port(pin_num, &gpio, &pin) == 0) {
+		return gpio_get_drv(gpio, pin);
+	}
+	return GPIO_DRV_NONE;
+}
+
+void gpio_set_rate_pn(uint16_t pin_num, gpio_rate_t rate)
+{
+	GPIO_Type *gpio;
+	uint16_t pin;
+	if(pin_to_port(pin_num, &gpio, &pin) == 0) {
+		return gpio_set_rate(gpio, pin, rate);
+	}
+}
+
+gpio_rate_t gpio_get_rate_pn(uint16_t pin_num)
+{
+	GPIO_Type *gpio;
+	uint16_t pin;
+	if(pin_to_port(pin_num, &gpio, &pin) == 0) {
+		return gpio_get_rate(gpio, pin);
+	}
+	return GPIO_RATE_SLOW;
+}
+
+void gpio_set_dir_pn(uint16_t pin_num, gpio_direction_t dir)
+{
+	GPIO_Type *gpio;
+	uint16_t pin;
+	if(pin_to_port(pin_num, &gpio, &pin) == 0) {
+		return gpio_set_dir(gpio, pin, dir);
+	}
+}
+
+gpio_direction_t gpio_get_dir_pn(uint16_t pin_num)
+{
+	GPIO_Type *gpio;
+	uint16_t pin;
+	if(pin_to_port(pin_num, &gpio, &pin) == 0) {
+		return gpio_get_dir(gpio, pin);
+	}
+	return GPIO_DIRECTION_INPUT;
+}
+
+void gpio_set_value_pn(uint16_t pin_num, uint8_t value)
+{
+	GPIO_Type *gpio;
+	uint16_t pin;
+	if(pin_to_port(pin_num, &gpio, &pin) == 0) {
+		return gpio_set_value(gpio, pin, value);
+	}
+}
+
+uint8_t gpio_get_value_pn(uint16_t pin_num)
+{
+	GPIO_Type *gpio;
+	uint16_t pin;
+	if(pin_to_port(pin_num, &gpio, &pin) == 0) {
+		return gpio_get_value(gpio, pin);
+	}
+	return 0xFF;
+}

@@ -145,3 +145,77 @@ vuno64.build.sdata.size=512
 ## Limit is the 15.5MB Flash
 vuno64.upload.maximum_size=16252928
 vuno64.build.ldscript="{runtime.platform.path}/variants/viduino_uno/f1c200s.ld"
+
+############################
+
+vuno32_2.name=Viduino Uno 32MB
+
+## Toolchain
+vuno32_2.menu.toolsloc.default=Default
+
+vuno32_2.program.tool=flashtool
+vuno32_2.upload.tool=flashtool
+vuno32_2.upload.maximum_size=8044464
+vuno32_2.upload.maximum_data_size=81920
+vuno32_2.upload.wait_for_upload_port=true
+vuno32_2.serial.disableDTR=false
+vuno32_2.serial.disableRTS=false
+
+vuno32_2.build.tarch=arm
+vuno32_2.build.target=viduino
+vuno32_2.build.mcu=f1c100s
+vuno32_2.build.core=arm926
+vuno32_2.build.variant=f1c100s
+
+## OS
+menu.OS=OS
+vuno32_2.menu.OS.Non=non os
+vuno32_2.menu.OS.Non.OS=NON_OS
+vuno32_2.menu.OS.freertos=freertos
+vuno32_2.menu.OS.freertos.OS=FREERTOS
+
+## CPU Clock
+vuno32_2.menu.clksrc.400=400MHz CPU Clock Frequency
+vuno32_2.menu.clksrc.500=500MHz CPU Clock Frequency
+vuno32_2.menu.clksrc.600=600MHz CPU Clock Frequency
+vuno32_2.menu.clksrc.400.build.f_cpu=400000000L
+vuno32_2.menu.clksrc.500.build.f_cpu=500000000L
+vuno32_2.menu.clksrc.600.build.f_cpu=600000000L
+
+## Burn baud rate
+menu.UploadSpeed=UploadSpeed
+vuno32_2.menu.UploadSpeed.921600=921600
+vuno32_2.menu.UploadSpeed.921600.upload.speed=921600
+vuno32_2.menu.UploadSpeed.115200=115200
+vuno32_2.menu.UploadSpeed.115200.upload.speed=115200
+vuno32_2.menu.UploadSpeed.256000.windows=256000
+vuno32_2.menu.UploadSpeed.256000.upload.speed=256000
+vuno32_2.menu.UploadSpeed.230400.linux=230400
+vuno32_2.menu.UploadSpeed.230400.macosx=230400
+vuno32_2.menu.UploadSpeed.230400.upload.speed=230400
+vuno32_2.menu.UploadSpeed.460800.linux=460800
+vuno32_2.menu.UploadSpeed.460800.macosx=460800
+vuno32_2.menu.UploadSpeed.460800.upload.speed=460800
+vuno32_2.menu.UploadSpeed.512000.windows=512000
+vuno32_2.menu.UploadSpeed.512000.upload.speed=512000
+
+## Compress
+menu.Compress=Compress
+vuno32_2.menu.Compress.No=no
+vuno32_2.menu.Compress.No.Compress=bin
+vuno32_2.menu.Compress.Yes=lzma
+vuno32_2.menu.Compress.Yes.Compress=lzma
+
+## Point to the file for ./variants/<variant>/pins_arduino.h
+vuno32_2.build.variant=viduino_uno_2
+
+## "The 'core' file directory for this board, in ./cores
+vuno32_2.build.core=allwinner
+
+## This sets a define for use in the compiled code.
+vuno32_2.build.board=VIDUINO_UNO
+vuno32_2.build.sdata.size=512
+
+## Limit is the 7.5MB Flash
+vuno32_2.upload.maximum_size=7864320
+vuno32_2.build.ldscript="{runtime.platform.path}/variants/viduino_uno/f1c100s.ld"

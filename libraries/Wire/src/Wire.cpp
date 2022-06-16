@@ -56,10 +56,10 @@ void TwoWire::begin(uint32_t frequency)
 
 	if (i2c != NULL)
 	{
-		gpio_set_cfg(i2c->pintype[0].P, i2c->pintype[0].num, i2c->pintype[0].type);
-		gpio_set_cfg(i2c->pintype[1].P, i2c->pintype[1].num, i2c->pintype[1].type);
-		gpio_set_pull(i2c->pintype[0].P, i2c->pintype[0].num, GPIO_PULL_UP);
-		gpio_set_pull(i2c->pintype[1].P, i2c->pintype[1].num, GPIO_PULL_UP);
+		gpio_set_cfg_pn(i2c->pintype[0].num, i2c->pintype[0].type);
+		gpio_set_cfg_pn(i2c->pintype[1].num, i2c->pintype[1].type);
+		gpio_set_pull_pn(i2c->pintype[0].num, GPIO_PULL_UP);
+		gpio_set_pull_pn(i2c->pintype[1].num, GPIO_PULL_UP);
 		i2c_init(i2c->I);
 		i2c_set_frequency(i2c->I, frequency);
 	}
@@ -392,6 +392,6 @@ void TwoWire::scan(Print &print, int start, int end)
 	print.println("I2C scan done");
 }
 
-TwoWire Wire(&I2C_Desc[1]);
-TwoWire Wire1(&I2C_Desc[2]);
-TwoWire Wire2(&I2C_Desc[3]);
+TwoWire Wire(&I2C_Desc[0]);
+TwoWire Wire1(&I2C_Desc[1]);
+TwoWire Wire2(&I2C_Desc[2]);

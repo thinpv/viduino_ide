@@ -58,8 +58,8 @@ void Uart::begin(unsigned long baudrate, uint16_t config)
 		data = 8;
 		break;
 	}
-	gpio_set_cfg(uartDesc->pintype[0].P, uartDesc->pintype[0].num, uartDesc->pintype[0].type);
-	gpio_set_cfg(uartDesc->pintype[1].P, uartDesc->pintype[1].num, uartDesc->pintype[1].type);
+	gpio_set_cfg_pn(uartDesc->pintype[0].num, uartDesc->pintype[0].type);
+	gpio_set_cfg_pn(uartDesc->pintype[1].num, uartDesc->pintype[1].type);
 	uart_set(uartDesc->U, baudrate, data, parity, stop);
 }
 

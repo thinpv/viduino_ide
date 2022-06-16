@@ -37,9 +37,9 @@ extern "C"
 
 	void analogWrite(pin_size_t pinNumber, int value)
 	{
-		GPIOPinDescription *gpio = &GPIO_Desc[pinNumber];
-		gpio_set_dir(gpio->port, gpio->pin, GPIO_DIRECTION_OUTPUT);
-		softpwm_add(gpio->port, gpio->pin, value/25);
+		// GPIOPinDescription *gpio = &GPIO_Desc[pinNumber];
+		// gpio_set_dir(gpio->port, gpio->pin, GPIO_DIRECTION_OUTPUT);
+		// softpwm_add(gpio->port, gpio->pin, value/25);
 		// pwm_t led_pwm_bl =
 		// 		{
 		// 				.virt = 0x01c21000,

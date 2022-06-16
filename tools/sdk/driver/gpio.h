@@ -10,59 +10,59 @@ extern "C"
 #include <types.h>
 #include <F1C100S.h>
 
-#define F1C100S_GPIOA0 (0)
-#define F1C100S_GPIOA1 (1)
-#define F1C100S_GPIOA2 (2)
-#define F1C100S_GPIOA3 (3)
+#define GPIOA0 (0)
+#define GPIOA1 (1)
+#define GPIOA2 (2)
+#define GPIOA3 (3)
 
-#define F1C100S_GPIOC0 (64)
-#define F1C100S_GPIOC1 (65)
-#define F1C100S_GPIOC2 (66)
-#define F1C100S_GPIOC3 (67)
+#define GPIOC0 (64)
+#define GPIOC1 (65)
+#define GPIOC2 (66)
+#define GPIOC3 (67)
 
-#define F1C100S_GPIOD0 (96)
-#define F1C100S_GPIOD1 (97)
-#define F1C100S_GPIOD2 (98)
-#define F1C100S_GPIOD3 (99)
-#define F1C100S_GPIOD4 (100)
-#define F1C100S_GPIOD5 (101)
-#define F1C100S_GPIOD6 (102)
-#define F1C100S_GPIOD7 (103)
-#define F1C100S_GPIOD8 (104)
-#define F1C100S_GPIOD9 (105)
-#define F1C100S_GPIOD10 (106)
-#define F1C100S_GPIOD11 (107)
-#define F1C100S_GPIOD12 (108)
-#define F1C100S_GPIOD13 (109)
-#define F1C100S_GPIOD14 (110)
-#define F1C100S_GPIOD15 (111)
-#define F1C100S_GPIOD16 (112)
-#define F1C100S_GPIOD17 (113)
-#define F1C100S_GPIOD18 (114)
-#define F1C100S_GPIOD19 (115)
-#define F1C100S_GPIOD20 (116)
-#define F1C100S_GPIOD21 (117)
+#define GPIOD0 (96)
+#define GPIOD1 (97)
+#define GPIOD2 (98)
+#define GPIOD3 (99)
+#define GPIOD4 (100)
+#define GPIOD5 (101)
+#define GPIOD6 (102)
+#define GPIOD7 (103)
+#define GPIOD8 (104)
+#define GPIOD9 (105)
+#define GPIOD10 (106)
+#define GPIOD11 (107)
+#define GPIOD12 (108)
+#define GPIOD13 (109)
+#define GPIOD14 (110)
+#define GPIOD15 (111)
+#define GPIOD16 (112)
+#define GPIOD17 (113)
+#define GPIOD18 (114)
+#define GPIOD19 (115)
+#define GPIOD20 (116)
+#define GPIOD21 (117)
 
-#define F1C100S_GPIOE0 (128)
-#define F1C100S_GPIOE1 (129)
-#define F1C100S_GPIOE2 (130)
-#define F1C100S_GPIOE3 (131)
-#define F1C100S_GPIOE4 (132)
-#define F1C100S_GPIOE5 (133)
-#define F1C100S_GPIOE6 (134)
-#define F1C100S_GPIOE7 (135)
-#define F1C100S_GPIOE8 (136)
-#define F1C100S_GPIOE9 (137)
-#define F1C100S_GPIOE10 (138)
-#define F1C100S_GPIOE11 (139)
-#define F1C100S_GPIOE12 (140)
+#define GPIOE0 (128)
+#define GPIOE1 (129)
+#define GPIOE2 (130)
+#define GPIOE3 (131)
+#define GPIOE4 (132)
+#define GPIOE5 (133)
+#define GPIOE6 (134)
+#define GPIOE7 (135)
+#define GPIOE8 (136)
+#define GPIOE9 (137)
+#define GPIOE10 (138)
+#define GPIOE11 (139)
+#define GPIOE12 (140)
 
-#define F1C100S_GPIOF0 (160)
-#define F1C100S_GPIOF1 (161)
-#define F1C100S_GPIOF2 (162)
-#define F1C100S_GPIOF3 (163)
-#define F1C100S_GPIOF4 (164)
-#define F1C100S_GPIOF5 (165)
+#define GPIOF0 (160)
+#define GPIOF1 (161)
+#define GPIOF2 (162)
+#define GPIOF3 (163)
+#define GPIOF4 (164)
+#define GPIOF5 (165)
 
 	typedef enum
 	{
@@ -119,6 +119,20 @@ extern "C"
 	void gpio_set_value(GPIO_Type *gpio, uint16_t pin, uint8_t value);
 	uint8_t gpio_get_value(GPIO_Type *gpio, uint16_t pin);
 	uint16_t gpio_to_irq(GPIO_Type *gpio, uint16_t pin);
+
+	uint8_t pin_to_port(uint16_t pin_num, GPIO_Type **gpio, uint16_t *pin);
+	void gpio_set_cfg_pn(uint16_t pin, uint16_t cfg);
+	uint16_t gpio_get_cfg_pn(uint16_t pin);
+	void gpio_set_pull_pn(uint16_t pin, gpio_pull_t pull);
+	gpio_pull_t gpio_get_pull_pn(uint16_t pin);
+	void gpio_set_drv_pn(uint16_t pin, gpio_drv_t drv);
+	gpio_drv_t gpio_get_drv_pn(uint16_t pin);
+	void gpio_set_rate_pn(uint16_t pin, gpio_rate_t rate);
+	gpio_rate_t gpio_get_rate_pn(uint16_t pin);
+	void gpio_set_dir_pn(uint16_t pin, gpio_direction_t dir);
+	gpio_direction_t gpio_get_dir_pn(uint16_t pin);
+	void gpio_set_value_pn(uint16_t pin, uint8_t value);
+	uint8_t gpio_get_value_pn(uint16_t pin);
 
 #ifdef __cplusplus
 }

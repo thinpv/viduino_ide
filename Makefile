@@ -70,6 +70,7 @@ INCDIRS			+= variants/viduino_uno
 
 SRCDIRS			+= $(ARDUINO)
 SRCDIRS			+= $(ARDUINO)/api
+SRCDIRS			+= variants/viduino_uno
 
 # ************************** USER **************************
 
