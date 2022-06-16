@@ -2,22 +2,22 @@ INCDIRS			+=
 SRCDIRS			+= examples/lvgl/src
 
 INCDIRS			+= \
-	examples/lvgl/lvgl/src \
-	examples/lvgl/lvgl/src/lv_core \
-	examples/lvgl/lvgl/src/lv_draw \
-	examples/lvgl/lvgl/src/lv_font \
-	examples/lvgl/lvgl/src/lv_gpu \
-	examples/lvgl/lvgl/src/lv_hal \
-	examples/lvgl/lvgl/src/lv_misc \
-	examples/lvgl/lvgl/src/lv_themes \
-	examples/lvgl/lvgl/src/lv_widgets
+	libs/lvgl7/src \
+	libs/lvgl7/src/lv_core \
+	libs/lvgl7/src/lv_draw \
+	libs/lvgl7/src/lv_font \
+	libs/lvgl7/src/lv_gpu \
+	libs/lvgl7/src/lv_hal \
+	libs/lvgl7/src/lv_misc \
+	libs/lvgl7/src/lv_themes \
+	libs/lvgl7/src/lv_widgets
 
 SRCDIRS			+= \
-	examples/lvgl/lvgl/src/lv_core \
-	examples/lvgl/lvgl/src/lv_draw \
-	examples/lvgl/lvgl/src/lv_font \
-	examples/lvgl/lvgl/src/lv_gpu \
-	examples/lvgl/lvgl/src/lv_hal \
-	examples/lvgl/lvgl/src/lv_misc \
-	examples/lvgl/lvgl/src/lv_themes \
-	examples/lvgl/lvgl/src/lv_widgets
+	libs/lvgl7/src/lv_core \
+	libs/lvgl7/src/lv_draw \
+	libs/lvgl7/src/lv_font \
+	libs/lvgl7/src/lv_gpu \
+	libs/lvgl7/src/lv_hal \
+	libs/lvgl7/src/lv_misc \
+	libs/lvgl7/src/lv_themes \
+	libs/lvgl7/src/lv_widgets
