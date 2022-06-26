@@ -204,7 +204,7 @@ void fb_init(lcd_type_t lcd_type, void *buffer)
 		lcd_pdat->width = 480;
 		lcd_pdat->height = 480;
 		// Pixel width
-		lcd_pdat->bits_per_pixel = 18;
+		lcd_pdat->bits_per_pixel = 16;
 
 		// Timing
 		lcd_pdat->timing.h_front_porch = 10; //
@@ -225,7 +225,7 @@ void fb_init(lcd_type_t lcd_type, void *buffer)
 
 		// Set the video clock to 390MHZ
 		u8 N = 23, M = 2;
-		F = 16; //LCD=276000000/16=17250000
+		F = 13; //LCD=(24MHz*N)/M/F=30Mhz
 		C_Bit(CCU->PLL_VIDEO_CTRL_REG, 31);
 		CCU->PLL_VIDEO_CTRL_REG = ((N - 1) << 8) | ((M - 1) << 0) | (3 << 24);
 		S_Bit(CCU->PLL_VIDEO_CTRL_REG, 31);

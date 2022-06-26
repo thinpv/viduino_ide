@@ -26,7 +26,7 @@ static void slider_event_cb(lv_obj_t *slider, lv_event_t event)
 
 void lvgl_test()
 {
-	fb_init(LCD_TYPE_RGB_480_272, NULL);
+	fb_init(LCD_TYPE_RGB_480_480, NULL);
 
 	lv_init();
 	lv_disp_buf_init(&disp_buf, buf, NULL, LV_HOR_RES_MAX * 10);
