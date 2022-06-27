@@ -29,24 +29,6 @@ OBJCOPY			= $(COMPILE)objcopy
 OBJDUMP			= $(COMPILE)objdump
 SIZE			= $(COMPILE)size
 
-DEFINES			+= -D__ARM32_ARCH__=5 -D__ARM926EJS__ -D__ARM32__ -DARM -Wno-unused-function
-ifeq ($(OS), freertos)
-DEFINES			+= -DFREERTOS
-else
-DEFINES			+= -DNONOS
-endif
-
-ASFLAGS			:= -g -ggdb -Wall -O3
-CFLAGS			:= -g -ggdb -Wall -O3
-CPFLAGS			:= -g -ggdb -Wall -O3
-LDFLAGS			:= -T $(ROOT)/variants/viduino_uno/f1c100s.ld -nostdlib
-MCFLAGS			:= -march=armv5te -mtune=arm926ej-s -mfloat-abi=soft -marm -specs=nosys.specs -mno-thumb-interwork
-
-ASFLAGS			+=	-ffunction-sections -fdata-sections -ffreestanding -std=gnu11 $(DEFINES)
-CFLAGS			+=	-ffunction-sections -fdata-sections -ffreestanding -std=gnu11 $(DEFINES)
-CPFLAGS			+=	-ffunction-sections -fdata-sections -ffreestanding -std=gnu++11 $(DEFINES) -fno-rtti -fno-use-cxa-atexit -fno-threadsafe-statics -fno-exceptions
-LDFLAGS			+=	-Wl,-gc-sections -ffunction-sections -fdata-sections
-
 # ************************** SDK **************************
 SDK				= $(ROOT)/tools/sdk
 DRIVER			= $(SDK)/driver
@@ -88,6 +70,26 @@ INCDIRS			+= examples/$(MAKECMDGOALS)
 SRCDIRS			+= examples/$(MAKECMDGOALS)
 
 # ************************** LIBRARIES **************************
+
+# ************************** DEFINE **************************
+
+DEFINES			+= -D__ARM32_ARCH__=5 -D__ARM926EJS__ -D__ARM32__ -DARM -Wno-unused-function
+ifeq ($(OS), freertos)
+DEFINES			+= -DFREERTOS
+else
+DEFINES			+= -DNONOS
+endif
+
+ASFLAGS			:= -g -ggdb -Wall -O3
+CFLAGS			:= -g -ggdb -Wall -O3
+CPFLAGS			:= -g -ggdb -Wall -O3
+LDFLAGS			:= -T $(ROOT)/variants/viduino_uno/f1c100s.ld -nostdlib
+MCFLAGS			:= -march=armv5te -mtune=arm926ej-s -mfloat-abi=soft -marm -specs=nosys.specs -mno-thumb-interwork
+
+ASFLAGS			+=	-ffunction-sections -fdata-sections -ffreestanding -std=gnu11 $(DEFINES)
+CFLAGS			+=	-ffunction-sections -fdata-sections -ffreestanding -std=gnu11 $(DEFINES)
+CPFLAGS			+=	-ffunction-sections -fdata-sections -ffreestanding -std=gnu++11 $(DEFINES) -fno-rtti -fno-use-cxa-atexit -fno-threadsafe-statics -fno-exceptions
+LDFLAGS			+=	-Wl,-gc-sections -ffunction-sections -fdata-sections
 
 # ************************** BUILD **************************
 
