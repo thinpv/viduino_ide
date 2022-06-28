@@ -1,5 +1,5 @@
 INCDIRS			+= 
-SRCDIRS			+= examples/lvgl_st7701s/src
+SRCDIRS			+= examples/lvgl_st7701s_music/src
 
 INCDIRS			+= \
 	libs/lvgl7/src \

@@ -1,7 +1,7 @@
 #include <gpio.h>
 #include <io.h>
 
-#define DEBUG( ... ) // printf(##__VA_ARGS__)
+#define DEBUG(...) // printf(##__VA_ARGS__)
 
 void gpio_set_cfg(GPIO_Type *gpio, int pin, uint16_t cfg)
 {
@@ -120,156 +120,62 @@ uint16_t gpio_to_irq(GPIO_Type *gpio, int pin)
 	return 0xFF;
 }
 
-uint8_t pin_to_port(int pin_num, GPIO_Type **gpio, uint16_t *pin)
+inline void gpio_set_cfg_pn(int pin_num, uint16_t cfg)
 {
-	switch (pin_num >> 5)
-	{
-	case 0:
-		*gpio = GPIOA;
-		*pin = pin_num & 0x1F;
-		return 0;
-	
-	case 1:
-		*gpio = GPIOB;
-		*pin = pin_num & 0x1F;
-		return 0;
-	
-	case 2:
-		*gpio = GPIOC;
-		*pin = pin_num & 0x1F;
-		return 0;
-	
-	case 3:
-		*gpio = GPIOD;
-		*pin = pin_num & 0x1F;
-		return 0;
-	
-	case 4:
-		*gpio = GPIOE;
-		*pin = pin_num & 0x1F;
-		return 0;
-	
-	case 5:
-		*gpio = GPIOF;
-		*pin = pin_num & 0x1F;
-		return 0;
-
-	default:
-		return 1;
-	}
-	return 1;
+	return gpio_set_cfg(GPIO(pin_num / 32), pin_num & 0x1F, cfg);
 }
 
-void gpio_set_cfg_pn(int pin_num, uint16_t cfg)
+inline uint16_t gpio_get_cfg_pn(int pin_num)
 {
-	GPIO_Type *gpio;
-	int pin;
-	if(pin_to_port(pin_num, &gpio, &pin) == 0) {
-		return gpio_set_cfg(gpio, pin, cfg);
-	}
+	return gpio_get_cfg(GPIO(pin_num / 32), pin_num & 0x1F);
 }
 
-uint16_t gpio_get_cfg_pn(int pin_num)
+inline void gpio_set_pull_pn(int pin_num, gpio_pull_t pull)
 {
-	GPIO_Type *gpio;
-	int pin;
-	if(pin_to_port(pin_num, &gpio, &pin) == 0) {
-		return gpio_get_cfg(gpio, pin);
-	}
-	return 0xFF;
+	return gpio_set_pull(GPIO(pin_num / 32), pin_num & 0x1F, pull);
 }
 
-void gpio_set_pull_pn(int pin_num, gpio_pull_t pull)
+inline gpio_pull_t gpio_get_pull_pn(int pin_num)
 {
-	GPIO_Type *gpio;
-	int pin;
-	if(pin_to_port(pin_num, &gpio, &pin) == 0) {
-		return gpio_set_pull(gpio, pin, pull);
-	}
+	return gpio_get_pull(GPIO(pin_num / 32), pin_num & 0x1F);
 }
 
-gpio_pull_t gpio_get_pull_pn(int pin_num)
+inline void gpio_set_drv_pn(int pin_num, gpio_drv_t drv)
 {
-	GPIO_Type *gpio;
-	int pin;
-	if(pin_to_port(pin_num, &gpio, &pin) == 0) {
-		return gpio_get_pull(gpio, pin);
-	}
-	return GPIO_PULL_NONE;
+	return gpio_set_drv(GPIO(pin_num / 32), pin_num & 0x1F, drv);
 }
 
-void gpio_set_drv_pn(int pin_num, gpio_drv_t drv)
+inline gpio_drv_t gpio_get_drv_pn(int pin_num)
 {
-	GPIO_Type *gpio;
-	int pin;
-	if(pin_to_port(pin_num, &gpio, &pin) == 0) {
-		return gpio_set_drv(gpio, pin, drv);
-	}
+	return gpio_get_drv(GPIO(pin_num / 32), pin_num & 0x1F);
 }
 
-gpio_drv_t gpio_get_drv_pn(int pin_num)
+inline void gpio_set_rate_pn(int pin_num, gpio_rate_t rate)
 {
-	GPIO_Type *gpio;
-	int pin;
-	if(pin_to_port(pin_num, &gpio, &pin) == 0) {
-		return gpio_get_drv(gpio, pin);
-	}
-	return GPIO_DRV_NONE;
+	return gpio_set_rate(GPIO(pin_num / 32), pin_num & 0x1F, rate);
 }
 
-void gpio_set_rate_pn(int pin_num, gpio_rate_t rate)
+inline gpio_rate_t gpio_get_rate_pn(int pin_num)
 {
-	GPIO_Type *gpio;
-	int pin;
-	if(pin_to_port(pin_num, &gpio, &pin) == 0) {
-		return gpio_set_rate(gpio, pin, rate);
-	}
+	return gpio_get_rate(GPIO(pin_num / 32), pin_num & 0x1F);
 }
 
-gpio_rate_t gpio_get_rate_pn(int pin_num)
+inline void gpio_set_dir_pn(int pin_num, gpio_direction_t dir)
 {
-	GPIO_Type *gpio;
-	int pin;
-	if(pin_to_port(pin_num, &gpio, &pin) == 0) {
-		return gpio_get_rate(gpio, pin);
-	}
-	return GPIO_RATE_SLOW;
+	return gpio_set_dir(GPIO(pin_num / 32), pin_num & 0x1F, dir);
 }
 
-void gpio_set_dir_pn(int pin_num, gpio_direction_t dir)
+inline gpio_direction_t gpio_get_dir_pn(int pin_num)
 {
-	GPIO_Type *gpio;
-	int pin;
-	if(pin_to_port(pin_num, &gpio, &pin) == 0) {
-		return gpio_set_dir(gpio, pin, dir);
-	}
+	return gpio_get_dir(GPIO(pin_num / 32), pin_num & 0x1F);
 }
 
-gpio_direction_t gpio_get_dir_pn(int pin_num)
+inline void gpio_set_value_pn(int pin_num, uint8_t value)
 {
-	GPIO_Type *gpio;
-	int pin;
-	if(pin_to_port(pin_num, &gpio, &pin) == 0) {
-		return gpio_get_dir(gpio, pin);
-	}
-	return GPIO_DIRECTION_INPUT;
+	return gpio_set_value(GPIO(pin_num / 32), pin_num & 0x1F, value);
 }
 
-void gpio_set_value_pn(int pin_num, uint8_t value)
+inline uint8_t gpio_get_value_pn(int pin_num)
 {
-	GPIO_Type *gpio;
-	int pin;
-	if(pin_to_port(pin_num, &gpio, &pin) == 0) {
-		return gpio_set_value(gpio, pin, value);
-	}
-}
-
-uint8_t gpio_get_value_pn(int pin_num)
-{
-	GPIO_Type *gpio;
-	int pin;
-	if(pin_to_port(pin_num, &gpio, &pin) == 0) {
-		return gpio_get_value(gpio, pin);
-	}
-	return 0xFF;
+	return gpio_get_value(GPIO(pin_num / 32), pin_num & 0x1F);
 }

@@ -683,6 +683,7 @@ typedef struct
 #define GPIOD ((GPIO_Type *)(PIO_BASE + 3 * 0x24))
 #define GPIOE ((GPIO_Type *)(PIO_BASE + 4 * 0x24))
 #define GPIOF ((GPIO_Type *)(PIO_BASE + 5 * 0x24))
+#define GPIO(x) ((GPIO_Type *)(PIO_BASE + x * 0x24))
 
 // #define GPIOA_INT   ((GPIO_INT_Type *)(PIO_BASE + 0x200 + 0*0x20))
 // #define GPIOB_INT   ((GPIO_INT_Type *)(PIO_BASE + 0x200 + 1*0x20))

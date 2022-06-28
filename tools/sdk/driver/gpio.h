@@ -120,7 +120,6 @@ extern "C"
 	uint8_t gpio_get_value(GPIO_Type *gpio, int pin);
 	uint16_t gpio_to_irq(GPIO_Type *gpio, int pin);
 
-	uint8_t pin_to_port(int pin_num, GPIO_Type **gpio, uint16_t *pin);
 	void gpio_set_cfg_pn(int pin, uint16_t cfg);
 	uint16_t gpio_get_cfg_pn(int pin);
 	void gpio_set_pull_pn(int pin, gpio_pull_t pull);
