@@ -1,14 +1,16 @@
-#include "st7701.h"
+#include "st7701s.h"
 #include <gpio.h>
 
-#define st7701s_spi_scl_1 gpio_set_value(SCK_PORT, SCK_PIN, 1)
-#define st7701s_spi_scl_0 gpio_set_value(SCK_PORT, SCK_PIN, 0)
-#define st7701s_spi_sdi_1 gpio_set_value(SDA_PORT, SDA_PIN, 1)
-#define st7701s_spi_sdi_0 gpio_set_value(SDA_PORT, SDA_PIN, 0)
-#define st7701s_spi_cs_1 gpio_set_value(CS_PORT, CS_PIN, 1)
-#define st7701s_spi_cs_0 gpio_set_value(CS_PORT, CS_PIN, 0)
-#define st7701s_spi_reset_1 gpio_set_value(CS_PORT, CS_PIN, 1)
-#define st7701s_spi_reset_0 gpio_set_value(CS_PORT, CS_PIN, 0)
+#define st7701s_spi_cs_1  gpio_set_value_pn(cs_pin, 1)
+#define st7701s_spi_cs_0  gpio_set_value_pn(cs_pin, 0)
+#define st7701s_spi_scl_1 gpio_set_value_pn(scl_pin, 1)
+#define st7701s_spi_scl_0 gpio_set_value_pn(scl_pin, 0)
+#define st7701s_spi_sdi_1 gpio_set_value_pn(sdi_pin, 1)
+#define st7701s_spi_sdi_0 gpio_set_value_pn(sdi_pin, 0)
+
+static int cs_pin = -1;
+static int scl_pin = -1;
+static int sdi_pin = -1;
 
 static void send_command(uint8_t value)
 {
@@ -60,16 +62,21 @@ static void send_data(uint8_t value)
   st7701s_spi_cs_1;
 }
 
-void st7701_init(void)
+void st7701_init(int _cs_pin, int _scl_pin, int _sdi_pin)
 {
-  gpio_set_dir(CS_PORT, CS_PIN, GPIO_DIRECTION_OUTPUT);
-  gpio_set_drv(CS_PORT, CS_PIN, GPIO_DRV_STRONG);
-  st7701s_spi_cs_1; // Deselect
-  gpio_set_dir(SCK_PORT, SCK_PIN, GPIO_DIRECTION_OUTPUT);
-  gpio_set_drv(SCK_PORT, SCK_PIN, GPIO_DRV_STRONG);
+	cs_pin = _cs_pin;
+	scl_pin = _scl_pin;
+	sdi_pin = _sdi_pin;
+
+	gpio_set_dir_pn(cs_pin, GPIO_DIRECTION_OUTPUT);
+	gpio_set_drv_pn(cs_pin, GPIO_DRV_STRONG);
+	gpio_set_dir_pn(scl_pin, GPIO_DIRECTION_OUTPUT);
+	gpio_set_drv_pn(scl_pin, GPIO_DRV_STRONG);
+	gpio_set_dir_pn(sdi_pin, GPIO_DIRECTION_OUTPUT);
+	gpio_set_drv_pn(sdi_pin, GPIO_DRV_STRONG);
+	
+  st7701s_spi_cs_1;
   st7701s_spi_scl_0;
-  gpio_set_dir(SDA_PORT, SDA_PIN, GPIO_DIRECTION_OUTPUT);
-  gpio_set_drv(SDA_PORT, SDA_PIN, GPIO_DRV_STRONG);
   st7701s_spi_sdi_0;
 
 #if 1

@@ -2,7 +2,7 @@
 #include <lv_conf.h>
 #include "src/lv_demo_benchmark.h"
 #include "FrameBuffer.h"
-#include "st7701.h"
+#include "st7701s.h"
 
 #define CAPACITOR_TOUCH
 //#define RESISTIVE_TOUCH
@@ -87,7 +87,7 @@ void setup()
 
   lv_init();
 
-	st7701_init();
+	st7701_init(GPIOE8, GPIOE9, GPIOE10);
 
   framebuffer.begin(LCD_TYPE_RGB_480_480, 100);
 

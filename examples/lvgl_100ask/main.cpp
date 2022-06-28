@@ -7,6 +7,11 @@
 
 #define CAPACITOR_TOUCH
 //#define RESISTIVE_TOUCH
+#define ST7701S
+
+#ifdef ST7701S
+#include <st7701s.h>
+#endif
 
 #ifdef CAPACITOR_TOUCH
 #define INT_PIN 6
@@ -88,7 +93,12 @@ void setup()
 
   lv_init();
 
-  framebuffer.begin();
+#ifdef ST7701S
+	st7701_init(GPIOE8, GPIOE9, GPIOE10);
+  framebuffer.begin(LCD_TYPE_RGB_480_480, 100);
+#else
+  framebuffer.begin(LCD_TYPE_RGB_800_480, 100);
+#endif
 
   lv_disp_buf_init(&disp_buf, buf, NULL, LV_HOR_RES_MAX * 10);
 

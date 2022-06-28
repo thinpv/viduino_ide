@@ -106,33 +106,33 @@ extern "C"
 		GPIO_DIRECTION_NONE = 2,
 	} gpio_direction_t;
 
-	void gpio_set_cfg(GPIO_Type *gpio, uint16_t pin, uint16_t cfg);
-	uint16_t gpio_get_cfg(GPIO_Type *gpio, uint16_t pin);
-	void gpio_set_pull(GPIO_Type *gpio, uint16_t pin, gpio_pull_t pull);
-	gpio_pull_t gpio_get_pull(GPIO_Type *gpio, uint16_t pin);
-	void gpio_set_drv(GPIO_Type *gpio, uint16_t pin, gpio_drv_t drv);
-	gpio_drv_t gpio_get_drv(GPIO_Type *gpio, uint16_t pin);
-	void gpio_set_rate(GPIO_Type *gpio, uint16_t pin, gpio_rate_t rate);
-	gpio_rate_t gpio_get_rate(GPIO_Type *gpio, uint16_t pin);
-	void gpio_set_dir(GPIO_Type *gpio, uint16_t pin, gpio_direction_t dir);
-	gpio_direction_t gpio_get_dir(GPIO_Type *gpio, uint16_t pin);
-	void gpio_set_value(GPIO_Type *gpio, uint16_t pin, uint8_t value);
-	uint8_t gpio_get_value(GPIO_Type *gpio, uint16_t pin);
-	uint16_t gpio_to_irq(GPIO_Type *gpio, uint16_t pin);
+	void gpio_set_cfg(GPIO_Type *gpio, int pin, uint16_t cfg);
+	uint16_t gpio_get_cfg(GPIO_Type *gpio, int pin);
+	void gpio_set_pull(GPIO_Type *gpio, int pin, gpio_pull_t pull);
+	gpio_pull_t gpio_get_pull(GPIO_Type *gpio, int pin);
+	void gpio_set_drv(GPIO_Type *gpio, int pin, gpio_drv_t drv);
+	gpio_drv_t gpio_get_drv(GPIO_Type *gpio, int pin);
+	void gpio_set_rate(GPIO_Type *gpio, int pin, gpio_rate_t rate);
+	gpio_rate_t gpio_get_rate(GPIO_Type *gpio, int pin);
+	void gpio_set_dir(GPIO_Type *gpio, int pin, gpio_direction_t dir);
+	gpio_direction_t gpio_get_dir(GPIO_Type *gpio, int pin);
+	void gpio_set_value(GPIO_Type *gpio, int pin, uint8_t value);
+	uint8_t gpio_get_value(GPIO_Type *gpio, int pin);
+	uint16_t gpio_to_irq(GPIO_Type *gpio, int pin);
 
-	uint8_t pin_to_port(uint16_t pin_num, GPIO_Type **gpio, uint16_t *pin);
-	void gpio_set_cfg_pn(uint16_t pin, uint16_t cfg);
-	uint16_t gpio_get_cfg_pn(uint16_t pin);
-	void gpio_set_pull_pn(uint16_t pin, gpio_pull_t pull);
-	gpio_pull_t gpio_get_pull_pn(uint16_t pin);
-	void gpio_set_drv_pn(uint16_t pin, gpio_drv_t drv);
-	gpio_drv_t gpio_get_drv_pn(uint16_t pin);
-	void gpio_set_rate_pn(uint16_t pin, gpio_rate_t rate);
-	gpio_rate_t gpio_get_rate_pn(uint16_t pin);
-	void gpio_set_dir_pn(uint16_t pin, gpio_direction_t dir);
-	gpio_direction_t gpio_get_dir_pn(uint16_t pin);
-	void gpio_set_value_pn(uint16_t pin, uint8_t value);
-	uint8_t gpio_get_value_pn(uint16_t pin);
+	uint8_t pin_to_port(int pin_num, GPIO_Type **gpio, uint16_t *pin);
+	void gpio_set_cfg_pn(int pin, uint16_t cfg);
+	uint16_t gpio_get_cfg_pn(int pin);
+	void gpio_set_pull_pn(int pin, gpio_pull_t pull);
+	gpio_pull_t gpio_get_pull_pn(int pin);
+	void gpio_set_drv_pn(int pin, gpio_drv_t drv);
+	gpio_drv_t gpio_get_drv_pn(int pin);
+	void gpio_set_rate_pn(int pin, gpio_rate_t rate);
+	gpio_rate_t gpio_get_rate_pn(int pin);
+	void gpio_set_dir_pn(int pin, gpio_direction_t dir);
+	gpio_direction_t gpio_get_dir_pn(int pin);
+	void gpio_set_value_pn(int pin, uint8_t value);
+	uint8_t gpio_get_value_pn(int pin);
 
 #ifdef __cplusplus
 }

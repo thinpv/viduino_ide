@@ -2,7 +2,7 @@
 #include <lvgl.h>
 #include "src/lv_demo_music.h"
 #include <sys_print.h>
-#include "st7701.h"
+#include "st7701s.h"
 
 static lv_disp_buf_t disp_buf;
 static lv_color_t buf[LV_HOR_RES_MAX * 10];
@@ -10,6 +10,14 @@ static lv_obj_t *slider_label;
 
 void my_disp_flush(lv_disp_drv_t *disp, const lv_area_t *area, lv_color_t *color_p)
 {
+  // static lv_color_t c = LV_COLOR_MAKE(0xFF, 0, 0);
+  // // static lv_color_t c = LV_COLOR_MAKE(0, 0xFF, 0);
+  // // static lv_color_t c = LV_COLOR_MAKE(0xFF, 0xFF, 0);
+  // // static lv_color_t c = LV_COLOR_MAKE(0, 0, 0xFF);
+  // // static lv_color_t c = LV_COLOR_MAKE(0, 0, 0);
+
+  // for(int i=0; i<LV_HOR_RES_MAX * 10; i++)
+  //   buf[i] = c;
 	fb_area_present(area->x1, area->y1, area->x2 - area->x1 + 1, area->y2 - area->y1 + 1, (unsigned short *)color_p);
 	lv_disp_flush_ready(disp);
 }
@@ -55,7 +63,7 @@ void setup()
 	sys_print_init();
 
 	printf("st7701_init start\r\n");
-	st7701_init();
+	st7701_init(GPIOE8, GPIOE9, GPIOE10);
 	printf("st7701_init done\r\n");
 
 	lvgl_test();

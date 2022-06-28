@@ -1,5 +1,5 @@
 INCDIRS			+= 
-SRCDIRS			+= examples/lvgl_st7701_benchmark/src
+SRCDIRS			+= examples/lvgl_st7701s_benchmark/src
 
 INCDIRS			+= \
 	libs/lvgl7/src \
@@ -13,7 +13,8 @@ INCDIRS			+= \
 	libs/lvgl7/src/lv_widgets \
 	libraries/arduino-goodix/src \
 	libraries/Wire/src \
-	libraries/FrameBuffer/src
+	libraries/FrameBuffer/src \
+	libraries/st7701s/src
 
 SRCDIRS			+= \
 	libs/lvgl7/src/lv_core \
@@ -26,4 +27,5 @@ SRCDIRS			+= \
 	libs/lvgl7/src/lv_widgets \
 	libraries/arduino-goodix/src \
 	libraries/Wire/src \
-	libraries/FrameBuffer/src
+	libraries/FrameBuffer/src \
+	libraries/st7701s/src

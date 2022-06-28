@@ -1,5 +1,5 @@
 INCDIRS			+= 
-SRCDIRS			+= examples/lvgl/src
+SRCDIRS			+= examples/lvgl_st7701s/src
 
 INCDIRS			+= \
 	libs/lvgl7/src \
@@ -10,7 +10,8 @@ INCDIRS			+= \
 	libs/lvgl7/src/lv_hal \
 	libs/lvgl7/src/lv_misc \
 	libs/lvgl7/src/lv_themes \
-	libs/lvgl7/src/lv_widgets
+	libs/lvgl7/src/lv_widgets \
+	libraries/st7701s/src
 
 SRCDIRS			+= \
 	libs/lvgl7/src/lv_core \
@@ -20,4 +21,5 @@ SRCDIRS			+= \
 	libs/lvgl7/src/lv_hal \
 	libs/lvgl7/src/lv_misc \
 	libs/lvgl7/src/lv_themes \
-	libs/lvgl7/src/lv_widgets
+	libs/lvgl7/src/lv_widgets \
+	libraries/st7701s/src
